@@ -153,8 +153,7 @@ object DownloadProgressHook {
         }
     }
 
-    internal fun isStatusBarNotification(obj: Any): Boolean =
-        obj.javaClass.name.contains("StatusBarNotification")
+    internal fun isStatusBarNotification(obj: Any): Boolean = obj.javaClass.name.contains("StatusBarNotification")
 }
 
 @XposedHooker

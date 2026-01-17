@@ -38,12 +38,14 @@ object SystemUIHook {
 
     // CentralSurfacesImpl.start() is the earliest point where we can get SystemUI context
     private fun hookCentralSurfaces(classLoader: ClassLoader) {
-        val targetClass = runCatching { classLoader.loadClass(CENTRAL_SURFACES_IMPL) }.onFailure {
-            log(
-                "Failed to load $CENTRAL_SURFACES_IMPL",
-                it
-            )
-        }.getOrNull() ?: return
+        val targetClass =
+            runCatching { classLoader.loadClass(CENTRAL_SURFACES_IMPL) }
+                .onFailure {
+                    log(
+                        "Failed to load $CENTRAL_SURFACES_IMPL",
+                        it,
+                    )
+                }.getOrNull() ?: return
 
         val startMethod =
             targetClass.declaredMethods.find { it.name == "start" && it.parameterCount == 0 }
@@ -55,26 +57,28 @@ object SystemUIHook {
         runCatching {
             module.hook(
                 startMethod,
-                StartHooker::class.java
+                StartHooker::class.java,
             )
         }.onSuccess { log("Hooked CentralSurfacesImpl.start()") }
             .onFailure { log("Hook failed", it) }
     }
 
     private fun hookNotifications(classLoader: ClassLoader) {
-        val targetClass = runCatching { classLoader.loadClass(NOTIF_COLLECTION) }.onFailure {
-            log(
-                "Failed to load $NOTIF_COLLECTION",
-                it
-            )
-        }.getOrNull() ?: return
+        val targetClass =
+            runCatching { classLoader.loadClass(NOTIF_COLLECTION) }
+                .onFailure {
+                    log(
+                        "Failed to load $NOTIF_COLLECTION",
+                        it,
+                    )
+                }.getOrNull() ?: return
 
         // postNotification: entry point for new notifications on Android 12+
         targetClass.declaredMethods.filter { it.name == "postNotification" }.forEach { method ->
             runCatching {
                 module.hook(
                     method,
-                    NotificationAddHooker::class.java
+                    NotificationAddHooker::class.java,
                 )
             }.onSuccess { log("Hooked NotifCollection.postNotification") }
         }
@@ -84,7 +88,7 @@ object SystemUIHook {
             runCatching {
                 module.hook(
                     method,
-                    NotificationRemoveHooker::class.java
+                    NotificationRemoveHooker::class.java,
                 )
             }.onSuccess { log("Hooked NotifCollection.retractNotification") }
         }
@@ -134,16 +138,17 @@ object SystemUIHook {
     private fun registerPowerSaveReceiver(context: Context) {
         if (powerSaveReceiver != null) return
 
-        powerSaveReceiver = object : BroadcastReceiver() {
-            override fun onReceive(
-                ctx: Context,
-                intent: Intent,
-            ) {
-                val isPowerSave =
-                    ctx.getSystemService(PowerManager::class.java)?.isPowerSaveMode == true
-                indicatorView?.let { it.post { it.isPowerSaveActive = isPowerSave } }
+        powerSaveReceiver =
+            object : BroadcastReceiver() {
+                override fun onReceive(
+                    ctx: Context,
+                    intent: Intent,
+                ) {
+                    val isPowerSave =
+                        ctx.getSystemService(PowerManager::class.java)?.isPowerSaveMode == true
+                    indicatorView?.let { it.post { it.isPowerSaveActive = isPowerSave } }
+                }
             }
-        }
 
         runCatching {
             context.registerReceiver(
@@ -164,8 +169,7 @@ object SystemUIHook {
         }
     }
 
-    private fun createHapticEffect(): VibrationEffect =
-        VibrationEffect.createOneShot(40, 150)
+    private fun createHapticEffect(): VibrationEffect = VibrationEffect.createOneShot(40, 150)
 
     fun isAttached(): Boolean = attached
 
@@ -174,7 +178,7 @@ object SystemUIHook {
             runCatching { indicatorView?.context?.unregisterReceiver(receiver) }.onFailure {
                 log(
                     "Failed to unregister power save receiver",
-                    it
+                    it,
                 )
             }
         }
@@ -206,9 +210,10 @@ class StartHooker : XposedInterface.Hooker {
             if (SystemUIHook.isAttached()) return
 
             val instance = callback.thisObject ?: return
-            val context = runCatching {
-                instance.javaClass.accessibleField("mContext").get(instance) as? Context
-            }.getOrNull()
+            val context =
+                runCatching {
+                    instance.javaClass.accessibleField("mContext").get(instance) as? Context
+                }.getOrNull()
 
             if (context == null) {
                 log("Failed to extract Context from CentralSurfacesImpl")

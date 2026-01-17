@@ -23,11 +23,7 @@ class PunchHoleMonitorModule(
     override fun onPackageLoaded(param: PackageLoadedParam) {
         if (param.packageName != SYSTEMUI_PACKAGE || !param.isFirstPackage) return
 
-        if (BuildConfig.DEBUG) {
-            log("Device: ${Build.MANUFACTURER} ${Build.MODEL} (${Build.HARDWARE})")
-            log("Android ${Build.VERSION.RELEASE} (SDK ${Build.VERSION.SDK_INT}), ROM: ${Build.DISPLAY}")
-        }
-
+        log("Device: ${Build.MANUFACTURER} ${Build.MODEL} (SDK ${Build.VERSION.SDK_INT})")
         PrefsManager.init(this)
         runCatching { SystemUIHook.hook(param.classLoader) }
             .onSuccess { log("Hooks registered") }
@@ -42,15 +38,14 @@ class PunchHoleMonitorModule(
             msg: String,
             t: Throwable? = null,
         ) {
-            val taggedMsg = "[$TAG] $msg"
-            // LSPosed logs (always, when module available)
-            if (::module.isInitialized) {
-                if (t != null) module.log(taggedMsg, t) else module.log(taggedMsg)
+            try {
+                // LSPosed logs via XposedModule.log()
+                if (t != null) module.log(msg, t) else module.log(msg)
+            } catch (e: Exception) {
+                Log.e("PHPM", "module.log failed: ${e.message}")
             }
-            // ADB logcat (debug builds only)
-            if (BuildConfig.DEBUG) {
-                if (t != null) Log.d(TAG, msg, t) else Log.d(TAG, msg)
-            }
+            // ADB logcat (stripped in release by proguard)
+            if (t != null) Log.d("PHPM", msg, t) else Log.d("PHPM", msg)
         }
     }
 }
