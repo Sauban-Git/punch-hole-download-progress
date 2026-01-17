@@ -1,6 +1,7 @@
 package eu.hxreborn.phpm.hook
 
 import android.app.Notification
+import eu.hxreborn.phpm.BuildConfig
 import eu.hxreborn.phpm.PunchHoleMonitorModule.Companion.log
 import eu.hxreborn.phpm.util.accessibleField
 import io.github.libxposed.api.XposedInterface
@@ -12,6 +13,16 @@ import java.util.concurrent.ConcurrentHashMap
 object DownloadProgressHook {
     private const val EXTRA_PROGRESS = "android.progress"
     private const val EXTRA_PROGRESS_MAX = "android.progressMax"
+
+    // Debug logging - logs everything in debug builds, nothing in release
+    private inline fun debug(msg: () -> String) {
+        if (BuildConfig.DEBUG) log(msg())
+    }
+
+    // Cached reflection methods for efficiency
+    @Volatile private var getPackageNameMethod: java.lang.reflect.Method? = null
+    @Volatile private var getNotificationMethod: java.lang.reflect.Method? = null
+    @Volatile private var getIdMethod: java.lang.reflect.Method? = null
 
     // Browser/downloader packages using standard android.progress/android.progressMax extras
     private val SUPPORTED_PACKAGES =
@@ -67,53 +78,43 @@ object DownloadProgressHook {
     var onActiveCountChanged: ((Int) -> Unit)? = null
 
     fun processNotification(sbn: Any) {
-        val pkg =
-            runCatching {
-                sbn.javaClass.getMethod("getPackageName").invoke(sbn) as? String
-            }.getOrNull() ?: return
+        val pkg = getPackageName(sbn) ?: return
+        debug { "Notification from: $pkg" }
 
         if (pkg !in SUPPORTED_PACKAGES) return
 
         val id = getNotificationId(sbn) ?: return
-        val notification =
-            runCatching {
-                sbn.javaClass.getMethod("getNotification").invoke(sbn) as? Notification
-            }.getOrNull() ?: return
-
+        val notification = getNotification(sbn) ?: return
         val extras = notification.extras ?: return
+
         val progress = extras.getInt(EXTRA_PROGRESS, -1)
         val max = extras.getInt(EXTRA_PROGRESS_MAX, -1)
+        debug { "Progress: $progress/$max" }
 
         if (progress >= 0 && max > 0) {
             val percent = (progress * 100 / max).coerceIn(0, 100)
-
             val oldPercent = activeDownloads[id]
             val wasNew = oldPercent == null
+
             if (oldPercent != percent) {
                 activeDownloads[id] = percent
-                log("Download $pkg: $percent% (id=$id)")
+                log("Download $pkg: $percent%")
                 updateProgress()
-                if (wasNew) {
-                    onActiveCountChanged?.invoke(activeDownloads.size)
-                }
+                if (wasNew) onActiveCountChanged?.invoke(activeDownloads.size)
             }
 
-            // Clean up completed downloads and trigger callback
             if (percent == 100) {
                 activeDownloads.remove(id)
                 onActiveCountChanged?.invoke(activeDownloads.size)
                 onDownloadComplete?.invoke()
             }
         } else {
-            // Some browsers replace progress notification with "Download complete" text notification
             val wasTracking = activeDownloads.remove(id)
             if (wasTracking != null) {
-                log("Download $pkg replaced with non-progress notification at $wasTracking% - treating as complete")
+                log("Download $pkg: complete")
                 onActiveCountChanged?.invoke(activeDownloads.size)
-                // Trigger 100% to start finish animation, then clear
                 onProgressChanged?.invoke(100)
                 onDownloadComplete?.invoke()
-                // After animation starts, clear progress
                 updateProgress()
             }
         }
@@ -121,31 +122,44 @@ object DownloadProgressHook {
 
     private fun updateProgress() {
         val maxProgress = activeDownloads.values.maxOrNull() ?: 0
-        log("Overall progress: $maxProgress% (${activeDownloads.size} active)")
+        debug { "Progress: $maxProgress% (${activeDownloads.size} active)" }
         onProgressChanged?.invoke(maxProgress)
     }
 
+    private fun getPackageName(sbn: Any): String? = runCatching {
+        val method = getPackageNameMethod
+            ?: sbn.javaClass.getMethod("getPackageName").also { getPackageNameMethod = it }
+        method.invoke(sbn) as? String
+    }.getOrNull()
+
+    private fun getNotification(sbn: Any): Notification? = runCatching {
+        val method = getNotificationMethod
+            ?: sbn.javaClass.getMethod("getNotification").also { getNotificationMethod = it }
+        method.invoke(sbn) as? Notification
+    }.getOrNull()
+
     private fun getNotificationId(sbn: Any): String? {
-        return runCatching {
-            val pkg =
-                sbn.javaClass.getMethod("getPackageName").invoke(sbn) as? String ?: return null
-            val id = sbn.javaClass.getMethod("getId").invoke(sbn) as? Int ?: return null
-            "$pkg:$id"
-        }.getOrNull()
+        val pkg = getPackageName(sbn) ?: return null
+        val id = runCatching {
+            val method = getIdMethod
+                ?: sbn.javaClass.getMethod("getId").also { getIdMethod = it }
+            method.invoke(sbn) as? Int
+        }.getOrNull() ?: return null
+        return "$pkg:$id"
     }
 
     fun onNotificationRemoved(sbn: Any) {
         val id = getNotificationId(sbn) ?: return
+        debug { "Notification removed: $id" }
+
         val wasTracking = activeDownloads.remove(id)
         if (wasTracking != null) {
             onActiveCountChanged?.invoke(activeDownloads.size)
             if (wasTracking < 100) {
-                // Download was cancelled mid-progress
-                log("Download notification removed while at $wasTracking% (id=$id) - cancelled")
+                log("Download cancelled at $wasTracking%")
                 onDownloadCancelled?.invoke()
             } else {
-                // Download completed normally
-                log("Download notification removed at 100% (id=$id) - complete")
+                log("Download complete")
                 onProgressChanged?.invoke(100)
                 onDownloadComplete?.invoke()
             }
@@ -162,9 +176,19 @@ class NotificationAddHooker : XposedInterface.Hooker {
         @JvmStatic
         @AfterInvocation
         fun after(callback: AfterHookCallback) {
+            if (BuildConfig.DEBUG) log("NotificationAddHooker: ${callback.args?.size ?: 0} args")
+
             callback.args?.forEach { arg ->
-                if (arg != null && DownloadProgressHook.isStatusBarNotification(arg)) {
+                if (arg == null) return@forEach
+
+                if (DownloadProgressHook.isStatusBarNotification(arg)) {
                     DownloadProgressHook.processNotification(arg)
+                } else if (arg.javaClass.name.contains("NotificationEntry")) {
+                    runCatching {
+                        val sbn = arg.javaClass.getDeclaredField("mSbn")
+                            .apply { isAccessible = true }.get(arg)
+                        if (sbn != null) DownloadProgressHook.processNotification(sbn)
+                    }
                 }
             }
         }
@@ -177,22 +201,20 @@ class NotificationRemoveHooker : XposedInterface.Hooker {
         @JvmStatic
         @AfterInvocation
         fun after(callback: AfterHookCallback) {
+            if (BuildConfig.DEBUG) log("NotificationRemoveHooker: ${callback.args?.size ?: 0} args")
+
             callback.args?.forEach { arg ->
                 if (arg == null) return@forEach
 
-                // Direct StatusBarNotification
                 if (DownloadProgressHook.isStatusBarNotification(arg)) {
                     DownloadProgressHook.onNotificationRemoved(arg)
                     return@forEach
                 }
 
-                // Android 12+ wraps SBN in NotificationEntry
                 if (arg.javaClass.name.contains("NotificationEntry")) {
                     runCatching {
                         val sbn = arg.javaClass.accessibleField("mSbn").get(arg)
-                        if (sbn != null) {
-                            DownloadProgressHook.onNotificationRemoved(sbn)
-                        }
+                        if (sbn != null) DownloadProgressHook.onNotificationRemoved(sbn)
                     }
                 }
             }
