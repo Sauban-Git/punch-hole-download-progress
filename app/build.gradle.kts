@@ -15,6 +15,7 @@ android {
         targetSdk = 36
         versionCode = 103
         versionName = "1.0.0"
+        resourceConfigurations += "en"
     }
 
     signingConfigs {
@@ -101,7 +102,6 @@ dependencies {
     implementation(libs.libxposed.service)
     implementation(libs.lifecycle.runtime)
     implementation(libs.core.ktx)
-    implementation(libs.material)
 
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
