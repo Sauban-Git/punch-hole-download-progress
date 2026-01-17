@@ -2,10 +2,12 @@ package eu.hxreborn.phpm.hook
 
 import android.app.Notification
 import eu.hxreborn.phpm.PunchHoleMonitorModule.Companion.log
+import eu.hxreborn.phpm.util.accessibleField
 import io.github.libxposed.api.XposedInterface
 import io.github.libxposed.api.XposedInterface.AfterHookCallback
 import io.github.libxposed.api.annotations.AfterInvocation
 import io.github.libxposed.api.annotations.XposedHooker
+import java.util.concurrent.ConcurrentHashMap
 
 object DownloadProgressHook {
     private const val EXTRA_PROGRESS = "android.progress"
@@ -57,18 +59,14 @@ object DownloadProgressHook {
         )
 
     // Active downloads: id -> progress (0-100)
-    private val activeDownloads = mutableMapOf<String, Int>()
+    private val activeDownloads = ConcurrentHashMap<String, Int>()
 
     var onProgressChanged: ((Int) -> Unit)? = null
     var onDownloadComplete: (() -> Unit)? = null
     var onDownloadCancelled: (() -> Unit)? = null
     var onActiveCountChanged: ((Int) -> Unit)? = null
 
-    fun onNotificationAdded(sbn: Any) {
-        processNotification(sbn)
-    }
-
-    private fun processNotification(sbn: Any) {
+    fun processNotification(sbn: Any) {
         val pkg =
             runCatching {
                 sbn.javaClass.getMethod("getPackageName").invoke(sbn) as? String
@@ -155,10 +153,8 @@ object DownloadProgressHook {
         }
     }
 
-    fun clearAll() {
-        activeDownloads.clear()
-        onProgressChanged?.invoke(0)
-    }
+    internal fun isStatusBarNotification(obj: Any): Boolean =
+        obj.javaClass.name.contains("StatusBarNotification")
 }
 
 @XposedHooker
@@ -168,13 +164,11 @@ class NotificationAddHooker : XposedInterface.Hooker {
         @AfterInvocation
         fun after(callback: AfterHookCallback) {
             callback.args?.forEach { arg ->
-                if (arg != null && isStatusBarNotification(arg)) {
-                    DownloadProgressHook.onNotificationAdded(arg)
+                if (arg != null && DownloadProgressHook.isStatusBarNotification(arg)) {
+                    DownloadProgressHook.processNotification(arg)
                 }
             }
         }
-
-        private fun isStatusBarNotification(obj: Any): Boolean = obj.javaClass.name.contains("StatusBarNotification")
     }
 }
 
@@ -188,7 +182,7 @@ class NotificationRemoveHooker : XposedInterface.Hooker {
                 if (arg == null) return@forEach
 
                 // Direct StatusBarNotification
-                if (isStatusBarNotification(arg)) {
+                if (DownloadProgressHook.isStatusBarNotification(arg)) {
                     DownloadProgressHook.onNotificationRemoved(arg)
                     return@forEach
                 }
@@ -196,9 +190,7 @@ class NotificationRemoveHooker : XposedInterface.Hooker {
                 // Android 12+ wraps SBN in NotificationEntry
                 if (arg.javaClass.name.contains("NotificationEntry")) {
                     runCatching {
-                        val sbnField = arg.javaClass.getDeclaredField("mSbn")
-                        sbnField.isAccessible = true
-                        val sbn = sbnField.get(arg)
+                        val sbn = arg.javaClass.accessibleField("mSbn").get(arg)
                         if (sbn != null) {
                             DownloadProgressHook.onNotificationRemoved(sbn)
                         }
@@ -206,7 +198,5 @@ class NotificationRemoveHooker : XposedInterface.Hooker {
                 }
             }
         }
-
-        private fun isStatusBarNotification(obj: Any): Boolean = obj.javaClass.name.contains("StatusBarNotification")
     }
 }

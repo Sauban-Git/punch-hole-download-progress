@@ -36,11 +36,11 @@ fun MotionScreen(
                 bottom = contentPadding.calculateBottomPadding() + 16.dp,
             ),
     ) {
-        item {
+        item(key = "motion_animation_header") {
             SectionHeader(title = stringResource(R.string.group_animation))
         }
 
-        item {
+        item(key = "motion_completion_style") {
             TweakSelection(
                 title = stringResource(R.string.completion_style),
                 description = stringResource(R.string.completion_style_desc),
@@ -58,11 +58,11 @@ fun MotionScreen(
             )
         }
 
-        item {
+        item(key = "motion_timing_header") {
             SectionHeader(title = stringResource(R.string.group_timing))
         }
 
-        item {
+        item(key = "motion_finish_hold") {
             TweakSlider(
                 title = stringResource(R.string.completion_hold),
                 description = stringResource(R.string.completion_hold_desc),
@@ -81,7 +81,7 @@ fun MotionScreen(
             )
         }
 
-        item {
+        item(key = "motion_finish_exit") {
             TweakSlider(
                 title = stringResource(R.string.exit_duration),
                 description = stringResource(R.string.exit_duration_desc),
@@ -100,11 +100,11 @@ fun MotionScreen(
             )
         }
 
-        item {
+        item(key = "motion_feedback_header") {
             SectionHeader(title = stringResource(R.string.group_feedback))
         }
 
-        item {
+        item(key = "motion_haptics") {
             TweakSwitch(
                 title = stringResource(R.string.finish_vibration),
                 description = stringResource(R.string.finish_vibration_desc),
@@ -115,7 +115,7 @@ fun MotionScreen(
             )
         }
 
-        item {
+        item(key = "motion_completion_pulse") {
             TweakSwitch(
                 title = stringResource(R.string.completion_pulse),
                 description = stringResource(R.string.completion_pulse_desc),
@@ -126,11 +126,11 @@ fun MotionScreen(
             )
         }
 
-        item {
+        item(key = "motion_fast_header") {
             SectionHeader(title = stringResource(R.string.group_fast_downloads))
         }
 
-        item {
+        item(key = "motion_min_visibility_enabled") {
             TweakSwitch(
                 title = stringResource(R.string.min_visibility),
                 description = stringResource(R.string.min_visibility_desc),
@@ -141,7 +141,7 @@ fun MotionScreen(
             )
         }
 
-        item {
+        item(key = "motion_min_visibility_ms") {
             TweakSlider(
                 title = stringResource(R.string.min_visibility_duration),
                 description = stringResource(R.string.min_visibility_duration_desc),

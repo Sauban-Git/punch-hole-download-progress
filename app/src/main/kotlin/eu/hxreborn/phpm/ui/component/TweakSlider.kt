@@ -1,5 +1,6 @@
 package eu.hxreborn.phpm.ui.component
 
+import android.os.SystemClock
 import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -46,24 +48,43 @@ fun TweakSlider(
     enabled: Boolean = true,
     description: String = "",
 ) {
-    val isDefault = abs(value - defaultValue) < 0.001f
+    // Local state for smooth dragging without pref writes on every tick
+    var localValue by remember { mutableFloatStateOf(value) }
+    var isDragging by remember { mutableStateOf(false) }
+
+    // Sync from external value when not dragging
+    if (!isDragging && abs(localValue - value) > 0.001f) {
+        localValue = value
+    }
+
+    val displayValue = if (isDragging) localValue else value
+    val isDefault = abs(displayValue - defaultValue) < 0.001f
     val view = LocalView.current
     var lastHapticValue by remember { mutableFloatStateOf(value) }
+    var lastHapticTime by remember { mutableStateOf(0L) }
 
     val snappedOnChange: (Float) -> Unit = { newValue ->
-        val snapped =
-            if (stepSize > 0) {
-                (newValue / stepSize).roundToInt() * stepSize
-            } else {
-                newValue
-            }
+        val snapped = if (stepSize > 0) {
+            (newValue / stepSize).roundToInt() * stepSize
+        } else {
+            newValue
+        }
 
         if (hapticInterval > 0 && abs(snapped - lastHapticValue) >= hapticInterval) {
-            view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
+            val now = SystemClock.uptimeMillis()
+            if (now - lastHapticTime >= 50L) {
+                view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
+                lastHapticTime = now
+            }
             lastHapticValue = snapped
         }
 
-        onValueChange(snapped)
+        localValue = snapped
+    }
+
+    val onDragFinished: () -> Unit = {
+        isDragging = false
+        onValueChange(localValue)
     }
 
     ElevatedCard(
@@ -76,7 +97,7 @@ fun TweakSlider(
                 containerColor = MaterialTheme.colorScheme.surfaceContainer,
             ),
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.dp),
     ) {
         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
             Row(
@@ -100,14 +121,11 @@ fun TweakSlider(
                     }
                 }
                 Text(
-                    text =
-                        if (isDefault) {
-                            "${valueLabel(value)} ${stringResource(R.string.default_suffix)}"
-                        } else {
-                            valueLabel(
-                                value,
-                            )
-                        },
+                    text = if (isDefault) {
+                        "${valueLabel(displayValue)} ${stringResource(R.string.default_suffix)}"
+                    } else {
+                        valueLabel(displayValue)
+                    },
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.primary,
                 )
@@ -117,8 +135,12 @@ fun TweakSlider(
                 modifier = Modifier.padding(top = 4.dp),
             ) {
                 Slider(
-                    value = value,
-                    onValueChange = snappedOnChange,
+                    value = displayValue,
+                    onValueChange = {
+                        isDragging = true
+                        snappedOnChange(it)
+                    },
+                    onValueChangeFinished = onDragFinished,
                     valueRange = valueRange,
                     steps = steps,
                     enabled = enabled,

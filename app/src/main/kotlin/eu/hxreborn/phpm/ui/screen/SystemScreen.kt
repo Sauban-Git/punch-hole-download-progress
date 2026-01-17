@@ -40,7 +40,7 @@ fun SystemScreen(
                 bottom = contentPadding.calculateBottomPadding() + 16.dp,
             ),
     ) {
-        item {
+        item(key = "system_master_switch") {
             MasterSwitch(
                 title = stringResource(R.string.master_enabled),
                 summaryOn = stringResource(R.string.master_enabled_on),
@@ -53,11 +53,11 @@ fun SystemScreen(
             )
         }
 
-        item {
+        item(key = "system_visibility_header") {
             SectionHeader(title = stringResource(R.string.group_visibility))
         }
 
-        item {
+        item(key = "system_show_count") {
             TweakSwitch(
                 title = stringResource(R.string.display_item_count),
                 description = stringResource(R.string.display_item_count_desc),
@@ -69,7 +69,7 @@ fun SystemScreen(
             )
         }
 
-        item {
+        item(key = "system_fill_direction") {
             TweakSwitch(
                 title = stringResource(R.string.fill_direction),
                 description =
@@ -86,11 +86,11 @@ fun SystemScreen(
             )
         }
 
-        item {
+        item(key = "system_power_header") {
             SectionHeader(title = stringResource(R.string.group_power))
         }
 
-        item {
+        item(key = "system_power_mode") {
             TweakSelection(
                 title = stringResource(R.string.battery_saver_mode),
                 description = stringResource(R.string.battery_saver_mode_desc),
@@ -104,11 +104,11 @@ fun SystemScreen(
             )
         }
 
-        item {
+        item(key = "system_diagnostics_header") {
             SectionHeader(title = stringResource(R.string.group_diagnostics))
         }
 
-        item {
+        item(key = "system_test_success") {
             TweakButton(
                 title = stringResource(R.string.test_success),
                 onClick = onTestSuccess,
@@ -116,7 +116,7 @@ fun SystemScreen(
             )
         }
 
-        item {
+        item(key = "system_test_failure") {
             TweakButton(
                 title = stringResource(R.string.test_failure),
                 onClick = onTestFailure,

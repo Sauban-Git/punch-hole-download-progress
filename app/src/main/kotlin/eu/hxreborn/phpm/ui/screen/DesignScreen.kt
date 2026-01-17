@@ -31,11 +31,11 @@ fun DesignScreen(
                 bottom = contentPadding.calculateBottomPadding() + 16.dp,
             ),
     ) {
-        item {
+        item(key = "design_colors_header") {
             SectionHeader(title = stringResource(R.string.group_colors))
         }
 
-        item {
+        item(key = "design_color_active") {
             TweakColorPicker(
                 title = stringResource(R.string.active_progress),
                 description = stringResource(R.string.active_progress_desc),
@@ -46,7 +46,7 @@ fun DesignScreen(
             )
         }
 
-        item {
+        item(key = "design_color_finish") {
             TweakColorPicker(
                 title = stringResource(R.string.on_completion),
                 description = stringResource(R.string.on_completion_desc),
@@ -57,11 +57,11 @@ fun DesignScreen(
             )
         }
 
-        item {
+        item(key = "design_geometry_header") {
             SectionHeader(title = stringResource(R.string.group_geometry))
         }
 
-        item {
+        item(key = "design_stroke_width") {
             TweakSlider(
                 title = stringResource(R.string.ring_thickness),
                 description = stringResource(R.string.ring_thickness_desc),
@@ -75,12 +75,12 @@ fun DesignScreen(
                 valueRange = PrefsManager.MIN_STROKE_WIDTH..PrefsManager.MAX_STROKE_WIDTH,
                 valueLabel = { "%.1fdp".format(it) },
                 defaultValue = PrefsManager.DEFAULT_STROKE_WIDTH,
-                stepSize = 0.5f,
-                hapticInterval = 1f,
+                stepSize = 0.1f,
+                hapticInterval = 0.5f,
             )
         }
 
-        item {
+        item(key = "design_ring_gap") {
             TweakSlider(
                 title = stringResource(R.string.camera_gap),
                 description = stringResource(R.string.camera_gap_desc),
@@ -92,14 +92,14 @@ fun DesignScreen(
                     onSavePrefs(PrefsManager.KEY_RING_GAP, PrefsManager.DEFAULT_RING_GAP)
                 },
                 valueRange = PrefsManager.MIN_RING_GAP..PrefsManager.MAX_RING_GAP,
-                valueLabel = { "%.1fx".format(it) },
+                valueLabel = { "%.2fx".format(it) },
                 defaultValue = PrefsManager.DEFAULT_RING_GAP,
-                stepSize = 0.1f,
-                hapticInterval = 0.2f,
+                stepSize = 0.01f,
+                hapticInterval = 0.05f,
             )
         }
 
-        item {
+        item(key = "design_opacity") {
             TweakSlider(
                 title = stringResource(R.string.opacity),
                 description = stringResource(R.string.opacity_desc),
@@ -113,16 +113,16 @@ fun DesignScreen(
                 valueRange = PrefsManager.MIN_OPACITY.toFloat()..PrefsManager.MAX_OPACITY.toFloat(),
                 valueLabel = { "${it.toInt()}%" },
                 defaultValue = PrefsManager.DEFAULT_OPACITY.toFloat(),
-                stepSize = 5f,
-                hapticInterval = 10f,
+                stepSize = 1f,
+                hapticInterval = 5f,
             )
         }
 
-        item {
+        item(key = "design_percent_header") {
             SectionHeader(title = stringResource(R.string.group_percent_text))
         }
 
-        item {
+        item(key = "design_percent_enabled") {
             TweakSwitch(
                 title = stringResource(R.string.percent_text),
                 description = stringResource(R.string.percent_text_desc),
@@ -133,7 +133,7 @@ fun DesignScreen(
             )
         }
 
-        item {
+        item(key = "design_percent_position") {
             TweakSelection(
                 title = stringResource(R.string.percent_text_position),
                 description = stringResource(R.string.percent_text_position_desc),

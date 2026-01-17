@@ -148,17 +148,6 @@ class IndicatorView(
             }
         }
 
-    // Test mode flag - when true, preview is hidden (we're running a test)
-    @Volatile
-    var testMode: Boolean = false
-        set(value) {
-            if (field != value) {
-                field = value
-                log("IndicatorView: testMode = $value")
-                post { invalidate() }
-            }
-        }
-
     private val glowPaint =
         Paint(Paint.ANTI_ALIAS_FLAG).apply {
             style = Paint.Style.STROKE
@@ -308,7 +297,6 @@ class IndicatorView(
         pendingFinishRunnable = null
         PrefsManager.onPrefsChanged = null
         PrefsManager.onTestProgressChanged = null
-        PrefsManager.onTestModeChanged = null
         PrefsManager.onTestErrorChanged = null
         PrefsManager.onPreviewTriggered = null
         PrefsManager.onGeometryPreviewTriggered = null
@@ -777,7 +765,7 @@ class IndicatorView(
     override fun onDraw(canvas: Canvas) {
         drawCount++
 
-        if (!PrefsManager.isEnabled()) {
+        if (!PrefsManager.enabled) {
             if (drawCount == 1) log("IndicatorView: disabled, skipping draw")
             return
         }

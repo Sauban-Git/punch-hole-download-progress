@@ -42,7 +42,7 @@ fun TweakSwitch(
                 containerColor = MaterialTheme.colorScheme.surfaceContainer,
             ),
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.dp),
     ) {
         Column {
             Row(

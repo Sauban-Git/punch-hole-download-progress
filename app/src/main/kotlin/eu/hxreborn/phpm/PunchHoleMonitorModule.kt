@@ -42,11 +42,14 @@ class PunchHoleMonitorModule(
             msg: String,
             t: Throwable? = null,
         ) {
+            val taggedMsg = "[$TAG] $msg"
+            // LSPosed logs (always, when module available)
+            if (::module.isInitialized) {
+                if (t != null) module.log(taggedMsg, t) else module.log(taggedMsg)
+            }
+            // ADB logcat (debug builds only)
             if (BuildConfig.DEBUG) {
                 if (t != null) Log.d(TAG, msg, t) else Log.d(TAG, msg)
-            }
-            if (::module.isInitialized) {
-                if (t != null) module.log(msg, t) else module.log(msg)
             }
         }
     }

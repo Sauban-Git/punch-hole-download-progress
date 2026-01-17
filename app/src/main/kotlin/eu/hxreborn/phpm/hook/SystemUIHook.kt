@@ -29,9 +29,6 @@ object SystemUIHook {
     private var indicatorView: IndicatorView? = null
 
     @Volatile
-    private var systemUIContext: Context? = null
-
-    @Volatile
     private var powerSaveReceiver: BroadcastReceiver? = null
 
     fun hook(classLoader: ClassLoader) {
@@ -41,10 +38,12 @@ object SystemUIHook {
 
     // CentralSurfacesImpl.start() is the earliest point where we can get SystemUI context
     private fun hookCentralSurfaces(classLoader: ClassLoader) {
-        val targetClass =
-            runCatching { classLoader.loadClass(CENTRAL_SURFACES_IMPL) }
-                .onFailure { log("Failed to load $CENTRAL_SURFACES_IMPL", it) }
-                .getOrNull() ?: return
+        val targetClass = runCatching { classLoader.loadClass(CENTRAL_SURFACES_IMPL) }.onFailure {
+            log(
+                "Failed to load $CENTRAL_SURFACES_IMPL",
+                it
+            )
+        }.getOrNull() ?: return
 
         val startMethod =
             targetClass.declaredMethods.find { it.name == "start" && it.parameterCount == 0 }
@@ -53,26 +52,41 @@ object SystemUIHook {
             return
         }
 
-        runCatching { module.hook(startMethod, StartHooker::class.java) }
-            .onSuccess { log("Hooked CentralSurfacesImpl.start()") }
+        runCatching {
+            module.hook(
+                startMethod,
+                StartHooker::class.java
+            )
+        }.onSuccess { log("Hooked CentralSurfacesImpl.start()") }
             .onFailure { log("Hook failed", it) }
     }
 
     private fun hookNotifications(classLoader: ClassLoader) {
-        val targetClass =
-            runCatching { classLoader.loadClass(NOTIF_COLLECTION) }
-                .getOrNull() ?: return
+        val targetClass = runCatching { classLoader.loadClass(NOTIF_COLLECTION) }.onFailure {
+            log(
+                "Failed to load $NOTIF_COLLECTION",
+                it
+            )
+        }.getOrNull() ?: return
 
         // postNotification: entry point for new notifications on Android 12+
         targetClass.declaredMethods.filter { it.name == "postNotification" }.forEach { method ->
-            runCatching { module.hook(method, NotificationAddHooker::class.java) }
-                .onSuccess { log("Hooked NotifCollection.postNotification") }
+            runCatching {
+                module.hook(
+                    method,
+                    NotificationAddHooker::class.java
+                )
+            }.onSuccess { log("Hooked NotifCollection.postNotification") }
         }
 
         // retractNotification: called when notifications are dismissed or cancelled
         targetClass.declaredMethods.filter { it.name == "retractNotification" }.forEach { method ->
-            runCatching { module.hook(method, NotificationRemoveHooker::class.java) }
-                .onSuccess { log("Hooked NotifCollection.retractNotification") }
+            runCatching {
+                module.hook(
+                    method,
+                    NotificationRemoveHooker::class.java
+                )
+            }.onSuccess { log("Hooked NotifCollection.retractNotification") }
         }
 
         wireCallbacks()
@@ -80,33 +94,31 @@ object SystemUIHook {
 
     private fun wireCallbacks() {
         DownloadProgressHook.onProgressChanged = { progress ->
-            indicatorView?.post { indicatorView?.progress = progress }
+            indicatorView?.let { it.post { it.progress = progress } }
         }
         DownloadProgressHook.onDownloadComplete = { triggerHapticFeedback() }
-        DownloadProgressHook.onDownloadCancelled =
-            { indicatorView?.post { indicatorView?.showError() } }
+        DownloadProgressHook.onDownloadCancelled = {
+            indicatorView?.let { it.post { it.showError() } }
+        }
         DownloadProgressHook.onActiveCountChanged = { count ->
-            indicatorView?.post { indicatorView?.activeDownloadCount = count }
+            indicatorView?.let { it.post { it.activeDownloadCount = count } }
         }
 
         PrefsManager.onAppVisibilityChanged = { visible ->
-            indicatorView?.post { indicatorView?.appVisible = visible }
-        }
-        PrefsManager.onTestModeChanged = { inTestMode ->
-            indicatorView?.post { indicatorView?.testMode = inTestMode }
+            indicatorView?.let { it.post { it.appVisible = visible } }
         }
         PrefsManager.onTestProgressChanged = { progress ->
-            indicatorView?.post { indicatorView?.progress = progress }
+            indicatorView?.let { it.post { it.progress = progress } }
         }
         PrefsManager.onPreviewTriggered = {
-            indicatorView?.post { indicatorView?.startPreview() }
+            indicatorView?.let { it.post { it.startPreview() } }
         }
         PrefsManager.onGeometryPreviewTriggered = {
-            indicatorView?.post { indicatorView?.showGeometryPreview() }
+            indicatorView?.let { it.post { it.showGeometryPreview() } }
         }
         PrefsManager.onDownloadComplete = { triggerHapticFeedback() }
         PrefsManager.onTestErrorChanged = { isError ->
-            if (isError) indicatorView?.post { indicatorView?.showError() }
+            if (isError) indicatorView?.let { it.post { it.showError() } }
         }
     }
 
@@ -116,24 +128,22 @@ object SystemUIHook {
     ) {
         attached = true
         indicatorView = view
-        systemUIContext = context
         registerPowerSaveReceiver(context)
     }
 
     private fun registerPowerSaveReceiver(context: Context) {
         if (powerSaveReceiver != null) return
 
-        powerSaveReceiver =
-            object : BroadcastReceiver() {
-                override fun onReceive(
-                    ctx: Context,
-                    intent: Intent,
-                ) {
-                    val isPowerSave =
-                        ctx.getSystemService(PowerManager::class.java)?.isPowerSaveMode == true
-                    indicatorView?.post { indicatorView?.isPowerSaveActive = isPowerSave }
-                }
+        powerSaveReceiver = object : BroadcastReceiver() {
+            override fun onReceive(
+                ctx: Context,
+                intent: Intent,
+            ) {
+                val isPowerSave =
+                    ctx.getSystemService(PowerManager::class.java)?.isPowerSaveMode == true
+                indicatorView?.let { it.post { it.isPowerSaveActive = isPowerSave } }
             }
+        }
 
         runCatching {
             context.registerReceiver(
@@ -147,73 +157,28 @@ object SystemUIHook {
 
     private fun triggerHapticFeedback() {
         if (!PrefsManager.hooksFeedback) return
-        val context = systemUIContext ?: return
+        val context = indicatorView?.context ?: return
         runCatching {
             val vibrator = context.getSystemService(Vibrator::class.java)
             if (vibrator?.hasVibrator() == true) vibrator.vibrate(createHapticEffect())
         }
     }
 
-    private fun createHapticEffect(): VibrationEffect {
-        val amplitude =
-            when (PrefsManager.hapticStrength) {
-                "low" -> 80
-                "high" -> 255
-                else -> 150
-            }
-        return when (PrefsManager.hapticPattern) {
-            "tick" -> {
-                VibrationEffect.createOneShot(20, amplitude)
-            }
-
-            "double_click" -> {
-                VibrationEffect.createWaveform(
-                    longArrayOf(0, 30, 50, 30),
-                    intArrayOf(0, amplitude, 0, amplitude),
-                    -1,
-                )
-            }
-
-            "heavy" -> {
-                VibrationEffect.createOneShot(80, amplitude)
-            }
-
-            "long" -> {
-                VibrationEffect.createOneShot(150, amplitude)
-            }
-
-            "pulse" -> {
-                VibrationEffect.createWaveform(
-                    longArrayOf(0, 40, 30, 40, 30, 40),
-                    intArrayOf(
-                        0,
-                        amplitude,
-                        0,
-                        (amplitude * 0.7).toInt(),
-                        0,
-                        (amplitude * 0.4).toInt(),
-                    ),
-                    -1,
-                )
-            }
-
-            else -> {
-                VibrationEffect.createOneShot(40, amplitude)
-            }
-        }
-    }
+    private fun createHapticEffect(): VibrationEffect =
+        VibrationEffect.createOneShot(40, 150)
 
     fun isAttached(): Boolean = attached
 
-    fun getIndicatorView(): IndicatorView? = indicatorView
-
     fun detach() {
         powerSaveReceiver?.let { receiver ->
-            runCatching { systemUIContext?.unregisterReceiver(receiver) }
-                .onFailure { log("Failed to unregister power save receiver", it) }
+            runCatching { indicatorView?.context?.unregisterReceiver(receiver) }.onFailure {
+                log(
+                    "Failed to unregister power save receiver",
+                    it
+                )
+            }
         }
         powerSaveReceiver = null
-        systemUIContext = null
         indicatorView = null
 
         DownloadProgressHook.onProgressChanged = null
@@ -222,7 +187,6 @@ object SystemUIHook {
         DownloadProgressHook.onActiveCountChanged = null
 
         PrefsManager.onAppVisibilityChanged = null
-        PrefsManager.onTestModeChanged = null
         PrefsManager.onTestProgressChanged = null
         PrefsManager.onPreviewTriggered = null
         PrefsManager.onGeometryPreviewTriggered = null
@@ -242,10 +206,9 @@ class StartHooker : XposedInterface.Hooker {
             if (SystemUIHook.isAttached()) return
 
             val instance = callback.thisObject ?: return
-            val context =
-                runCatching {
-                    instance.javaClass.accessibleField("mContext").get(instance) as? Context
-                }.getOrNull()
+            val context = runCatching {
+                instance.javaClass.accessibleField("mContext").get(instance) as? Context
+            }.getOrNull()
 
             if (context == null) {
                 log("Failed to extract Context from CentralSurfacesImpl")

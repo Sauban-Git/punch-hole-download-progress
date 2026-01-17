@@ -2,7 +2,6 @@ package eu.hxreborn.phpm.prefs
 
 import android.content.SharedPreferences
 import eu.hxreborn.phpm.PunchHoleMonitorModule.Companion.log
-import io.github.libxposed.api.XposedInterface
 
 object PrefsManager {
     const val PREFS_GROUP = "phpm_settings"
@@ -35,8 +34,6 @@ object PrefsManager {
     const val KEY_FINISH_INTENSITY = "finish_intensity"
     const val KEY_FINISH_USE_FLASH_COLOR = "finish_use_flash_color"
     const val KEY_FINISH_FLASH_COLOR = "finish_flash_color"
-    const val KEY_HAPTIC_PATTERN = "haptic_pattern"
-    const val KEY_HAPTIC_STRENGTH = "haptic_strength"
     const val KEY_PREVIEW_TRIGGER = "preview_trigger"
 
     // Keys that trigger geometry preview when changed
@@ -67,12 +64,10 @@ object PrefsManager {
     const val DEFAULT_FINISH_INTENSITY = "med"
     const val DEFAULT_FINISH_USE_FLASH_COLOR = false
     const val DEFAULT_FINISH_FLASH_COLOR = 0xFFFFFFFF.toInt()
-    const val DEFAULT_HAPTIC_PATTERN = "click"
-    const val DEFAULT_HAPTIC_STRENGTH = "med"
 
     // Ranges
     const val MIN_STROKE_WIDTH = 0.5f
-    const val MAX_STROKE_WIDTH = 4.0f
+    const val MAX_STROKE_WIDTH = 5.0f
     const val MIN_RING_GAP = 0.6f
     const val MAX_RING_GAP = 1.6f
     const val MIN_OPACITY = 30
@@ -87,9 +82,6 @@ object PrefsManager {
     // Cached values
     @Volatile
     private var remotePrefs: SharedPreferences? = null
-
-    @Volatile
-    private var xposedModule: XposedInterface? = null
 
     @Volatile
     var enabled = DEFAULT_ENABLED
@@ -172,14 +164,6 @@ object PrefsManager {
         private set
 
     @Volatile
-    var hapticPattern = DEFAULT_HAPTIC_PATTERN
-        private set
-
-    @Volatile
-    var hapticStrength = DEFAULT_HAPTIC_STRENGTH
-        private set
-
-    @Volatile
     var minVisibilityEnabled = DEFAULT_MIN_VISIBILITY_ENABLED
         private set
 
@@ -203,23 +187,13 @@ object PrefsManager {
     var onPrefsChanged: (() -> Unit)? = null
     var onAppVisibilityChanged: ((Boolean) -> Unit)? = null
     var onTestProgressChanged: ((Int) -> Unit)? = null
-    var onTestModeChanged: ((Boolean) -> Unit)? = null
     var onDownloadComplete: (() -> Unit)? = null
     var onTestErrorChanged: ((Boolean) -> Unit)? = null
     var onPreviewTriggered: (() -> Unit)? = null
     var onGeometryPreviewTriggered: (() -> Unit)? = null
 
-    // Initialization
-    fun isEnabled(): Boolean =
+    fun init(xposed: io.github.libxposed.api.XposedInterface) {
         runCatching {
-            xposedModule
-                ?.getRemotePreferences(PREFS_GROUP)
-                ?.getBoolean(KEY_ENABLED, DEFAULT_ENABLED)
-        }.getOrNull() ?: enabled
-
-    fun init(xposed: XposedInterface) {
-        runCatching {
-            xposedModule = xposed
             remotePrefs = xposed.getRemotePreferences(PREFS_GROUP)
             refreshCache()
 
@@ -235,12 +209,9 @@ object PrefsManager {
                         KEY_TEST_PROGRESS -> {
                             val progress = prefs.getInt(KEY_TEST_PROGRESS, -1)
                             if (progress >= 0) {
-                                onTestModeChanged?.invoke(true)
                                 onTestProgressChanged?.invoke(progress)
-                            } else {
-                                onTestModeChanged?.invoke(false)
+                                if (progress == 100) onDownloadComplete?.invoke()
                             }
-                            if (progress == 100) onDownloadComplete?.invoke()
                         }
 
                         KEY_TEST_ERROR -> {
@@ -310,10 +281,6 @@ object PrefsManager {
                 finishUseFlashColor =
                     prefs.getBoolean(KEY_FINISH_USE_FLASH_COLOR, DEFAULT_FINISH_USE_FLASH_COLOR)
                 finishFlashColor = prefs.getInt(KEY_FINISH_FLASH_COLOR, DEFAULT_FINISH_FLASH_COLOR)
-                hapticPattern = prefs.getString(KEY_HAPTIC_PATTERN, DEFAULT_HAPTIC_PATTERN)
-                    ?: DEFAULT_HAPTIC_PATTERN
-                hapticStrength = prefs.getString(KEY_HAPTIC_STRENGTH, DEFAULT_HAPTIC_STRENGTH)
-                    ?: DEFAULT_HAPTIC_STRENGTH
                 minVisibilityEnabled =
                     prefs.getBoolean(KEY_MIN_VISIBILITY_ENABLED, DEFAULT_MIN_VISIBILITY_ENABLED)
                 minVisibilityMs =
