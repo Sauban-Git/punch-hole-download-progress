@@ -17,17 +17,17 @@ class PunchHoleMonitorModule(
 ) : XposedModule(base, param) {
     init {
         module = this
-        log("Module v${BuildConfig.VERSION_NAME} on ${base.frameworkName} ${base.frameworkVersion}")
+        Companion.log("Module v${BuildConfig.VERSION_NAME} on ${base.frameworkName} ${base.frameworkVersion}")
     }
 
     override fun onPackageLoaded(param: PackageLoadedParam) {
         if (param.packageName != SYSTEMUI_PACKAGE || !param.isFirstPackage) return
 
-        log("Device: ${Build.MANUFACTURER} ${Build.MODEL} (SDK ${Build.VERSION.SDK_INT})")
+        Companion.log("Device: ${Build.MANUFACTURER} ${Build.MODEL} (SDK ${Build.VERSION.SDK_INT})")
         PrefsManager.init(this)
         runCatching { SystemUIHook.hook(param.classLoader) }
-            .onSuccess { log("Hooks registered") }
-            .onFailure { log("Hook failed", it) }
+            .onSuccess { Companion.log("Hooks registered") }
+            .onFailure { Companion.log("Hook failed", it) }
     }
 
     companion object {
@@ -38,14 +38,10 @@ class PunchHoleMonitorModule(
             msg: String,
             t: Throwable? = null,
         ) {
-            try {
-                // LSPosed logs via XposedModule.log()
-                if (t != null) module.log(msg, t) else module.log(msg)
-            } catch (e: Exception) {
-                Log.e("PHPM", "module.log failed: ${e.message}")
-            }
+            // LSPosed Manager logs
+            if (t != null) module.log(msg, t) else module.log(msg)
             // ADB logcat (stripped in release by proguard)
-            if (t != null) Log.d("PHPM", msg, t) else Log.d("PHPM", msg)
+            if (t != null) Log.d(TAG, msg, t) else Log.d(TAG, msg)
         }
     }
 }
