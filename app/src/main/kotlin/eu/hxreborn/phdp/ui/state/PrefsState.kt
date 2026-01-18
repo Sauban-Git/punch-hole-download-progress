@@ -25,7 +25,6 @@ data class PrefsState(
     val finishStyle: String = PrefsManager.DEFAULT_FINISH_STYLE,
     val finishHoldMs: Int = PrefsManager.DEFAULT_FINISH_HOLD_MS,
     val finishExitMs: Int = PrefsManager.DEFAULT_FINISH_EXIT_MS,
-    val finishIntensity: String = PrefsManager.DEFAULT_FINISH_INTENSITY,
     val finishUseFlashColor: Boolean = PrefsManager.DEFAULT_FINISH_USE_FLASH_COLOR,
     val finishFlashColor: Int = PrefsManager.DEFAULT_FINISH_FLASH_COLOR,
     val minVisibilityEnabled: Boolean = PrefsManager.DEFAULT_MIN_VISIBILITY_ENABLED,
@@ -195,16 +194,6 @@ private fun updatePrefsStateForKey(
             )
         }
 
-        PrefsManager.KEY_FINISH_INTENSITY -> {
-            current.copy(
-                finishIntensity =
-                    prefs.getString(
-                        PrefsManager.KEY_FINISH_INTENSITY,
-                        PrefsManager.DEFAULT_FINISH_INTENSITY,
-                    ) ?: PrefsManager.DEFAULT_FINISH_INTENSITY,
-            )
-        }
-
         PrefsManager.KEY_FINISH_USE_FLASH_COLOR -> {
             current.copy(
                 finishUseFlashColor =
@@ -357,12 +346,6 @@ private fun readPrefsState(prefs: SharedPreferences): PrefsState =
             prefs
                 .getInt(PrefsManager.KEY_FINISH_EXIT_MS, PrefsManager.DEFAULT_FINISH_EXIT_MS)
                 .coerceIn(PrefsManager.MIN_FINISH_EXIT_MS, PrefsManager.MAX_FINISH_EXIT_MS),
-        finishIntensity =
-            prefs.getString(
-                PrefsManager.KEY_FINISH_INTENSITY,
-                PrefsManager.DEFAULT_FINISH_INTENSITY,
-            )
-                ?: PrefsManager.DEFAULT_FINISH_INTENSITY,
         finishUseFlashColor =
             prefs.getBoolean(
                 PrefsManager.KEY_FINISH_USE_FLASH_COLOR,

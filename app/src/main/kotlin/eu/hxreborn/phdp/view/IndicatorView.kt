@@ -364,12 +364,7 @@ class IndicatorView(
         val style = PrefsManager.finishStyle
         val holdMs = PrefsManager.finishHoldMs
         val exitMs = PrefsManager.finishExitMs
-        val intensity =
-            when (PrefsManager.finishIntensity) {
-                "low" -> 0.7f
-                "high" -> 1.5f
-                else -> 1.0f
-            }
+        val intensity = 1.5f
 
         log("Starting finish animation: style=$style, hold=${holdMs}ms, exit=${exitMs}ms, intensity=$intensity")
 
