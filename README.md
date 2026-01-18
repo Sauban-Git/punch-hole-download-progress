@@ -1,4 +1,4 @@
-# Punch-Hole Progress Monitor
+# Punch-hole Download Progress
 
 Xposed module that displays download progress as an animated ring around the camera cutout. Hooks into SystemUI notifications to monitor downloads from browsers and the system download manager.
 
