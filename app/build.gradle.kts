@@ -31,14 +31,8 @@ val gitDescribe: String by lazy {
         .removePrefix("v")
 }
 
-val semverRegex = Regex("""^\d+\.\d+\.\d+.*""")
-
-val gitVersionName: String by lazy {
-    if (semverRegex.matches(gitDescribe)) gitDescribe else "0.0.0-dev+$gitDescribe"
-}
-
 val versionMajor: Int by lazy {
-    gitVersionName.substringBefore(".").toIntOrNull() ?: 0
+    gitDescribe.removePrefix("v").substringBefore(".").toIntOrNull() ?: 0
 }
 
 android {
@@ -52,7 +46,7 @@ android {
         versionCode = project.findProperty("version.code")?.toString()?.toInt()
             ?: (versionMajor * 10000 + gitCommitCount)
         versionName = project.findProperty("version.name")?.toString()
-            ?: gitVersionName
+            ?: gitDescribe
         resourceConfigurations += "en"
     }
 
