@@ -11,7 +11,7 @@ body = """
 {%- macro remote_url() -%}
 https://github.com/{{ remote.github.owner }}/{{ remote.github.repo }}
 {%- endmacro -%}
-## What's New
+## What's New in {{ version }}
 {%- for group, commits in commits | group_by(attribute="group") %}
 
 ### {{ group | upper_first }}
