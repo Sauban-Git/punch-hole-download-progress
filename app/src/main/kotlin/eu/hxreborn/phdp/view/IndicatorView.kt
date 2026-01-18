@@ -385,20 +385,8 @@ class IndicatorView(
                     isFinishAnimating = false
                 }
 
-                "hold_fade" -> {
-                    animateHoldFade(holdMs, exitMs)
-                }
-
                 "pop" -> {
                     animatePop(holdMs, exitMs, intensity)
-                }
-
-                "pulse" -> {
-                    animatePulse(holdMs, exitMs, intensity)
-                }
-
-                "shine_sweep" -> {
-                    animateShineSweep(holdMs, exitMs, intensity)
                 }
 
                 "segmented" -> {
@@ -406,7 +394,7 @@ class IndicatorView(
                 }
 
                 else -> {
-                    animateHoldFade(holdMs, exitMs)
+                    animatePop(holdMs, exitMs, intensity)
                 }
             }
         }
@@ -417,33 +405,6 @@ class IndicatorView(
         } else {
             startStyleAnimation()
         }
-    }
-
-    private fun animateHoldFade(
-        holdMs: Int,
-        exitMs: Int,
-    ) {
-        val totalMs = (holdMs + exitMs).coerceAtMost(MAX_ANIMATION_MS)
-        val holdFraction = holdMs.toFloat() / totalMs
-
-        finishAnimator =
-            ValueAnimator.ofFloat(0f, 1f).apply {
-                duration = totalMs.toLong()
-                interpolator = LinearInterpolator()
-                addUpdateListener { animator ->
-                    val fraction = animator.animatedValue as Float
-                    displayAlpha =
-                        if (fraction < holdFraction) {
-                            1f
-                        } else {
-                            val exitFraction = (fraction - holdFraction) / (1f - holdFraction)
-                            1f - exitFraction
-                        }
-                    invalidate()
-                }
-                addListener(finishAnimationEndListener())
-                start()
-            }
     }
 
     private fun animatePop(
@@ -477,76 +438,6 @@ class IndicatorView(
                                         val fraction = animator.animatedValue as Float
                                         displayScale = 1f + (0.08f * intensity * (1f - fraction * 0.5f))
                                         displayAlpha = 1f - fraction
-                                        invalidate()
-                                    }
-                                    addListener(finishAnimationEndListener())
-                                    start()
-                                }
-                        }
-                    },
-                )
-                start()
-            }
-    }
-
-    private fun animatePulse(
-        holdMs: Int,
-        exitMs: Int,
-        intensity: Float,
-    ) {
-        val totalMs = (holdMs + exitMs).coerceAtMost(MAX_ANIMATION_MS)
-        val holdFraction = holdMs.toFloat() / totalMs
-
-        finishAnimator =
-            ValueAnimator.ofFloat(0f, 1f).apply {
-                duration = totalMs.toLong()
-                interpolator = AccelerateDecelerateInterpolator()
-                addUpdateListener { animator ->
-                    val fraction = animator.animatedValue as Float
-                    if (fraction < holdFraction) {
-                        displayAlpha = 1f
-                    } else {
-                        val pulseFraction = (fraction - holdFraction) / (1f - holdFraction)
-                        displayAlpha = 1f - pulseFraction
-                    }
-                    invalidate()
-                }
-                addListener(finishAnimationEndListener())
-                start()
-            }
-    }
-
-    private fun animateShineSweep(
-        holdMs: Int,
-        exitMs: Int,
-        intensity: Float,
-    ) {
-        val totalMs = (holdMs + exitMs).coerceAtMost(MAX_ANIMATION_MS)
-        val sweepPhaseMs = (totalMs * 0.6f).toInt()
-        val fadePhaseMs = totalMs - sweepPhaseMs
-
-        // Phase 1: Shine sweeps around the ring (-30° start to 390° gives full circle + overshoot)
-        finishAnimator =
-            ValueAnimator.ofFloat(-30f, 390f).apply {
-                duration = sweepPhaseMs.toLong()
-                interpolator = AccelerateDecelerateInterpolator()
-                addUpdateListener { animator ->
-                    shineAngle = animator.animatedValue as Float
-                    successColorBlend = intensity * 0.3f
-                    invalidate()
-                }
-                addListener(
-                    object : android.animation.AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: android.animation.Animator) {
-                            // Phase 2: Fade out
-                            shineAngle = -30f
-                            finishAnimator =
-                                ValueAnimator.ofFloat(1f, 0f).apply {
-                                    duration = fadePhaseMs.toLong()
-                                    interpolator = AccelerateDecelerateInterpolator()
-                                    addUpdateListener { animator ->
-                                        displayAlpha = animator.animatedValue as Float
-                                        successColorBlend = intensity * 0.3f * displayAlpha
                                         invalidate()
                                     }
                                     addListener(finishAnimationEndListener())
@@ -924,10 +815,6 @@ class IndicatorView(
                 drawSegmented(canvas, paint)
             }
 
-            "shine_sweep" -> {
-                drawShineSweep(canvas, paint)
-            }
-
             else -> {
                 // Default: draw full ring with current animation state
                 canvas.drawPath(scaledPath, paint)
@@ -952,24 +839,6 @@ class IndicatorView(
                 }
 
             canvas.drawArc(arcBounds, startAngle, segmentArcDegrees, false, segmentPaint)
-        }
-    }
-
-    private fun drawShineSweep(
-        canvas: Canvas,
-        paint: Paint,
-    ) {
-        // Draw base ring
-        canvas.drawPath(scaledPath, paint)
-
-        // Draw shine highlight arc if in sweep phase
-        if (shineAngle > -30f && shineAngle < 360f) {
-            val shineArcPaint =
-                Paint(shinePaint).apply {
-                    alpha = (200 * displayAlpha).toInt()
-                    strokeWidth = paint.strokeWidth * 1.3f
-                }
-            canvas.drawArc(arcBounds, shineAngle - 90f, 30f, false, shineArcPaint)
         }
     }
 

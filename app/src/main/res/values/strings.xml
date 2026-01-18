@@ -127,18 +127,12 @@
     <!-- Dialog Arrays - Completion Style -->
     <string-array name="finish_style_entries">
         <item>Snap</item>
-        <item>Hold + Fade</item>
         <item>Pop</item>
-        <item>Pulse</item>
-        <item>Shine Sweep</item>
         <item>Segmented</item>
     </string-array>
     <string-array name="finish_style_values">
         <item>snap</item>
-        <item>hold_fade</item>
         <item>pop</item>
-        <item>pulse</item>
-        <item>shine_sweep</item>
         <item>segmented</item>
     </string-array>
 
