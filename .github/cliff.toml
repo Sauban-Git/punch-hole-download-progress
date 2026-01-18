@@ -15,8 +15,12 @@ https://github.com/{{ remote.github.owner }}/{{ remote.github.repo }}
 {%- for group, commits in commits | group_by(attribute="group") %}
 
 ### {{ group | upper_first }}
-{%- for commit in commits %}
-- [`{{ commit.id | truncate(length=7, end="") }}`]({{ self::remote_url() }}/commit/{{ commit.id }}) - {{ commit.message | split(pat="\n") | first | upper_first | trim }}{% if commit.remote.username %} ({% if commit.remote.pr_number %}merged{% else %}commit{% endif %} by [@{{ commit.remote.username }}](https://github.com/{{ commit.remote.username }}){% if commit.remote.pr_number %} in [#{{ commit.remote.pr_number }}]({{ self::remote_url() }}/pull/{{ commit.remote.pr_number }}){% endif %}){% endif %}
+{%- for scope, scoped_commits in commits | group_by(attribute="scope") %}
+
+#### {{ scope | default(value="general") }}
+{%- for commit in scoped_commits %}
+- [`{{ commit.id | truncate(length=7, end="") }}`]({{ self::remote_url() }}/commit/{{ commit.id }}) - {{ commit.message | split(pat="\n") | first | upper_first | trim }}{% if commit.remote.username %} (by [@{{ commit.remote.username }}](https://github.com/{{ commit.remote.username }}){% if commit.remote.pr_number %} in [#{{ commit.remote.pr_number }}]({{ self::remote_url() }}/pull/{{ commit.remote.pr_number }}){% endif %}){% endif %}
+{%- endfor %}
 {%- endfor %}
 {%- endfor %}
 """
