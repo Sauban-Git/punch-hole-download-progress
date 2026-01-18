@@ -34,7 +34,7 @@ val gitDescribe: String by lazy {
 val semverRegex = Regex("""^\d+\.\d+\.\d+.*""")
 
 val gitVersionName: String by lazy {
-    if (semverRegex.matches(gitDescribe)) gitDescribe else "0.0.0-dev"
+    if (semverRegex.matches(gitDescribe)) gitDescribe else "0.0.0-dev+$gitDescribe"
 }
 
 val versionMajor: Int by lazy {
