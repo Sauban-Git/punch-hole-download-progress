@@ -25,7 +25,7 @@ Xposed module that displays download progress as an animated ring around the cam
 ## Requirements
 
 - Android 12 (API 31) or higher
-- [LSPosed](https://github.com/JingMatrix/LSPosed) (JingMatrix fork recommended)
+- [LSPosed](https://github.com/JingMatrix/LSPosed) (JingMatrix fork recommended) or [LSPosed Next](https://github.com/mywalkb/LSPosed_mod)
 - Device with camera cutout (punch-hole or pill-shaped)
 
 ## Installation
