@@ -73,16 +73,12 @@ jobs:
           config: .github/cliff.toml
           args: --latest --strip header
         env:
-          OUTPUT: CHANGELOG.md
-
-      - name: Add commit links
-        run: |
-          sed -i 's/(\([a-f0-9]\{7\}\))$/([`\1`](https:\/\/github.com\/${{ github.repository }}\/commit\/\1))/g' CHANGELOG.md
-          cat CHANGELOG.md
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPO: ${{ github.repository }}
 
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
           prerelease: true
-          body_path: CHANGELOG.md
+          body: ${{ steps.changelog.outputs.content }}
           files: app/build/outputs/apk/release/*.apk
