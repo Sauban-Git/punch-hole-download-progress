@@ -36,6 +36,9 @@ jobs:
           java-version: 21
           cache: gradle
 
+      - name: Publish libxposed to mavenLocal
+        run: ./gradlew buildLibxposedApi
+
       - name: Lint check
         run: ./gradlew ktlintCheck
 

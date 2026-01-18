@@ -40,6 +40,9 @@ jobs:
           echo "name=$VERSION_NAME" >> $GITHUB_OUTPUT
           echo "code=$VERSION_CODE" >> $GITHUB_OUTPUT
 
+      - name: Publish libxposed to mavenLocal
+        run: ./gradlew buildLibxposedApi
+
       - name: Build APKs
         run: |
           ./gradlew assembleDebug assembleRelease \
