@@ -11,50 +11,80 @@ body = """
 {%- macro remote_url() -%}
 https://github.com/{{ remote.github.owner }}/{{ remote.github.repo }}
 {%- endmacro -%}
-## What's New in {{ version }}
-{%- for group, commits in commits | group_by(attribute="group") %}
 
-### {{ group | upper_first }}
-{%- for scope, scoped_commits in commits | group_by(attribute="scope") %}
+{%- macro commit(commit) -%}
+- [{{ commit.id | truncate(length=7, end="") }}]({{ self::remote_url() }}/commit/{{ commit.id }}) \
+  {% if commit.scope %}*({{ commit.scope }})* {% endif %}\
+  {{ commit.message | upper_first | trim }}\
+  {% if commit.breaking %} [**breaking**]{% endif %}\
+  {% if commit.remote.username %} by [@{{ commit.remote.username }}](https://github.com/{{ commit.remote.username }})\
+  {%- if commit.remote.pr_number %} in [#{{ commit.remote.pr_number }}]({{ self::remote_url() }}/pull/{{ commit.remote.pr_number }}){% endif %}{% endif %}
+{%- if commit.body %}
 
-#### {{ scope | default(value="general") }}
-{%- for commit in scoped_commits %}
-- [`{{ commit.id | truncate(length=7, end="") }}`]({{ self::remote_url() }}/commit/{{ commit.id }}) - {{ commit.message | split(pat="\n") | first | upper_first | trim }}{% if commit.remote.username %} (by [@{{ commit.remote.username }}](https://github.com/{{ commit.remote.username }}){% if commit.remote.pr_number %} in [#{{ commit.remote.pr_number }}]({{ self::remote_url() }}/pull/{{ commit.remote.pr_number }}){% endif %}){% endif %}
+{{ commit.body | indent(prefix="  > ", first=true, blank=true) }}
+{%- endif %}
+{%- for footer in commit.footers %}
+{%- if footer.token != "Signed-off-by" and footer.token != "Co-authored-by" %}
+
+  > {{ footer.token }}{{ footer.separator }}{{ footer.value }}
+{%- endif %}
 {%- endfor %}
+{% endmacro -%}
+
+{%- if version %}
+## What's Changed in [{{ version }}]({{ self::remote_url() }}/releases/tag/{{ version }}) ({{ timestamp | date(format="%Y-%m-%d") }})
+{%- else %}
+## What's Changed
+{%- endif %}
+
+{% for group, commits in commits | group_by(attribute="group") %}
+### {{ group | striptags | trim | upper_first }}
+{% for commit in commits | filter(attribute="scope") | sort(attribute="scope") %}
+{{ self::commit(commit=commit) }}
+{%- endfor -%}
+{% for commit in commits %}
+{%- if not commit.scope %}
+{{ self::commit(commit=commit) }}
+{%- endif -%}
 {%- endfor %}
-{%- endfor %}
+{% endfor %}
+
+{%- if github.contributors | filter(attribute="is_first_time", value=true) | length != 0 %}
+### New Contributors
+{% for contributor in github.contributors | filter(attribute="is_first_time", value=true) %}
+* @{{ contributor.username }} made their first contribution\
+{%- if contributor.pr_number %} in [#{{ contributor.pr_number }}]({{ self::remote_url() }}/pull/{{ contributor.pr_number }}){% endif %}
+{% endfor %}
+{%- endif %}
 """
 footer = ""
-# remove the leading and trailing whitespace from the templates
-trim = true
+trim = false
+postprocessors = [
+    { pattern = ' +\n', replace = "\n" },
+]
 
 [git]
-# parse the commits based on https://www.conventionalcommits.org
 conventional_commits = true
-# filter out the commits that are not conventional
-filter_unconventional = false
-# regex for preprocessing the commit messages
+filter_unconventional = true
 commit_preprocessors = [
-    # remove issue numbers from commits
     { pattern = '\((\w+\s)?#([0-9]+)\)', replace = "" },
 ]
-# regex for parsing and grouping commits
 commit_parsers = [
-    { message = "^feat", group = "Added" },
-    { message = "^fix", group = "Fixed" },
-    { message = "^doc", group = "Documentation" },
-    { message = "^perf", group = "Performance" },
-    { message = "^refactor", group = "Changed" },
-    { message = "^style", group = "Changed" },
-    { message = "^test", group = "Testing" },
-    { message = "^build", group = "Build" },
-    { message = "^chore", skip = true },
-    { message = "^ci", skip = true },
-    { message = "^revert", group = "Reverted" },
+  { message = "^feat", group = "<!-- 00 -->Features" },
+  { message = "^[fF]ix", group = "<!-- 01 -->Bug Fixes" },
+  { message = "^refactor|^style", group = "<!-- 02 -->Refactor" },
+  { message = "^doc", group = "<!-- 03 -->Documentation" },
+  { message = "^perf", group = "<!-- 04 -->Performance Improvements" },
+  { message = "^test", group = "<!-- 05 -->Testing" },
+  { message = "^chore\\(release\\)|^chore\\(deps\\)|^chore\\(changelog\\)", skip = true },
+  { message = "^[cC]hore", group = "<!-- 06 -->Miscellaneous" },
+  { message = "^build", group = "<!-- 07 -->Build" },
+  { body = ".*[Ss]ecurity", group = "<!-- 08 -->Security" },
+  { message = "^ci", skip = true },
+  { message = "^revert", group = "<!-- 09 -->Reverted" },
 ]
-# filter out the commits that are not matched by commit parsers
 filter_commits = false
-# sort the tags topologically
+tag_pattern = "v[0-9]*"
+# skip_tags = "beta|alpha"
 topo_order = false
-# sort the commits inside sections by oldest/newest order
 sort_commits = "newest"
