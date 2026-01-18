@@ -29,6 +29,7 @@
     <string name="group_visibility">Visibility</string>
     <string name="group_power">Power</string>
     <string name="group_diagnostics">Diagnostics</string>
+    <string name="group_about">About</string>
 
     <!-- Design Tab - Colors -->
     <string name="active_progress">Progress Color</string>
@@ -112,6 +113,9 @@
 
     <!-- Color Picker -->
     <string name="pick_color">Pick Color</string>
+
+    <!-- About -->
+    <string name="version_label">Version</string>
 
     <!-- Reset -->
     <string name="reset_defaults">Reset to Defaults</string>

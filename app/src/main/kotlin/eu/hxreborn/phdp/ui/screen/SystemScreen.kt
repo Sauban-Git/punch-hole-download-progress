@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import eu.hxreborn.phdp.BuildConfig
 import eu.hxreborn.phdp.R
 import eu.hxreborn.phdp.prefs.PrefsManager
 import eu.hxreborn.phdp.ui.component.SectionHeader
@@ -131,14 +132,31 @@ fun SystemScreen(
                     TweakButton(
                         title = stringResource(R.string.test_success),
                         onClick = onTestSuccess,
-                        enabled = prefsState.enabled,
+                        enabled = false,
                     )
                 }
                 item {
                     TweakButton(
                         title = stringResource(R.string.test_failure),
                         onClick = onTestFailure,
-                        enabled = prefsState.enabled,
+                        enabled = false,
+                    )
+                }
+            }
+        }
+
+        item(key = "system_about_header") {
+            SectionHeader(title = stringResource(R.string.group_about))
+        }
+
+        item(key = "system_about_group") {
+            SettingsGroup {
+                item {
+                    TweakButton(
+                        title = stringResource(R.string.version_label),
+                        description = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
+                        onClick = {},
+                        enabled = false,
                     )
                 }
             }
