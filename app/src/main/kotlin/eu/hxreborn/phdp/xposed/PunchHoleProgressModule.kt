@@ -1,8 +1,8 @@
-package eu.hxreborn.phdp
+package eu.hxreborn.phdp.xposed
 
 import android.os.Build
 import android.util.Log
-import eu.hxreborn.phdp.hook.SystemUIHook
+import eu.hxreborn.phdp.BuildConfig
 import eu.hxreborn.phdp.prefs.PrefsManager
 import io.github.libxposed.api.XposedInterface
 import io.github.libxposed.api.XposedModule

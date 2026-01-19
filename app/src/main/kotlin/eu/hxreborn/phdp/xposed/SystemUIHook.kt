@@ -1,4 +1,4 @@
-package eu.hxreborn.phdp.hook
+package eu.hxreborn.phdp.xposed
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -7,11 +7,9 @@ import android.content.IntentFilter
 import android.os.PowerManager
 import android.os.VibrationEffect
 import android.os.Vibrator
-import eu.hxreborn.phdp.PunchHoleProgressModule.Companion.log
-import eu.hxreborn.phdp.module
 import eu.hxreborn.phdp.prefs.PrefsManager
 import eu.hxreborn.phdp.util.accessibleField
-import eu.hxreborn.phdp.view.IndicatorView
+import eu.hxreborn.phdp.xposed.PunchHoleProgressModule.Companion.log
 import io.github.libxposed.api.XposedInterface
 import io.github.libxposed.api.XposedInterface.AfterHookCallback
 import io.github.libxposed.api.annotations.AfterInvocation

@@ -70,15 +70,20 @@ object Tokens {
     // M3 list item leading-to-headline spacing = 16dp
     val ListItemLeadingSpacing: Dp = 16.dp
 
+    // Preference Layout (compose-preference reference)
+    // https://github.com/zhanghai/ComposePreference
+    val PreferencePadding: Dp = 16.dp // all sides
+    val PreferenceHorizontalSpacing: Dp = 16.dp // between elements
+    val PreferenceVerticalSpacing: Dp = 16.dp // between title/summary
+    val PreferenceIconContainerMinWidth: Dp = 56.dp
+    val PreferenceCategoryPaddingTop: Dp = 24.dp
+    val PreferenceCategoryPaddingBottom: Dp = 8.dp
+
     // App-Specific: Settings Layout (ColorBlendr style)
     // Each row is its own surface with small gap between
     val GroupSpacing: Dp = 6.dp // vertical margin around groups
     val RowGap: Dp = 2.dp // gap between individual row surfaces
     val RowCornerRadius: Dp = 24.dp // corner radius for each row
-
-    // Settings row padding (matches ColorBlendr: 22dp h, 16dp v)
-    val SettingsRowHorizontalPadding: Dp = 22.dp
-    val SettingsRowVerticalPadding: Dp = 16.dp
 
     // App-Specific: Section Header
     // Indented from screen edge to align with group content

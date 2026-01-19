@@ -1,37 +1,6 @@
 package eu.hxreborn.phdp.ui.state
 
-import android.content.SharedPreferences
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import eu.hxreborn.phdp.prefs.PrefsManager
-import eu.hxreborn.phdp.prefs.readClockwise
-import eu.hxreborn.phdp.prefs.readColor
-import eu.hxreborn.phdp.prefs.readCompletionPulseEnabled
-import eu.hxreborn.phdp.prefs.readEnabled
-import eu.hxreborn.phdp.prefs.readErrorColor
-import eu.hxreborn.phdp.prefs.readFilenameTextEnabled
-import eu.hxreborn.phdp.prefs.readFilenameTextPosition
-import eu.hxreborn.phdp.prefs.readFinishExitMs
-import eu.hxreborn.phdp.prefs.readFinishFlashColor
-import eu.hxreborn.phdp.prefs.readFinishHoldMs
-import eu.hxreborn.phdp.prefs.readFinishStyle
-import eu.hxreborn.phdp.prefs.readFinishUseFlashColor
-import eu.hxreborn.phdp.prefs.readHooksFeedback
-import eu.hxreborn.phdp.prefs.readIdleRingEnabled
-import eu.hxreborn.phdp.prefs.readIdleRingOpacity
-import eu.hxreborn.phdp.prefs.readMinVisibilityEnabled
-import eu.hxreborn.phdp.prefs.readMinVisibilityMs
-import eu.hxreborn.phdp.prefs.readOpacity
-import eu.hxreborn.phdp.prefs.readPercentTextEnabled
-import eu.hxreborn.phdp.prefs.readPercentTextPosition
-import eu.hxreborn.phdp.prefs.readPowerSaverMode
-import eu.hxreborn.phdp.prefs.readProgressEasing
-import eu.hxreborn.phdp.prefs.readRingGap
-import eu.hxreborn.phdp.prefs.readShowDownloadCount
-import eu.hxreborn.phdp.prefs.readStrokeWidth
 
 data class PrefsState(
     val enabled: Boolean = PrefsManager.DEFAULT_ENABLED,
@@ -60,60 +29,3 @@ data class PrefsState(
     val filenameTextEnabled: Boolean = PrefsManager.DEFAULT_FILENAME_TEXT_ENABLED,
     val filenameTextPosition: String = PrefsManager.DEFAULT_FILENAME_TEXT_POSITION,
 )
-
-@Composable
-fun rememberPrefsState(prefs: SharedPreferences): MutableState<PrefsState> {
-    val state =
-        remember {
-            mutableStateOf(readPrefsState(prefs))
-        }
-
-    DisposableEffect(prefs) {
-        val listener =
-            SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-                state.value = updatePrefsStateForKey(state.value, prefs, key)
-            }
-        prefs.registerOnSharedPreferenceChangeListener(listener)
-        onDispose {
-            prefs.unregisterOnSharedPreferenceChangeListener(listener)
-        }
-    }
-
-    return state
-}
-
-@Suppress("UNUSED_PARAMETER")
-private fun updatePrefsStateForKey(
-    current: PrefsState,
-    prefs: SharedPreferences,
-    key: String?,
-): PrefsState = readPrefsState(prefs)
-
-private fun readPrefsState(prefs: SharedPreferences): PrefsState =
-    PrefsState(
-        enabled = prefs.readEnabled(),
-        color = prefs.readColor(),
-        strokeWidth = prefs.readStrokeWidth(),
-        ringGap = prefs.readRingGap(),
-        opacity = prefs.readOpacity(),
-        hooksFeedback = prefs.readHooksFeedback(),
-        clockwise = prefs.readClockwise(),
-        progressEasing = prefs.readProgressEasing(),
-        errorColor = prefs.readErrorColor(),
-        powerSaverMode = prefs.readPowerSaverMode(),
-        idleRingEnabled = prefs.readIdleRingEnabled(),
-        idleRingOpacity = prefs.readIdleRingOpacity(),
-        showDownloadCount = prefs.readShowDownloadCount(),
-        finishStyle = prefs.readFinishStyle(),
-        finishHoldMs = prefs.readFinishHoldMs(),
-        finishExitMs = prefs.readFinishExitMs(),
-        finishUseFlashColor = prefs.readFinishUseFlashColor(),
-        finishFlashColor = prefs.readFinishFlashColor(),
-        minVisibilityEnabled = prefs.readMinVisibilityEnabled(),
-        minVisibilityMs = prefs.readMinVisibilityMs(),
-        completionPulseEnabled = prefs.readCompletionPulseEnabled(),
-        percentTextEnabled = prefs.readPercentTextEnabled(),
-        percentTextPosition = prefs.readPercentTextPosition(),
-        filenameTextEnabled = prefs.readFilenameTextEnabled(),
-        filenameTextPosition = prefs.readFilenameTextPosition(),
-    )

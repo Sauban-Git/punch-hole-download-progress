@@ -27,10 +27,7 @@ private fun RowPosition.shape(): Shape {
     }
 }
 
-private fun positionOf(
-    index: Int,
-    count: Int,
-) = when {
+private fun positionOf(index: Int, count: Int) = when {
     count == 1 -> RowPosition.SINGLE
     index == 0 -> RowPosition.FIRST
     index == count - 1 -> RowPosition.LAST
@@ -38,40 +35,25 @@ private fun positionOf(
 }
 
 @Composable
-fun SettingsGroup(
+fun SectionCard(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    content: @Composable SettingsGroupScope.() -> Unit,
+    items: List<@Composable () -> Unit>,
 ) {
-    val scope = SettingsGroupScopeImpl().apply { content() }
-
     Column(
-        modifier =
-            modifier
-                .padding(horizontal = Tokens.ScreenHorizontalPadding, vertical = Tokens.GroupSpacing)
-                .alpha(if (enabled) 1f else Tokens.DISABLED_ALPHA),
-        verticalArrangement = Arrangement.spacedBy(Tokens.RowGap),
+        modifier = modifier
+            .padding(horizontal = 8.dp)
+            .alpha(if (enabled) 1f else Tokens.DISABLED_ALPHA),
+        verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
-        scope.items.forEachIndexed { index, item ->
+        items.forEachIndexed { index, item ->
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                shape = positionOf(index, scope.items.size).shape(),
-                color = MaterialTheme.colorScheme.surfaceContainer,
+                shape = positionOf(index, items.size).shape(),
+                color = MaterialTheme.colorScheme.surfaceContainerHigh,
             ) {
                 item()
             }
         }
-    }
-}
-
-interface SettingsGroupScope {
-    fun item(content: @Composable () -> Unit)
-}
-
-private class SettingsGroupScopeImpl : SettingsGroupScope {
-    val items = mutableListOf<@Composable () -> Unit>()
-
-    override fun item(content: @Composable () -> Unit) {
-        items.add(content)
     }
 }

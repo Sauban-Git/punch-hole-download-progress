@@ -10,6 +10,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -19,8 +20,9 @@ import androidx.lifecycle.lifecycleScope
 import eu.hxreborn.phdp.PunchHoleProgressApp
 import eu.hxreborn.phdp.R
 import eu.hxreborn.phdp.prefs.PrefsManager
-import eu.hxreborn.phdp.prefs.putAny
-import eu.hxreborn.phdp.ui.state.rememberPrefsState
+import eu.hxreborn.phdp.prefs.PrefsRepository
+import eu.hxreborn.phdp.prefs.PrefsRepositoryImpl
+import eu.hxreborn.phdp.ui.state.PrefsState
 import eu.hxreborn.phdp.ui.theme.AppTheme
 import eu.hxreborn.phdp.util.RootUtils
 import io.github.libxposed.service.XposedService
@@ -33,6 +35,7 @@ class MainActivity :
     XposedServiceHelper.OnServiceListener {
     // Properties
     private lateinit var prefs: SharedPreferences
+    private lateinit var repository: PrefsRepository
 
     private var xposedService: XposedService? = null
     private var remotePrefs: SharedPreferences? = null
@@ -46,12 +49,13 @@ class MainActivity :
         super.onCreate(savedInstanceState)
 
         prefs = getSharedPreferences(PrefsManager.PREFS_GROUP, Context.MODE_PRIVATE)
+        repository = PrefsRepositoryImpl(prefs) { remotePrefs }
 
         PunchHoleProgressApp.addServiceListener(this)
 
         setContent {
             AppTheme {
-                val prefsState by rememberPrefsState(prefs)
+                val prefsState by repository.state.collectAsState(initial = PrefsState())
 
                 PunchHoleProgressContent(
                     prefsState = prefsState,
@@ -121,8 +125,7 @@ class MainActivity :
         key: String,
         value: Any,
     ) {
-        prefs.edit { putAny(key, value) }
-        remotePrefs?.edit(commit = true) { putAny(key, value) }
+        repository.save(key, value)
     }
 
     // Test simulation
@@ -154,8 +157,7 @@ class MainActivity :
     }
 
     private fun resetToDefaults() {
-        prefs.edit { PrefsManager.DEFAULTS.forEach { (k, v) -> putAny(k, v) } }
-        remotePrefs?.edit(commit = true) { PrefsManager.DEFAULTS.forEach { (k, v) -> putAny(k, v) } }
+        repository.resetDefaults()
         Toast.makeText(this, R.string.reset_done, Toast.LENGTH_SHORT).show()
     }
 
