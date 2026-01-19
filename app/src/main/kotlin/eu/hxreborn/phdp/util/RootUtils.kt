@@ -12,9 +12,21 @@ object RootUtils {
             "kill -9 $(pidof com.android.systemui)",
         )
 
+    private var _shell: Shell? = null
+
+    private val shell: Shell
+        get() = _shell ?: Shell.Builder.create().build().also { _shell = it }
+
     suspend fun isRootAvailable(): Boolean =
         withContext(Dispatchers.IO) {
-            Shell.isAppGrantedRoot() == true || Shell.cmd("id").exec().isSuccess
+            ArrayList<String>().also {
+                shell.newJob().add("whoami").to(it).exec()
+            }.firstOrNull() == "root"
+        }.also {
+            if (!it) {
+                _shell?.close()
+                _shell = null
+            }
         }
 
     suspend fun restartSystemUI(): Result<Unit> =
@@ -22,7 +34,7 @@ object RootUtils {
             runCatching {
                 var lastErr: String? = null
                 for (cmd in commands) {
-                    val res = Shell.cmd(cmd).exec()
+                    val res = shell.newJob().add(cmd).exec()
                     if (res.isSuccess) return@runCatching
                     lastErr = (res.err + res.out).joinToString().ifBlank { "exit ${res.code}" }
                 }

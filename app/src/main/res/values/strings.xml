@@ -10,6 +10,7 @@
     <string name="restarting">Restarting…</string>
     <string name="restart_success">SystemUI restarted</string>
     <string name="restart_failed_detail">Failed to restart SystemUI: %1$s</string>
+    <string name="root_not_granted">Root not granted. Please grant root to Punch-hole Download Progress.</string>
 
     <!-- Value Formats -->
     <string name="selected">Selected</string>

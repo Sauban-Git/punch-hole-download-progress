@@ -193,6 +193,10 @@ class MainActivity :
     // System actions
     private fun performRestart() {
         lifecycleScope.launch {
+            if (!RootUtils.isRootAvailable()) {
+                Toast.makeText(this@MainActivity, R.string.root_not_granted, Toast.LENGTH_LONG).show()
+                return@launch
+            }
             RootUtils
                 .restartSystemUI()
                 .onSuccess {
