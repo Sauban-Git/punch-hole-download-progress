@@ -34,14 +34,22 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
-          cache: gradle
 
-      - name: Build libxposed to mavenLocal
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build libxposed api to mavenLocal
         uses: nick-fields/retry@v3
         with:
           timeout_minutes: 10
           max_attempts: 3
-          command: ./gradlew buildLibxposed
+          command: ./libxposed/api/gradlew :api:publishApiPublicationToMavenLocal -x :checks:compileKotlin --no-daemon
+
+      - name: Build libxposed service to mavenLocal
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: ./libxposed/service/gradlew :interface:publishInterfacePublicationToMavenLocal :service:publishServicePublicationToMavenLocal --no-daemon
 
       - name: Lint check
         run: ./gradlew ktlintCheck
