@@ -12,15 +12,14 @@ Xposed module that displays download progress as an animated ring around the cam
 
 ## Features
 
-- Ring overlay drawn around the camera cutout using Android's cutout path API
-- Reads standard `android.progress` notification extras (Download Manager, browsers, file managers)
-- Supports 30+ apps including Chrome, Firefox, Brave, Opera, Samsung Browser
-- Multiple concurrent downloads: displays the highest progress percentage
-- Completion effects: snap, hold/fade, pop, pulse, shine sweep, segmented cascade
-- Customization: stroke width, ring gap, opacity, color, fill direction
-- Optional percentage and filename text display
-- Power saver integration (dim or disable during battery saver)
-- Optional haptic feedback on completion
+- **Cutout Integration:** Renders progress rings directly around the device camera cutout using the native Android Display Cutout API.
+- **Native Tracking:** Out-of-the-box monitoring for Android Download Manager, Bluetooth transfers, and major browser engines (Chrome, Firefox, etc.).
+- **Universal Interception:** Optional tracking mode to display progress for any active notification containing a standard progress bar.
+- **Concurrent Management:** Logic for handling multiple simultaneous transfers, defaulting to the task with the highest progress.
+- **Granular Customization:** Individual controls for ring thickness, cutout spacing, opacity, and color hex codes.
+- **Completion Effects:** Selectable animations for finished tasks, including snap, pulse, and segmented sweep effects.
+- **Duration Thresholds:** Configurable behavior for fast downloads with options to guarantee minimum visibility or skip the indicator entirely.
+- **System Awareness:** Integrated haptic feedback and automatic dimming or disabling when Battery Saver is active.
 
 ## Requirements
 

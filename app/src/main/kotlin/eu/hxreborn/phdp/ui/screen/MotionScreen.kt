@@ -36,10 +36,11 @@ fun MotionScreen(
     ProvidePreferenceLocals {
         LazyColumn(
             modifier = modifier.fillMaxSize(),
-            contentPadding = PaddingValues(
-                top = contentPadding.calculateTopPadding() + Tokens.SpacingLg,
-                bottom = contentPadding.calculateBottomPadding() + Tokens.SpacingLg,
-            ),
+            contentPadding =
+                PaddingValues(
+                    top = contentPadding.calculateTopPadding() + Tokens.SpacingLg,
+                    bottom = contentPadding.calculateBottomPadding() + Tokens.SpacingLg,
+                ),
         ) {
             preferenceCategory(
                 key = "motion_animation_header",
@@ -48,17 +49,18 @@ fun MotionScreen(
 
             item(key = "motion_animation_section") {
                 SectionCard(
-                    items = listOf(
-                        {
-                            SelectPreference(
-                                value = prefsState.finishStyle,
-                                onValueChange = { onSavePrefs(PrefsManager.KEY_FINISH_STYLE, it) },
-                                values = finishStyleValues,
-                                title = { Text(stringResource(R.string.completion_style)) },
-                                valueToText = { finishStyleLabel(it, finishStyleEntries, finishStyleValues) ?: it },
-                            )
-                        },
-                    ),
+                    items =
+                        listOf(
+                            {
+                                SelectPreference(
+                                    value = prefsState.finishStyle,
+                                    onValueChange = { onSavePrefs(PrefsManager.KEY_FINISH_STYLE, it) },
+                                    values = finishStyleValues,
+                                    title = { Text(stringResource(R.string.pref_completion_style_title)) },
+                                    valueToText = { finishStyleLabel(it, finishStyleEntries, finishStyleValues) ?: it },
+                                )
+                            },
+                        ),
                 )
             }
 
@@ -69,32 +71,33 @@ fun MotionScreen(
 
             item(key = "motion_timing_section") {
                 SectionCard(
-                    items = listOf(
-                        {
-                            SliderPreferenceWithReset(
-                                value = prefsState.finishHoldMs.toFloat(),
-                                onValueChange = { onSavePrefs(PrefsManager.KEY_FINISH_HOLD_MS, it.toInt()) },
-                                title = { Text(stringResource(R.string.completion_hold)) },
-                                summary = { Text(stringResource(R.string.completion_hold_desc)) },
-                                valueRange = PrefsManager.MIN_FINISH_HOLD_MS.toFloat()..PrefsManager.MAX_FINISH_HOLD_MS.toFloat(),
-                                defaultValue = PrefsManager.DEFAULT_FINISH_HOLD_MS.toFloat(),
-                                onReset = { onSavePrefs(PrefsManager.KEY_FINISH_HOLD_MS, PrefsManager.DEFAULT_FINISH_HOLD_MS) },
-                                valueText = { Text("${it.toInt()}ms") },
-                            )
-                        },
-                        {
-                            SliderPreferenceWithReset(
-                                value = prefsState.finishExitMs.toFloat(),
-                                onValueChange = { onSavePrefs(PrefsManager.KEY_FINISH_EXIT_MS, it.toInt()) },
-                                title = { Text(stringResource(R.string.exit_duration)) },
-                                summary = { Text(stringResource(R.string.exit_duration_desc)) },
-                                valueRange = PrefsManager.MIN_FINISH_EXIT_MS.toFloat()..PrefsManager.MAX_FINISH_EXIT_MS.toFloat(),
-                                defaultValue = PrefsManager.DEFAULT_FINISH_EXIT_MS.toFloat(),
-                                onReset = { onSavePrefs(PrefsManager.KEY_FINISH_EXIT_MS, PrefsManager.DEFAULT_FINISH_EXIT_MS) },
-                                valueText = { Text("${it.toInt()}ms") },
-                            )
-                        },
-                    ),
+                    items =
+                        listOf(
+                            {
+                                SliderPreferenceWithReset(
+                                    value = prefsState.finishHoldMs.toFloat(),
+                                    onValueChange = { onSavePrefs(PrefsManager.KEY_FINISH_HOLD_MS, it.toInt()) },
+                                    title = { Text(stringResource(R.string.pref_hold_duration_title)) },
+                                    summary = { Text(stringResource(R.string.pref_hold_duration_summary)) },
+                                    valueRange = PrefsManager.MIN_FINISH_HOLD_MS.toFloat()..PrefsManager.MAX_FINISH_HOLD_MS.toFloat(),
+                                    defaultValue = PrefsManager.DEFAULT_FINISH_HOLD_MS.toFloat(),
+                                    onReset = { onSavePrefs(PrefsManager.KEY_FINISH_HOLD_MS, PrefsManager.DEFAULT_FINISH_HOLD_MS) },
+                                    valueText = { Text("${it.toInt()}ms") },
+                                )
+                            },
+                            {
+                                SliderPreferenceWithReset(
+                                    value = prefsState.finishExitMs.toFloat(),
+                                    onValueChange = { onSavePrefs(PrefsManager.KEY_FINISH_EXIT_MS, it.toInt()) },
+                                    title = { Text(stringResource(R.string.pref_exit_duration_title)) },
+                                    summary = { Text(stringResource(R.string.pref_exit_duration_summary)) },
+                                    valueRange = PrefsManager.MIN_FINISH_EXIT_MS.toFloat()..PrefsManager.MAX_FINISH_EXIT_MS.toFloat(),
+                                    defaultValue = PrefsManager.DEFAULT_FINISH_EXIT_MS.toFloat(),
+                                    onReset = { onSavePrefs(PrefsManager.KEY_FINISH_EXIT_MS, PrefsManager.DEFAULT_FINISH_EXIT_MS) },
+                                    valueText = { Text("${it.toInt()}ms") },
+                                )
+                            },
+                        ),
                 )
             }
 
@@ -105,24 +108,25 @@ fun MotionScreen(
 
             item(key = "motion_feedback_section") {
                 SectionCard(
-                    items = listOf(
-                        {
-                            TogglePreferenceWithIcon(
-                                value = prefsState.hooksFeedback,
-                                onValueChange = { onSavePrefs(PrefsManager.KEY_HOOKS_FEEDBACK, it) },
-                                title = { Text(stringResource(R.string.finish_vibration)) },
-                                summary = { Text(stringResource(R.string.finish_vibration_desc)) },
-                            )
-                        },
-                        {
-                            TogglePreferenceWithIcon(
-                                value = prefsState.completionPulseEnabled,
-                                onValueChange = { onSavePrefs(PrefsManager.KEY_COMPLETION_PULSE_ENABLED, it) },
-                                title = { Text(stringResource(R.string.completion_pulse)) },
-                                summary = { Text(stringResource(R.string.completion_pulse_desc)) },
-                            )
-                        },
-                    ),
+                    items =
+                        listOf(
+                            {
+                                TogglePreferenceWithIcon(
+                                    value = prefsState.hooksFeedback,
+                                    onValueChange = { onSavePrefs(PrefsManager.KEY_HOOKS_FEEDBACK, it) },
+                                    title = { Text(stringResource(R.string.pref_haptic_feedback_title)) },
+                                    summary = { Text(stringResource(R.string.pref_haptic_feedback_summary)) },
+                                )
+                            },
+                            {
+                                TogglePreferenceWithIcon(
+                                    value = prefsState.completionPulseEnabled,
+                                    onValueChange = { onSavePrefs(PrefsManager.KEY_COMPLETION_PULSE_ENABLED, it) },
+                                    title = { Text(stringResource(R.string.pref_pulse_flash_title)) },
+                                    summary = { Text(stringResource(R.string.pref_pulse_flash_summary)) },
+                                )
+                            },
+                        ),
                 )
             }
 
@@ -133,29 +137,30 @@ fun MotionScreen(
 
             item(key = "motion_fast_section") {
                 SectionCard(
-                    items = listOf(
-                        {
-                            TogglePreferenceWithIcon(
-                                value = prefsState.minVisibilityEnabled,
-                                onValueChange = { onSavePrefs(PrefsManager.KEY_MIN_VISIBILITY_ENABLED, it) },
-                                title = { Text(stringResource(R.string.min_visibility)) },
-                                summary = { Text(stringResource(R.string.min_visibility_desc)) },
-                            )
-                        },
-                        {
-                            SliderPreferenceWithReset(
-                                value = prefsState.minVisibilityMs.toFloat(),
-                                onValueChange = { onSavePrefs(PrefsManager.KEY_MIN_VISIBILITY_MS, it.toInt()) },
-                                title = { Text(stringResource(R.string.min_visibility_duration)) },
-                                summary = { Text(stringResource(R.string.min_visibility_duration_desc)) },
-                                enabled = prefsState.minVisibilityEnabled,
-                                valueRange = PrefsManager.MIN_MIN_VISIBILITY_MS.toFloat()..PrefsManager.MAX_MIN_VISIBILITY_MS.toFloat(),
-                                defaultValue = PrefsManager.DEFAULT_MIN_VISIBILITY_MS.toFloat(),
-                                onReset = { onSavePrefs(PrefsManager.KEY_MIN_VISIBILITY_MS, PrefsManager.DEFAULT_MIN_VISIBILITY_MS) },
-                                valueText = { Text("${it.toInt()}ms") },
-                            )
-                        },
-                    ),
+                    items =
+                        listOf(
+                            {
+                                TogglePreferenceWithIcon(
+                                    value = prefsState.minVisibilityEnabled,
+                                    onValueChange = { onSavePrefs(PrefsManager.KEY_MIN_VISIBILITY_ENABLED, it) },
+                                    title = { Text(stringResource(R.string.pref_force_completion_title)) },
+                                    summary = { Text(stringResource(R.string.pref_force_completion_summary)) },
+                                )
+                            },
+                            {
+                                SliderPreferenceWithReset(
+                                    value = prefsState.minVisibilityMs.toFloat(),
+                                    onValueChange = { onSavePrefs(PrefsManager.KEY_MIN_VISIBILITY_MS, it.toInt()) },
+                                    title = { Text(stringResource(R.string.pref_min_duration_title)) },
+                                    summary = { Text(stringResource(R.string.pref_min_duration_summary)) },
+                                    enabled = prefsState.minVisibilityEnabled,
+                                    valueRange = PrefsManager.MIN_MIN_VISIBILITY_MS.toFloat()..PrefsManager.MAX_MIN_VISIBILITY_MS.toFloat(),
+                                    defaultValue = PrefsManager.DEFAULT_MIN_VISIBILITY_MS.toFloat(),
+                                    onReset = { onSavePrefs(PrefsManager.KEY_MIN_VISIBILITY_MS, PrefsManager.DEFAULT_MIN_VISIBILITY_MS) },
+                                    valueText = { Text("${it.toInt()}ms") },
+                                )
+                            },
+                        ),
                 )
             }
         }

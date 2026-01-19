@@ -38,31 +38,38 @@ fun SystemScreen(
     ProvidePreferenceLocals {
         LazyColumn(
             modifier = modifier.fillMaxSize(),
-            contentPadding = PaddingValues(
-                top = contentPadding.calculateTopPadding() + Tokens.SpacingLg,
-                bottom = contentPadding.calculateBottomPadding() + Tokens.SpacingLg,
-            ),
+            contentPadding =
+                PaddingValues(
+                    top = contentPadding.calculateTopPadding() + Tokens.SpacingLg,
+                    bottom = contentPadding.calculateBottomPadding() + Tokens.SpacingLg,
+                ),
         ) {
             preferenceCategory(
-                key = "system_master_header",
-                title = { Text(stringResource(R.string.master_enabled)) },
+                key = "system_service_header",
+                title = { Text(stringResource(R.string.group_service)) },
             )
 
-            item(key = "system_master_section") {
+            item(key = "system_service_section") {
                 SectionCard(
-                    items = listOf(
-                        {
-                            TogglePreferenceWithIcon(
-                                value = prefsState.enabled,
-                                onValueChange = { onSavePrefs(PrefsManager.KEY_ENABLED, it) },
-                                title = { Text(stringResource(R.string.master_enabled)) },
-                                summary = {
-                                    val text = if (prefsState.enabled) R.string.master_enabled_on else R.string.master_enabled_off
-                                    Text(stringResource(text))
-                                },
-                            )
-                        },
-                    ),
+                    items =
+                        listOf(
+                            {
+                                TogglePreferenceWithIcon(
+                                    value = prefsState.enabled,
+                                    onValueChange = { onSavePrefs(PrefsManager.KEY_ENABLED, it) },
+                                    title = { Text(stringResource(R.string.pref_enable_service_title)) },
+                                    summary = {
+                                        val text =
+                                            if (prefsState.enabled) {
+                                                R.string.pref_enable_service_on
+                                            } else {
+                                                R.string.pref_enable_service_off
+                                            }
+                                        Text(stringResource(text))
+                                    },
+                                )
+                            },
+                        ),
                 )
             }
 
@@ -74,29 +81,30 @@ fun SystemScreen(
             item(key = "system_visibility_section") {
                 SectionCard(
                     enabled = prefsState.enabled,
-                    items = listOf(
-                        {
-                            TogglePreferenceWithIcon(
-                                value = prefsState.showDownloadCount,
-                                onValueChange = { onSavePrefs(PrefsManager.KEY_SHOW_DOWNLOAD_COUNT, it) },
-                                title = { Text(stringResource(R.string.display_item_count)) },
-                                summary = { Text(stringResource(R.string.display_item_count_desc)) },
-                                enabled = prefsState.enabled,
-                            )
-                        },
-                        {
-                            TogglePreferenceWithIcon(
-                                value = prefsState.clockwise,
-                                onValueChange = { onSavePrefs(PrefsManager.KEY_CLOCKWISE, it) },
-                                title = { Text(stringResource(R.string.fill_direction)) },
-                                summary = {
-                                    val text = if (prefsState.clockwise) R.string.clockwise else R.string.counter_clockwise
-                                    Text(stringResource(text))
-                                },
-                                enabled = prefsState.enabled,
-                            )
-                        },
-                    ),
+                    items =
+                        listOf(
+                            {
+                                TogglePreferenceWithIcon(
+                                    value = prefsState.showDownloadCount,
+                                    onValueChange = { onSavePrefs(PrefsManager.KEY_SHOW_DOWNLOAD_COUNT, it) },
+                                    title = { Text(stringResource(R.string.pref_show_queue_count_title)) },
+                                    summary = { Text(stringResource(R.string.pref_show_queue_count_summary)) },
+                                    enabled = prefsState.enabled,
+                                )
+                            },
+                            {
+                                TogglePreferenceWithIcon(
+                                    value = prefsState.clockwise,
+                                    onValueChange = { onSavePrefs(PrefsManager.KEY_CLOCKWISE, it) },
+                                    title = { Text(stringResource(R.string.pref_invert_rotation_title)) },
+                                    summary = {
+                                        val text = if (prefsState.clockwise) R.string.clockwise else R.string.counter_clockwise
+                                        Text(stringResource(text))
+                                    },
+                                    enabled = prefsState.enabled,
+                                )
+                            },
+                        ),
                 )
             }
 
@@ -108,18 +116,19 @@ fun SystemScreen(
             item(key = "system_power_section") {
                 SectionCard(
                     enabled = prefsState.enabled,
-                    items = listOf(
-                        {
-                            SelectPreference(
-                                value = prefsState.powerSaverMode,
-                                onValueChange = { onSavePrefs(PrefsManager.KEY_POWER_SAVER_MODE, it) },
-                                values = powerSaverValues,
-                                title = { Text(stringResource(R.string.battery_saver_mode)) },
-                                enabled = prefsState.enabled,
-                                valueToText = { powerSaverLabel(it, powerSaverEntries, powerSaverValues) ?: it },
-                            )
-                        },
-                    ),
+                    items =
+                        listOf(
+                            {
+                                SelectPreference(
+                                    value = prefsState.powerSaverMode,
+                                    onValueChange = { onSavePrefs(PrefsManager.KEY_POWER_SAVER_MODE, it) },
+                                    values = powerSaverValues,
+                                    title = { Text(stringResource(R.string.pref_battery_saver_title)) },
+                                    enabled = prefsState.enabled,
+                                    valueToText = { powerSaverLabel(it, powerSaverEntries, powerSaverValues) ?: it },
+                                )
+                            },
+                        ),
                 )
             }
 
@@ -131,22 +140,25 @@ fun SystemScreen(
             item(key = "system_diagnostics_section") {
                 SectionCard(
                     enabled = prefsState.enabled,
-                    items = listOf(
-                        {
-                            ActionPreference(
-                                onClick = onTestSuccess,
-                                title = { Text(stringResource(R.string.test_success)) },
-                                enabled = prefsState.enabled,
-                            )
-                        },
-                        {
-                            ActionPreference(
-                                onClick = onTestFailure,
-                                title = { Text(stringResource(R.string.test_failure)) },
-                                enabled = prefsState.enabled,
-                            )
-                        },
-                    ),
+                    items =
+                        listOf(
+                            {
+                                ActionPreference(
+                                    onClick = onTestSuccess,
+                                    title = { Text(stringResource(R.string.pref_debug_completion_title)) },
+                                    summary = { Text(stringResource(R.string.pref_debug_completion_summary)) },
+                                    enabled = prefsState.enabled,
+                                )
+                            },
+                            {
+                                ActionPreference(
+                                    onClick = onTestFailure,
+                                    title = { Text(stringResource(R.string.pref_test_failure_title)) },
+                                    summary = { Text(stringResource(R.string.pref_test_failure_summary)) },
+                                    enabled = prefsState.enabled,
+                                )
+                            },
+                        ),
                 )
             }
 
@@ -157,16 +169,17 @@ fun SystemScreen(
 
             item(key = "system_about_section") {
                 SectionCard(
-                    items = listOf(
-                        {
-                            ActionPreference(
-                                onClick = {},
-                                title = { Text(stringResource(R.string.version_label)) },
-                                summary = { Text("${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})") },
-                                enabled = false,
-                            )
-                        },
-                    ),
+                    items =
+                        listOf(
+                            {
+                                ActionPreference(
+                                    onClick = {},
+                                    title = { Text(stringResource(R.string.pref_version_title)) },
+                                    summary = { Text("${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})") },
+                                    enabled = false,
+                                )
+                            },
+                        ),
                 )
             }
         }

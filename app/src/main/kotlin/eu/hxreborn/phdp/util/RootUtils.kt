@@ -12,20 +12,29 @@ object RootUtils {
             "kill -9 $(pidof com.android.systemui)",
         )
 
-    private var _shell: Shell? = null
+    private var shellInstance: Shell? = null
 
     private val shell: Shell
-        get() = _shell ?: Shell.Builder.create().build().also { _shell = it }
+        get() =
+            shellInstance ?: Shell.Builder
+                .create()
+                .build()
+                .also { shellInstance = it }
 
     suspend fun isRootAvailable(): Boolean =
         withContext(Dispatchers.IO) {
-            ArrayList<String>().also {
-                shell.newJob().add("whoami").to(it).exec()
-            }.firstOrNull() == "root"
+            ArrayList<String>()
+                .also {
+                    shell
+                        .newJob()
+                        .add("whoami")
+                        .to(it)
+                        .exec()
+                }.firstOrNull() == "root"
         }.also {
             if (!it) {
-                _shell?.close()
-                _shell = null
+                shellInstance?.close()
+                shellInstance = null
             }
         }
 

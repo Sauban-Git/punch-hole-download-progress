@@ -24,99 +24,100 @@
     <!-- Group Headers -->
     <string name="group_colors">Colors</string>
     <string name="group_geometry">Geometry</string>
+    <string name="group_percent_text">Percentage Text</string>
+    <string name="group_filename_text">Filename Text</string>
     <string name="group_animation">Animation</string>
     <string name="group_timing">Timing</string>
     <string name="group_feedback">Feedback</string>
+    <string name="group_fast_downloads">Fast Downloads</string>
+    <string name="group_service">Service</string>
     <string name="group_visibility">Visibility</string>
     <string name="group_power">Power</string>
     <string name="group_diagnostics">Diagnostics</string>
     <string name="group_about">About</string>
 
-    <!-- Design Tab - Colors -->
-    <string name="active_progress">Progress Color</string>
-    <string name="active_progress_desc">Color applied to ring during active downloads</string>
-    <string name="on_completion">Success Color</string>
-    <string name="on_completion_desc">Color applied when download completes</string>
+    <!-- Design: Colors -->
+    <string name="pref_progress_color_title">Progress color</string>
+    <string name="pref_progress_color_summary">Ring fill color during active downloads</string>
+    <string name="pref_success_color_title">Completion color</string>
+    <string name="pref_success_color_summary">Ring color applied when download finishes</string>
 
-    <!-- Design Tab - Geometry -->
-    <string name="ring_thickness">Stroke Width</string>
-    <string name="ring_thickness_desc">Physical thickness of overlay ring in dp</string>
-    <string name="camera_gap">Cutout Padding</string>
-    <string name="camera_gap_desc">Radial distance from display cutout edge</string>
-    <string name="opacity">Opacity</string>
-    <string name="opacity_desc">Visibility level of overlay ring</string>
+    <!-- Design: Geometry -->
+    <string name="pref_stroke_width_title">Ring thickness</string>
+    <string name="pref_stroke_width_summary">Line width of the progress arc</string>
+    <string name="pref_cutout_padding_title">Cutout spacing</string>
+    <string name="pref_cutout_padding_summary">Distance multiplier from camera edge</string>
+    <string name="pref_opacity_title">Ring opacity</string>
+    <string name="pref_opacity_summary">Transparency level of the progress indicator</string>
 
-    <!-- Design Tab - Percentage Text -->
-    <string name="group_percent_text">Percentage Text</string>
-    <string name="percent_text">Show Percentage</string>
-    <string name="percent_text_desc">Display numeric percent near ring</string>
-    <string name="percent_text_position">Text Position</string>
-    <string name="percent_text_position_desc">Placement relative to ring</string>
+    <!-- Design: Percentage Text -->
+    <string name="pref_show_percentage_title">Percentage label</string>
+    <string name="pref_show_percentage_summary">Display current progress as numeric text</string>
+    <string name="pref_text_position_title">Label position</string>
+    <string name="pref_text_position_summary">Placement of the percentage text</string>
     <string name="position_left">Left</string>
     <string name="position_right">Right</string>
     <string name="position_top_left">Top Left</string>
     <string name="position_top_right">Top Right</string>
 
-    <!-- Design Tab - Filename Text -->
-    <string name="group_filename_text">Filename Text</string>
-    <string name="filename_text">Show Filename</string>
-    <string name="filename_text_desc">Display current download filename near ring</string>
-    <string name="filename_text_position">Filename Position</string>
-    <string name="filename_text_position_desc">Placement relative to ring</string>
+    <!-- Design: Filename Text -->
+    <string name="pref_show_filename_title">Filename label</string>
+    <string name="pref_show_filename_summary">Display the name of the file being downloaded</string>
+    <string name="pref_filename_position_title">Filename position</string>
+    <string name="pref_filename_position_summary">Placement of the filename text</string>
 
-    <!-- Motion Tab - Animation -->
-    <string name="completion_style">Completion Effect</string>
-    <string name="completion_style_desc">Visual style triggered when download completes</string>
+    <!-- Motion: Animation -->
+    <string name="pref_completion_style_title">Completion style</string>
+    <string name="pref_completion_style_summary">Animation style when download finishes</string>
     <string name="long_press_preview_hint">Long-press to preview</string>
 
-    <!-- Motion Tab - Timing -->
-    <string name="completion_hold">Completion Timeout</string>
-    <string name="completion_hold_desc">Duration ring persists after download completes</string>
-    <string name="exit_duration">Fade Duration</string>
-    <string name="exit_duration_desc">Time interval for dismissal animation</string>
+    <!-- Motion: Timing -->
+    <string name="pref_hold_duration_title">Hold duration</string>
+    <string name="pref_hold_duration_summary">Time the ring stays visible before fading out</string>
+    <string name="pref_exit_duration_title">Exit duration</string>
+    <string name="pref_exit_duration_summary">Duration of the fade-out animation</string>
 
-    <!-- Motion Tab - Feedback -->
-    <string name="finish_vibration">Haptic Feedback</string>
-    <string name="finish_vibration_desc">System vibration triggered on completion event</string>
-    <string name="completion_pulse">Completion Pulse</string>
-    <string name="completion_pulse_desc">Brief opacity flash on success</string>
+    <!-- Motion: Feedback -->
+    <string name="pref_haptic_feedback_title">Haptic feedback</string>
+    <string name="pref_haptic_feedback_summary">Vibrate on download completion</string>
+    <string name="pref_pulse_flash_title">Pulse flash</string>
+    <string name="pref_pulse_flash_summary">Brief brightness dip before completion animation plays</string>
 
-    <!-- Motion Tab - Fast Downloads -->
-    <string name="group_fast_downloads">Fast Downloads</string>
-    <string name="min_visibility">Minimum Visibility</string>
-    <string name="min_visibility_desc">Ensure ring shows for fast downloads</string>
-    <string name="min_visibility_duration">Display Duration</string>
-    <string name="min_visibility_duration_desc">Minimum time ring is visible</string>
+    <!-- Motion: Fast Downloads -->
+    <string name="pref_min_duration_title">Min duration</string>
+    <string name="pref_min_duration_summary">Skip indicator for downloads completing under this threshold</string>
+    <string name="pref_force_completion_title">Force completion</string>
+    <string name="pref_force_completion_summary">Play completion effect even when download finishes instantly</string>
 
-    <!-- System Tab - Visibility -->
-    <string name="display_item_count">Show Queue Count</string>
-    <string name="display_item_count_desc">Display number of concurrent active tasks</string>
-    <string name="fill_direction">Invert Rotation</string>
-    <string name="fill_direction_desc">Toggle counter-clockwise progression</string>
+    <!-- System: Service -->
+    <string name="pref_enable_service_title">Service</string>
+    <string name="pref_enable_service_summary">Monitor and display download progress</string>
+    <string name="pref_enable_service_on">Monitoring downloads</string>
+    <string name="pref_enable_service_off">Service disabled</string>
+
+    <!-- System: Visibility -->
+    <string name="pref_show_queue_count_title">Queue counter</string>
+    <string name="pref_show_queue_count_summary">Display number of concurrent active downloads</string>
+    <string name="pref_invert_rotation_title">Rotation direction</string>
+    <string name="pref_invert_rotation_summary">Reverses arc progress from counter-clockwise to clockwise</string>
     <string name="clockwise">Clockwise</string>
     <string name="counter_clockwise">Counter-clockwise</string>
 
-    <!-- System Tab - Power -->
-    <string name="battery_saver_mode">Battery Saver</string>
-    <string name="battery_saver_mode_desc">Suspend service during low power states</string>
+    <!-- System: Power -->
+    <string name="pref_battery_saver_title">Battery saver mode</string>
+    <string name="pref_battery_saver_summary">Indicator behavior when battery saver is active</string>
 
-    <!-- System Tab - Diagnostics -->
-    <string name="test_success">Debug Completion</string>
-    <string name="test_success_desc">Trigger mock completion event for calibration</string>
-    <string name="test_failure">Test Failure</string>
-    <string name="test_failure_desc">Simulate a failed download</string>
+    <!-- System: Diagnostics -->
+    <string name="pref_debug_completion_title">Simulate completion</string>
+    <string name="pref_debug_completion_summary">Trigger a test completion animation</string>
+    <string name="pref_test_failure_title">Simulate failure</string>
+    <string name="pref_test_failure_summary">Trigger a test failure animation</string>
 
-    <!-- Master Switch -->
-    <string name="master_enabled">Enable Service</string>
-    <string name="master_enabled_desc">Master switch for download monitor overlay</string>
-    <string name="master_enabled_on">Monitoring downloads</string>
-    <string name="master_enabled_off">Service disabled</string>
+    <!-- System: About -->
+    <string name="pref_version_title">Version</string>
 
     <!-- Color Picker -->
     <string name="pick_color">Pick Color</string>
-
-    <!-- About -->
-    <string name="version_label">Version</string>
 
     <!-- Reset -->
     <string name="reset_defaults">Reset to Defaults</string>
