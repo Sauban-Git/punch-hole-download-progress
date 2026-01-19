@@ -1,8 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Base theme: dark window background prevents white flash during transitions -->
     <style name="Theme.PHDP" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/surface_dark</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+    <!-- Splash theme: dark background with animated icon -->
+    <style name="Theme.PHDP.Splash" parent="Theme.PHDP">
+        <item name="android:windowSplashScreenBackground">@color/surface_dark</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_splash_animated</item>
+        <item name="android:windowSplashScreenAnimationDuration">500</item>
+        <item name="postSplashScreenTheme">@style/Theme.PHDP</item>
     </style>
 </resources>

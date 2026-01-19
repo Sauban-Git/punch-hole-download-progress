@@ -146,6 +146,7 @@ dependencies {
     implementation(libs.libsu.core)
     implementation(libs.lifecycle.runtime)
     implementation(libs.core.ktx)
+    implementation(libs.core.splashscreen)
 
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
