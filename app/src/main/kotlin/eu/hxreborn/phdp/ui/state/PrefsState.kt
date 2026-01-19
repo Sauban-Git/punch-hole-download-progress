@@ -7,6 +7,31 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import eu.hxreborn.phdp.prefs.PrefsManager
+import eu.hxreborn.phdp.prefs.readClockwise
+import eu.hxreborn.phdp.prefs.readColor
+import eu.hxreborn.phdp.prefs.readCompletionPulseEnabled
+import eu.hxreborn.phdp.prefs.readEnabled
+import eu.hxreborn.phdp.prefs.readErrorColor
+import eu.hxreborn.phdp.prefs.readFilenameTextEnabled
+import eu.hxreborn.phdp.prefs.readFilenameTextPosition
+import eu.hxreborn.phdp.prefs.readFinishExitMs
+import eu.hxreborn.phdp.prefs.readFinishFlashColor
+import eu.hxreborn.phdp.prefs.readFinishHoldMs
+import eu.hxreborn.phdp.prefs.readFinishStyle
+import eu.hxreborn.phdp.prefs.readFinishUseFlashColor
+import eu.hxreborn.phdp.prefs.readHooksFeedback
+import eu.hxreborn.phdp.prefs.readIdleRingEnabled
+import eu.hxreborn.phdp.prefs.readIdleRingOpacity
+import eu.hxreborn.phdp.prefs.readMinVisibilityEnabled
+import eu.hxreborn.phdp.prefs.readMinVisibilityMs
+import eu.hxreborn.phdp.prefs.readOpacity
+import eu.hxreborn.phdp.prefs.readPercentTextEnabled
+import eu.hxreborn.phdp.prefs.readPercentTextPosition
+import eu.hxreborn.phdp.prefs.readPowerSaverMode
+import eu.hxreborn.phdp.prefs.readProgressEasing
+import eu.hxreborn.phdp.prefs.readRingGap
+import eu.hxreborn.phdp.prefs.readShowDownloadCount
+import eu.hxreborn.phdp.prefs.readStrokeWidth
 
 data class PrefsState(
     val enabled: Boolean = PrefsManager.DEFAULT_ENABLED,
@@ -64,332 +89,60 @@ private fun updatePrefsStateForKey(
 ): PrefsState {
     if (key == null) return readPrefsState(prefs)
     return when (key) {
-        PrefsManager.KEY_ENABLED -> {
-            current.copy(enabled = prefs.getBoolean(PrefsManager.KEY_ENABLED, PrefsManager.DEFAULT_ENABLED))
-        }
-
-        PrefsManager.KEY_COLOR -> {
-            current.copy(color = prefs.getInt(PrefsManager.KEY_COLOR, PrefsManager.DEFAULT_COLOR))
-        }
-
-        PrefsManager.KEY_STROKE_WIDTH -> {
-            current.copy(
-                strokeWidth =
-                    prefs
-                        .getFloat(PrefsManager.KEY_STROKE_WIDTH, PrefsManager.DEFAULT_STROKE_WIDTH)
-                        .coerceIn(PrefsManager.MIN_STROKE_WIDTH, PrefsManager.MAX_STROKE_WIDTH),
-            )
-        }
-
-        PrefsManager.KEY_RING_GAP -> {
-            current.copy(
-                ringGap =
-                    prefs
-                        .getFloat(PrefsManager.KEY_RING_GAP, PrefsManager.DEFAULT_RING_GAP)
-                        .coerceIn(PrefsManager.MIN_RING_GAP, PrefsManager.MAX_RING_GAP),
-            )
-        }
-
-        PrefsManager.KEY_OPACITY -> {
-            current.copy(
-                opacity =
-                    prefs
-                        .getInt(PrefsManager.KEY_OPACITY, PrefsManager.DEFAULT_OPACITY)
-                        .coerceIn(PrefsManager.MIN_OPACITY, PrefsManager.MAX_OPACITY),
-            )
-        }
-
-        PrefsManager.KEY_HOOKS_FEEDBACK -> {
-            current.copy(
-                hooksFeedback =
-                    prefs.getBoolean(
-                        PrefsManager.KEY_HOOKS_FEEDBACK,
-                        PrefsManager.DEFAULT_HOOKS_FEEDBACK,
-                    ),
-            )
-        }
-
-        PrefsManager.KEY_CLOCKWISE -> {
-            current.copy(clockwise = prefs.getBoolean(PrefsManager.KEY_CLOCKWISE, true))
-        }
-
-        PrefsManager.KEY_PROGRESS_EASING -> {
-            current.copy(
-                progressEasing =
-                    prefs.getString(
-                        PrefsManager.KEY_PROGRESS_EASING,
-                        PrefsManager.DEFAULT_PROGRESS_EASING,
-                    ) ?: PrefsManager.DEFAULT_PROGRESS_EASING,
-            )
-        }
-
-        PrefsManager.KEY_ERROR_COLOR -> {
-            current.copy(errorColor = prefs.getInt(PrefsManager.KEY_ERROR_COLOR, PrefsManager.DEFAULT_ERROR_COLOR))
-        }
-
-        PrefsManager.KEY_POWER_SAVER_MODE -> {
-            current.copy(
-                powerSaverMode =
-                    prefs.getString(
-                        PrefsManager.KEY_POWER_SAVER_MODE,
-                        PrefsManager.DEFAULT_POWER_SAVER_MODE,
-                    ) ?: PrefsManager.DEFAULT_POWER_SAVER_MODE,
-            )
-        }
-
-        PrefsManager.KEY_IDLE_RING_ENABLED -> {
-            current.copy(
-                idleRingEnabled =
-                    prefs.getBoolean(
-                        PrefsManager.KEY_IDLE_RING_ENABLED,
-                        PrefsManager.DEFAULT_IDLE_RING_ENABLED,
-                    ),
-            )
-        }
-
-        PrefsManager.KEY_IDLE_RING_OPACITY -> {
-            current.copy(
-                idleRingOpacity =
-                    prefs
-                        .getInt(PrefsManager.KEY_IDLE_RING_OPACITY, PrefsManager.DEFAULT_IDLE_RING_OPACITY)
-                        .coerceIn(0, 100),
-            )
-        }
-
-        PrefsManager.KEY_SHOW_DOWNLOAD_COUNT -> {
-            current.copy(
-                showDownloadCount =
-                    prefs.getBoolean(
-                        PrefsManager.KEY_SHOW_DOWNLOAD_COUNT,
-                        PrefsManager.DEFAULT_SHOW_DOWNLOAD_COUNT,
-                    ),
-            )
-        }
-
-        PrefsManager.KEY_FINISH_STYLE -> {
-            current.copy(
-                finishStyle =
-                    prefs.getString(
-                        PrefsManager.KEY_FINISH_STYLE,
-                        PrefsManager.DEFAULT_FINISH_STYLE,
-                    ) ?: PrefsManager.DEFAULT_FINISH_STYLE,
-            )
-        }
-
-        PrefsManager.KEY_FINISH_HOLD_MS -> {
-            current.copy(
-                finishHoldMs =
-                    prefs
-                        .getInt(PrefsManager.KEY_FINISH_HOLD_MS, PrefsManager.DEFAULT_FINISH_HOLD_MS)
-                        .coerceIn(PrefsManager.MIN_FINISH_HOLD_MS, PrefsManager.MAX_FINISH_HOLD_MS),
-            )
-        }
-
-        PrefsManager.KEY_FINISH_EXIT_MS -> {
-            current.copy(
-                finishExitMs =
-                    prefs
-                        .getInt(PrefsManager.KEY_FINISH_EXIT_MS, PrefsManager.DEFAULT_FINISH_EXIT_MS)
-                        .coerceIn(PrefsManager.MIN_FINISH_EXIT_MS, PrefsManager.MAX_FINISH_EXIT_MS),
-            )
-        }
-
-        PrefsManager.KEY_FINISH_USE_FLASH_COLOR -> {
-            current.copy(
-                finishUseFlashColor =
-                    prefs.getBoolean(
-                        PrefsManager.KEY_FINISH_USE_FLASH_COLOR,
-                        PrefsManager.DEFAULT_FINISH_USE_FLASH_COLOR,
-                    ),
-            )
-        }
-
-        PrefsManager.KEY_FINISH_FLASH_COLOR -> {
-            current.copy(
-                finishFlashColor =
-                    prefs.getInt(
-                        PrefsManager.KEY_FINISH_FLASH_COLOR,
-                        PrefsManager.DEFAULT_FINISH_FLASH_COLOR,
-                    ),
-            )
-        }
-
-        PrefsManager.KEY_MIN_VISIBILITY_ENABLED -> {
-            current.copy(
-                minVisibilityEnabled =
-                    prefs.getBoolean(
-                        PrefsManager.KEY_MIN_VISIBILITY_ENABLED,
-                        PrefsManager.DEFAULT_MIN_VISIBILITY_ENABLED,
-                    ),
-            )
-        }
-
-        PrefsManager.KEY_MIN_VISIBILITY_MS -> {
-            current.copy(
-                minVisibilityMs =
-                    prefs
-                        .getInt(PrefsManager.KEY_MIN_VISIBILITY_MS, PrefsManager.DEFAULT_MIN_VISIBILITY_MS)
-                        .coerceIn(PrefsManager.MIN_MIN_VISIBILITY_MS, PrefsManager.MAX_MIN_VISIBILITY_MS),
-            )
-        }
-
-        PrefsManager.KEY_COMPLETION_PULSE_ENABLED -> {
-            current.copy(
-                completionPulseEnabled =
-                    prefs.getBoolean(
-                        PrefsManager.KEY_COMPLETION_PULSE_ENABLED,
-                        PrefsManager.DEFAULT_COMPLETION_PULSE_ENABLED,
-                    ),
-            )
-        }
-
-        PrefsManager.KEY_PERCENT_TEXT_ENABLED -> {
-            current.copy(
-                percentTextEnabled =
-                    prefs.getBoolean(
-                        PrefsManager.KEY_PERCENT_TEXT_ENABLED,
-                        PrefsManager.DEFAULT_PERCENT_TEXT_ENABLED,
-                    ),
-            )
-        }
-
-        PrefsManager.KEY_PERCENT_TEXT_POSITION -> {
-            current.copy(
-                percentTextPosition =
-                    prefs.getString(
-                        PrefsManager.KEY_PERCENT_TEXT_POSITION,
-                        PrefsManager.DEFAULT_PERCENT_TEXT_POSITION,
-                    ) ?: PrefsManager.DEFAULT_PERCENT_TEXT_POSITION,
-            )
-        }
-
-        PrefsManager.KEY_FILENAME_TEXT_ENABLED -> {
-            current.copy(
-                filenameTextEnabled =
-                    prefs.getBoolean(
-                        PrefsManager.KEY_FILENAME_TEXT_ENABLED,
-                        PrefsManager.DEFAULT_FILENAME_TEXT_ENABLED,
-                    ),
-            )
-        }
-
-        PrefsManager.KEY_FILENAME_TEXT_POSITION -> {
-            current.copy(
-                filenameTextPosition =
-                    prefs.getString(
-                        PrefsManager.KEY_FILENAME_TEXT_POSITION,
-                        PrefsManager.DEFAULT_FILENAME_TEXT_POSITION,
-                    ) ?: PrefsManager.DEFAULT_FILENAME_TEXT_POSITION,
-            )
-        }
-
-        else -> {
-            readPrefsState(prefs)
-        }
+        PrefsManager.KEY_ENABLED -> current.copy(enabled = prefs.readEnabled())
+        PrefsManager.KEY_COLOR -> current.copy(color = prefs.readColor())
+        PrefsManager.KEY_STROKE_WIDTH -> current.copy(strokeWidth = prefs.readStrokeWidth())
+        PrefsManager.KEY_RING_GAP -> current.copy(ringGap = prefs.readRingGap())
+        PrefsManager.KEY_OPACITY -> current.copy(opacity = prefs.readOpacity())
+        PrefsManager.KEY_HOOKS_FEEDBACK -> current.copy(hooksFeedback = prefs.readHooksFeedback())
+        PrefsManager.KEY_CLOCKWISE -> current.copy(clockwise = prefs.readClockwise())
+        PrefsManager.KEY_PROGRESS_EASING -> current.copy(progressEasing = prefs.readProgressEasing())
+        PrefsManager.KEY_ERROR_COLOR -> current.copy(errorColor = prefs.readErrorColor())
+        PrefsManager.KEY_POWER_SAVER_MODE -> current.copy(powerSaverMode = prefs.readPowerSaverMode())
+        PrefsManager.KEY_IDLE_RING_ENABLED -> current.copy(idleRingEnabled = prefs.readIdleRingEnabled())
+        PrefsManager.KEY_IDLE_RING_OPACITY -> current.copy(idleRingOpacity = prefs.readIdleRingOpacity())
+        PrefsManager.KEY_SHOW_DOWNLOAD_COUNT -> current.copy(showDownloadCount = prefs.readShowDownloadCount())
+        PrefsManager.KEY_FINISH_STYLE -> current.copy(finishStyle = prefs.readFinishStyle())
+        PrefsManager.KEY_FINISH_HOLD_MS -> current.copy(finishHoldMs = prefs.readFinishHoldMs())
+        PrefsManager.KEY_FINISH_EXIT_MS -> current.copy(finishExitMs = prefs.readFinishExitMs())
+        PrefsManager.KEY_FINISH_USE_FLASH_COLOR -> current.copy(finishUseFlashColor = prefs.readFinishUseFlashColor())
+        PrefsManager.KEY_FINISH_FLASH_COLOR -> current.copy(finishFlashColor = prefs.readFinishFlashColor())
+        PrefsManager.KEY_MIN_VISIBILITY_ENABLED -> current.copy(minVisibilityEnabled = prefs.readMinVisibilityEnabled())
+        PrefsManager.KEY_MIN_VISIBILITY_MS -> current.copy(minVisibilityMs = prefs.readMinVisibilityMs())
+        PrefsManager.KEY_COMPLETION_PULSE_ENABLED -> current.copy(completionPulseEnabled = prefs.readCompletionPulseEnabled())
+        PrefsManager.KEY_PERCENT_TEXT_ENABLED -> current.copy(percentTextEnabled = prefs.readPercentTextEnabled())
+        PrefsManager.KEY_PERCENT_TEXT_POSITION -> current.copy(percentTextPosition = prefs.readPercentTextPosition())
+        PrefsManager.KEY_FILENAME_TEXT_ENABLED -> current.copy(filenameTextEnabled = prefs.readFilenameTextEnabled())
+        PrefsManager.KEY_FILENAME_TEXT_POSITION -> current.copy(filenameTextPosition = prefs.readFilenameTextPosition())
+        else -> readPrefsState(prefs)
     }
 }
 
 private fun readPrefsState(prefs: SharedPreferences): PrefsState =
     PrefsState(
-        enabled = prefs.getBoolean(PrefsManager.KEY_ENABLED, PrefsManager.DEFAULT_ENABLED),
-        color = prefs.getInt(PrefsManager.KEY_COLOR, PrefsManager.DEFAULT_COLOR),
-        strokeWidth =
-            prefs
-                .getFloat(PrefsManager.KEY_STROKE_WIDTH, PrefsManager.DEFAULT_STROKE_WIDTH)
-                .coerceIn(PrefsManager.MIN_STROKE_WIDTH, PrefsManager.MAX_STROKE_WIDTH),
-        ringGap =
-            prefs
-                .getFloat(PrefsManager.KEY_RING_GAP, PrefsManager.DEFAULT_RING_GAP)
-                .coerceIn(PrefsManager.MIN_RING_GAP, PrefsManager.MAX_RING_GAP),
-        opacity =
-            prefs
-                .getInt(PrefsManager.KEY_OPACITY, PrefsManager.DEFAULT_OPACITY)
-                .coerceIn(PrefsManager.MIN_OPACITY, PrefsManager.MAX_OPACITY),
-        hooksFeedback =
-            prefs.getBoolean(
-                PrefsManager.KEY_HOOKS_FEEDBACK,
-                PrefsManager.DEFAULT_HOOKS_FEEDBACK,
-            ),
-        clockwise = prefs.getBoolean(PrefsManager.KEY_CLOCKWISE, true),
-        progressEasing =
-            prefs.getString(PrefsManager.KEY_PROGRESS_EASING, PrefsManager.DEFAULT_PROGRESS_EASING)
-                ?: PrefsManager.DEFAULT_PROGRESS_EASING,
-        errorColor = prefs.getInt(PrefsManager.KEY_ERROR_COLOR, PrefsManager.DEFAULT_ERROR_COLOR),
-        powerSaverMode =
-            prefs.getString(
-                PrefsManager.KEY_POWER_SAVER_MODE,
-                PrefsManager.DEFAULT_POWER_SAVER_MODE,
-            )
-                ?: PrefsManager.DEFAULT_POWER_SAVER_MODE,
-        idleRingEnabled =
-            prefs.getBoolean(
-                PrefsManager.KEY_IDLE_RING_ENABLED,
-                PrefsManager.DEFAULT_IDLE_RING_ENABLED,
-            ),
-        idleRingOpacity =
-            prefs
-                .getInt(PrefsManager.KEY_IDLE_RING_OPACITY, PrefsManager.DEFAULT_IDLE_RING_OPACITY)
-                .coerceIn(0, 100),
-        showDownloadCount =
-            prefs.getBoolean(
-                PrefsManager.KEY_SHOW_DOWNLOAD_COUNT,
-                PrefsManager.DEFAULT_SHOW_DOWNLOAD_COUNT,
-            ),
-        finishStyle =
-            prefs.getString(PrefsManager.KEY_FINISH_STYLE, PrefsManager.DEFAULT_FINISH_STYLE)
-                ?: PrefsManager.DEFAULT_FINISH_STYLE,
-        finishHoldMs =
-            prefs
-                .getInt(PrefsManager.KEY_FINISH_HOLD_MS, PrefsManager.DEFAULT_FINISH_HOLD_MS)
-                .coerceIn(PrefsManager.MIN_FINISH_HOLD_MS, PrefsManager.MAX_FINISH_HOLD_MS),
-        finishExitMs =
-            prefs
-                .getInt(PrefsManager.KEY_FINISH_EXIT_MS, PrefsManager.DEFAULT_FINISH_EXIT_MS)
-                .coerceIn(PrefsManager.MIN_FINISH_EXIT_MS, PrefsManager.MAX_FINISH_EXIT_MS),
-        finishUseFlashColor =
-            prefs.getBoolean(
-                PrefsManager.KEY_FINISH_USE_FLASH_COLOR,
-                PrefsManager.DEFAULT_FINISH_USE_FLASH_COLOR,
-            ),
-        finishFlashColor =
-            prefs.getInt(
-                PrefsManager.KEY_FINISH_FLASH_COLOR,
-                PrefsManager.DEFAULT_FINISH_FLASH_COLOR,
-            ),
-        minVisibilityEnabled =
-            prefs.getBoolean(
-                PrefsManager.KEY_MIN_VISIBILITY_ENABLED,
-                PrefsManager.DEFAULT_MIN_VISIBILITY_ENABLED,
-            ),
-        minVisibilityMs =
-            prefs
-                .getInt(PrefsManager.KEY_MIN_VISIBILITY_MS, PrefsManager.DEFAULT_MIN_VISIBILITY_MS)
-                .coerceIn(PrefsManager.MIN_MIN_VISIBILITY_MS, PrefsManager.MAX_MIN_VISIBILITY_MS),
-        completionPulseEnabled =
-            prefs.getBoolean(
-                PrefsManager.KEY_COMPLETION_PULSE_ENABLED,
-                PrefsManager.DEFAULT_COMPLETION_PULSE_ENABLED,
-            ),
-        percentTextEnabled =
-            prefs.getBoolean(
-                PrefsManager.KEY_PERCENT_TEXT_ENABLED,
-                PrefsManager.DEFAULT_PERCENT_TEXT_ENABLED,
-            ),
-        percentTextPosition =
-            prefs.getString(
-                PrefsManager.KEY_PERCENT_TEXT_POSITION,
-                PrefsManager.DEFAULT_PERCENT_TEXT_POSITION,
-            )
-                ?: PrefsManager.DEFAULT_PERCENT_TEXT_POSITION,
-        filenameTextEnabled =
-            prefs.getBoolean(
-                PrefsManager.KEY_FILENAME_TEXT_ENABLED,
-                PrefsManager.DEFAULT_FILENAME_TEXT_ENABLED,
-            ),
-        filenameTextPosition =
-            prefs.getString(
-                PrefsManager.KEY_FILENAME_TEXT_POSITION,
-                PrefsManager.DEFAULT_FILENAME_TEXT_POSITION,
-            )
-                ?: PrefsManager.DEFAULT_FILENAME_TEXT_POSITION,
+        enabled = prefs.readEnabled(),
+        color = prefs.readColor(),
+        strokeWidth = prefs.readStrokeWidth(),
+        ringGap = prefs.readRingGap(),
+        opacity = prefs.readOpacity(),
+        hooksFeedback = prefs.readHooksFeedback(),
+        clockwise = prefs.readClockwise(),
+        progressEasing = prefs.readProgressEasing(),
+        errorColor = prefs.readErrorColor(),
+        powerSaverMode = prefs.readPowerSaverMode(),
+        idleRingEnabled = prefs.readIdleRingEnabled(),
+        idleRingOpacity = prefs.readIdleRingOpacity(),
+        showDownloadCount = prefs.readShowDownloadCount(),
+        finishStyle = prefs.readFinishStyle(),
+        finishHoldMs = prefs.readFinishHoldMs(),
+        finishExitMs = prefs.readFinishExitMs(),
+        finishUseFlashColor = prefs.readFinishUseFlashColor(),
+        finishFlashColor = prefs.readFinishFlashColor(),
+        minVisibilityEnabled = prefs.readMinVisibilityEnabled(),
+        minVisibilityMs = prefs.readMinVisibilityMs(),
+        completionPulseEnabled = prefs.readCompletionPulseEnabled(),
+        percentTextEnabled = prefs.readPercentTextEnabled(),
+        percentTextPosition = prefs.readPercentTextPosition(),
+        filenameTextEnabled = prefs.readFilenameTextEnabled(),
+        filenameTextPosition = prefs.readFilenameTextPosition(),
     )

@@ -247,62 +247,32 @@ object PrefsManager {
     private fun refreshCache() {
         runCatching {
             remotePrefs?.let { prefs ->
-                enabled = prefs.getBoolean(KEY_ENABLED, DEFAULT_ENABLED)
-                color = prefs.getInt(KEY_COLOR, DEFAULT_COLOR)
-                strokeWidth =
-                    prefs
-                        .getFloat(KEY_STROKE_WIDTH, DEFAULT_STROKE_WIDTH)
-                        .coerceIn(MIN_STROKE_WIDTH, MAX_STROKE_WIDTH)
-                ringGap =
-                    prefs
-                        .getFloat(KEY_RING_GAP, DEFAULT_RING_GAP)
-                        .coerceIn(MIN_RING_GAP, MAX_RING_GAP)
-                opacity =
-                    prefs.getInt(KEY_OPACITY, DEFAULT_OPACITY).coerceIn(MIN_OPACITY, MAX_OPACITY)
-                hooksFeedback = prefs.getBoolean(KEY_HOOKS_FEEDBACK, DEFAULT_HOOKS_FEEDBACK)
-                appVisible = prefs.getBoolean(KEY_APP_VISIBLE, false)
-                clockwise = prefs.getBoolean(KEY_CLOCKWISE, true)
-                progressEasing = prefs.getString(KEY_PROGRESS_EASING, DEFAULT_PROGRESS_EASING)
-                    ?: DEFAULT_PROGRESS_EASING
-                errorColor = prefs.getInt(KEY_ERROR_COLOR, DEFAULT_ERROR_COLOR)
-                powerSaverMode = prefs.getString(KEY_POWER_SAVER_MODE, DEFAULT_POWER_SAVER_MODE)
-                    ?: DEFAULT_POWER_SAVER_MODE
-                idleRingEnabled = prefs.getBoolean(KEY_IDLE_RING_ENABLED, DEFAULT_IDLE_RING_ENABLED)
-                idleRingOpacity =
-                    prefs.getInt(KEY_IDLE_RING_OPACITY, DEFAULT_IDLE_RING_OPACITY).coerceIn(0, 100)
-                showDownloadCount =
-                    prefs.getBoolean(KEY_SHOW_DOWNLOAD_COUNT, DEFAULT_SHOW_DOWNLOAD_COUNT)
-                finishStyle =
-                    prefs.getString(KEY_FINISH_STYLE, DEFAULT_FINISH_STYLE) ?: DEFAULT_FINISH_STYLE
-                finishHoldMs =
-                    prefs
-                        .getInt(KEY_FINISH_HOLD_MS, DEFAULT_FINISH_HOLD_MS)
-                        .coerceIn(MIN_FINISH_HOLD_MS, MAX_FINISH_HOLD_MS)
-                finishExitMs =
-                    prefs
-                        .getInt(KEY_FINISH_EXIT_MS, DEFAULT_FINISH_EXIT_MS)
-                        .coerceIn(MIN_FINISH_EXIT_MS, MAX_FINISH_EXIT_MS)
-                finishUseFlashColor =
-                    prefs.getBoolean(KEY_FINISH_USE_FLASH_COLOR, DEFAULT_FINISH_USE_FLASH_COLOR)
-                finishFlashColor = prefs.getInt(KEY_FINISH_FLASH_COLOR, DEFAULT_FINISH_FLASH_COLOR)
-                minVisibilityEnabled =
-                    prefs.getBoolean(KEY_MIN_VISIBILITY_ENABLED, DEFAULT_MIN_VISIBILITY_ENABLED)
-                minVisibilityMs =
-                    prefs
-                        .getInt(KEY_MIN_VISIBILITY_MS, DEFAULT_MIN_VISIBILITY_MS)
-                        .coerceIn(MIN_MIN_VISIBILITY_MS, MAX_MIN_VISIBILITY_MS)
-                completionPulseEnabled =
-                    prefs.getBoolean(KEY_COMPLETION_PULSE_ENABLED, DEFAULT_COMPLETION_PULSE_ENABLED)
-                percentTextEnabled =
-                    prefs.getBoolean(KEY_PERCENT_TEXT_ENABLED, DEFAULT_PERCENT_TEXT_ENABLED)
-                percentTextPosition =
-                    prefs.getString(KEY_PERCENT_TEXT_POSITION, DEFAULT_PERCENT_TEXT_POSITION)
-                        ?: DEFAULT_PERCENT_TEXT_POSITION
-                filenameTextEnabled =
-                    prefs.getBoolean(KEY_FILENAME_TEXT_ENABLED, DEFAULT_FILENAME_TEXT_ENABLED)
-                filenameTextPosition =
-                    prefs.getString(KEY_FILENAME_TEXT_POSITION, DEFAULT_FILENAME_TEXT_POSITION)
-                        ?: DEFAULT_FILENAME_TEXT_POSITION
+                enabled = prefs.readEnabled()
+                color = prefs.readColor()
+                strokeWidth = prefs.readStrokeWidth()
+                ringGap = prefs.readRingGap()
+                opacity = prefs.readOpacity()
+                hooksFeedback = prefs.readHooksFeedback()
+                appVisible = prefs.readAppVisible()
+                clockwise = prefs.readClockwise()
+                progressEasing = prefs.readProgressEasing()
+                errorColor = prefs.readErrorColor()
+                powerSaverMode = prefs.readPowerSaverMode()
+                idleRingEnabled = prefs.readIdleRingEnabled()
+                idleRingOpacity = prefs.readIdleRingOpacity()
+                showDownloadCount = prefs.readShowDownloadCount()
+                finishStyle = prefs.readFinishStyle()
+                finishHoldMs = prefs.readFinishHoldMs()
+                finishExitMs = prefs.readFinishExitMs()
+                finishUseFlashColor = prefs.readFinishUseFlashColor()
+                finishFlashColor = prefs.readFinishFlashColor()
+                minVisibilityEnabled = prefs.readMinVisibilityEnabled()
+                minVisibilityMs = prefs.readMinVisibilityMs()
+                completionPulseEnabled = prefs.readCompletionPulseEnabled()
+                percentTextEnabled = prefs.readPercentTextEnabled()
+                percentTextPosition = prefs.readPercentTextPosition()
+                filenameTextEnabled = prefs.readFilenameTextEnabled()
+                filenameTextPosition = prefs.readFilenameTextPosition()
             }
         }.onFailure { log("refreshCache() failed", it) }
     }

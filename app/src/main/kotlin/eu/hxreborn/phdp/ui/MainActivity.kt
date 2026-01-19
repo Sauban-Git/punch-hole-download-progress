@@ -20,6 +20,7 @@ import androidx.lifecycle.lifecycleScope
 import eu.hxreborn.phdp.PunchHoleProgressApp
 import eu.hxreborn.phdp.R
 import eu.hxreborn.phdp.prefs.PrefsManager
+import eu.hxreborn.phdp.prefs.putAny
 import eu.hxreborn.phdp.ui.state.rememberPrefsState
 import eu.hxreborn.phdp.ui.theme.AppTheme
 import eu.hxreborn.phdp.util.RootUtils
@@ -123,24 +124,8 @@ class MainActivity :
         key: String,
         value: Any,
     ) {
-        prefs.edit {
-            when (value) {
-                is Int -> putInt(key, value)
-                is Long -> putLong(key, value)
-                is Float -> putFloat(key, value)
-                is Boolean -> putBoolean(key, value)
-                is String -> putString(key, value)
-            }
-        }
-        remotePrefs?.edit(commit = true) {
-            when (value) {
-                is Int -> putInt(key, value)
-                is Long -> putLong(key, value)
-                is Float -> putFloat(key, value)
-                is Boolean -> putBoolean(key, value)
-                is String -> putString(key, value)
-            }
-        }
+        prefs.edit { putAny(key, value) }
+        remotePrefs?.edit(commit = true) { putAny(key, value) }
     }
 
     // Test simulation
@@ -172,35 +157,23 @@ class MainActivity :
     }
 
     private fun resetToDefaults() {
-        prefs.edit {
-            putInt(PrefsManager.KEY_COLOR, PrefsManager.DEFAULT_COLOR)
-            putFloat(PrefsManager.KEY_STROKE_WIDTH, PrefsManager.DEFAULT_STROKE_WIDTH)
-            putFloat(PrefsManager.KEY_RING_GAP, PrefsManager.DEFAULT_RING_GAP)
-            putInt(PrefsManager.KEY_OPACITY, PrefsManager.DEFAULT_OPACITY)
-            putBoolean(PrefsManager.KEY_HOOKS_FEEDBACK, PrefsManager.DEFAULT_HOOKS_FEEDBACK)
-            putBoolean(PrefsManager.KEY_CLOCKWISE, true)
-            putString(PrefsManager.KEY_FINISH_STYLE, PrefsManager.DEFAULT_FINISH_STYLE)
-            putInt(PrefsManager.KEY_FINISH_HOLD_MS, PrefsManager.DEFAULT_FINISH_HOLD_MS)
-            putInt(PrefsManager.KEY_FINISH_EXIT_MS, PrefsManager.DEFAULT_FINISH_EXIT_MS)
-            putInt(PrefsManager.KEY_FINISH_FLASH_COLOR, PrefsManager.DEFAULT_FINISH_FLASH_COLOR)
-            putBoolean(PrefsManager.KEY_SHOW_DOWNLOAD_COUNT, PrefsManager.DEFAULT_SHOW_DOWNLOAD_COUNT)
-            putString(PrefsManager.KEY_POWER_SAVER_MODE, PrefsManager.DEFAULT_POWER_SAVER_MODE)
-        }
-        remotePrefs?.edit(commit = true) {
-            putInt(PrefsManager.KEY_COLOR, PrefsManager.DEFAULT_COLOR)
-            putFloat(PrefsManager.KEY_STROKE_WIDTH, PrefsManager.DEFAULT_STROKE_WIDTH)
-            putFloat(PrefsManager.KEY_RING_GAP, PrefsManager.DEFAULT_RING_GAP)
-            putInt(PrefsManager.KEY_OPACITY, PrefsManager.DEFAULT_OPACITY)
-            putBoolean(PrefsManager.KEY_HOOKS_FEEDBACK, PrefsManager.DEFAULT_HOOKS_FEEDBACK)
-            putBoolean(PrefsManager.KEY_CLOCKWISE, true)
-            putString(PrefsManager.KEY_FINISH_STYLE, PrefsManager.DEFAULT_FINISH_STYLE)
-            putInt(PrefsManager.KEY_FINISH_HOLD_MS, PrefsManager.DEFAULT_FINISH_HOLD_MS)
-            putInt(PrefsManager.KEY_FINISH_EXIT_MS, PrefsManager.DEFAULT_FINISH_EXIT_MS)
-            putInt(PrefsManager.KEY_FINISH_FLASH_COLOR, PrefsManager.DEFAULT_FINISH_FLASH_COLOR)
-            putBoolean(PrefsManager.KEY_SHOW_DOWNLOAD_COUNT, PrefsManager.DEFAULT_SHOW_DOWNLOAD_COUNT)
-            putString(PrefsManager.KEY_POWER_SAVER_MODE, PrefsManager.DEFAULT_POWER_SAVER_MODE)
-        }
-
+        val defaults =
+            mapOf(
+                PrefsManager.KEY_COLOR to PrefsManager.DEFAULT_COLOR,
+                PrefsManager.KEY_STROKE_WIDTH to PrefsManager.DEFAULT_STROKE_WIDTH,
+                PrefsManager.KEY_RING_GAP to PrefsManager.DEFAULT_RING_GAP,
+                PrefsManager.KEY_OPACITY to PrefsManager.DEFAULT_OPACITY,
+                PrefsManager.KEY_HOOKS_FEEDBACK to PrefsManager.DEFAULT_HOOKS_FEEDBACK,
+                PrefsManager.KEY_CLOCKWISE to true,
+                PrefsManager.KEY_FINISH_STYLE to PrefsManager.DEFAULT_FINISH_STYLE,
+                PrefsManager.KEY_FINISH_HOLD_MS to PrefsManager.DEFAULT_FINISH_HOLD_MS,
+                PrefsManager.KEY_FINISH_EXIT_MS to PrefsManager.DEFAULT_FINISH_EXIT_MS,
+                PrefsManager.KEY_FINISH_FLASH_COLOR to PrefsManager.DEFAULT_FINISH_FLASH_COLOR,
+                PrefsManager.KEY_SHOW_DOWNLOAD_COUNT to PrefsManager.DEFAULT_SHOW_DOWNLOAD_COUNT,
+                PrefsManager.KEY_POWER_SAVER_MODE to PrefsManager.DEFAULT_POWER_SAVER_MODE,
+            )
+        prefs.edit { defaults.forEach { (k, v) -> putAny(k, v) } }
+        remotePrefs?.edit(commit = true) { defaults.forEach { (k, v) -> putAny(k, v) } }
         Toast.makeText(this, R.string.reset_done, Toast.LENGTH_SHORT).show()
     }
 
