@@ -1,11 +1,28 @@
 
 
+## What's Changed in [v1.0.0-alpha8](https://github.com/hxreborn/punch-hole-download-progress/releases/tag/v1.0.0-alpha8) (2026-01-19)
+
+
+### Fixed
+
+- [ae9970a](https://github.com/hxreborn/punch-hole-download-progress/commit/ae9970ad2bc393cae64f6184223577df04a28f61) *(xposed)* Update module entry point path after refactor by @hxreborn
+
+  > java_init.list and proguard-rules.pro still referenced the old path
+  > after the module class was moved to the xposed subpackage in 3cf544c.
+
+
+### Changed
+
+- [3ae230a](https://github.com/hxreborn/punch-hole-download-progress/commit/3ae230aca87114e4c89dc4cda3525adb08a819b9) *(xposed)* Use PHDP acronym naming by @hxreborn
+
+
+
 ## What's Changed in [v1.0.0-alpha7](https://github.com/hxreborn/punch-hole-download-progress/releases/tag/v1.0.0-alpha7) (2026-01-19)
 
 
 ### Fixed
 
-- [71d5301](https://github.com/hxreborn/punch-hole-download-progress/commit/71d530134772d2c0862cc0ae4b095ffb743003af) *(ci)* Validate semver and handle v-prefix in release script
+- [71d5301](https://github.com/hxreborn/punch-hole-download-progress/commit/71d530134772d2c0862cc0ae4b095ffb743003af) *(ci)* Validate semver and handle v-prefix in release script by @hxreborn
 
   > Accept both "1.0.0" and "v1.0.0" formats, reject double-prefixed "vv".
   > Validate against semver regex before proceeding.
@@ -13,7 +30,7 @@
 
 ### Security
 
-- [0b27db9](https://github.com/hxreborn/punch-hole-download-progress/commit/0b27db9625c990e00727c07e2f7a919a49aeca56) *(ci)* Simplify changelog to user-focused sections
+- [0b27db9](https://github.com/hxreborn/punch-hole-download-progress/commit/0b27db9625c990e00727c07e2f7a919a49aeca56) *(ci)* Simplify changelog to user-focused sections by @hxreborn
 
   > Collapse dev-only sections (docs, test, build, ci, style) and low-context
   > chore commits into skip rules. Rename remaining sections to plain terms:
