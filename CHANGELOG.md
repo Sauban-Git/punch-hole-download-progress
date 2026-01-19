@@ -1,9 +1,60 @@
 
 
+## What's Changed in [v1.0.0-alpha5](https://github.com/hxreborn/punch-hole-download-progress/releases/tag/v1.0.0-alpha5) (2026-01-19)
+
+
+### Features
+
+- [8a2611a](https://github.com/hxreborn/punch-hole-download-progress/commit/8a2611ab3b859991bd5ca3078d96a65d0b3fdbe2) *(ui)* Add splash screen with icon to avoid flashbang on cold start by [@hxreborn](https://github.com/hxreborn)
+
+
+### Refactor
+
+- [46219ce](https://github.com/hxreborn/punch-hole-download-progress/commit/46219cea8cd6ceb9df4edb9324e05ffe652a8cb0) *(ci)* Switch to ratatui-style changelog template by [@hxreborn](https://github.com/hxreborn)
+
+- [8973945](https://github.com/hxreborn/punch-hole-download-progress/commit/8973945cd04fcd7d572a7c171490bdf2e65fbb0b) *(prefs)* Simplify state updates and reset defaults by [@hxreborn](https://github.com/hxreborn)
+
+  > Collapse updatePrefsStateForKey to full read, add centralized DEFAULTS
+  > map, remove unused serviceState LiveData.
+
+- [58f98e1](https://github.com/hxreborn/punch-hole-download-progress/commit/58f98e1709f68db8bab3cc303a7b038fa1aaaf51) *(prefs)* Deduplicate preference mapping by [@hxreborn](https://github.com/hxreborn)
+
+- [4baed56](https://github.com/hxreborn/punch-hole-download-progress/commit/4baed560a111689b068f3be4a028de488e3868e0) *(prefs)* Add shared preference reader extensions by [@hxreborn](https://github.com/hxreborn)
+
+  > Centralize key, default, and coercion logic for reuse.
+
+- [d4a6b68](https://github.com/hxreborn/punch-hole-download-progress/commit/d4a6b68227a8ce705df8816305c6b618ca33a74b) *(prefs)* Remove unused finishIntensity setting by [@hxreborn](https://github.com/hxreborn)
+
+  > Always use high intensity (1.5f). Raise MIN_RING_GAP to 1.0f since
+  > values below 1.0 make the ring invisible.
+
+- [3cf544c](https://github.com/hxreborn/punch-hole-download-progress/commit/3cf544c895792d5e299d5aa932e78e03a8a2cd11) *(ui)* Standardize preference components by [@hxreborn](https://github.com/hxreborn)
+
+  > Move preference components to dedicated package with unified styling
+  > matching compose-preference library. Uses Tokens for consistent padding,
+  > typography, and disabled state handling.
+
+  > Components:TogglePreferenceWithIcon, SliderPreferenceWithReset,
+SelectPreference, ColorPreference, ActionPreference.
+
+- [0982fa7](https://github.com/hxreborn/punch-hole-download-progress/commit/0982fa7549cf907a78902d4fd4b01e2449cffb14) *(util)* Migrate root commands to libsu by [@hxreborn](https://github.com/hxreborn)
+
+- [3e49b64](https://github.com/hxreborn/punch-hole-download-progress/commit/3e49b64f07607ffdbc7dac851c8e55aac75f733c) *(view)* Remove indistinct finish styles by [@hxreborn](https://github.com/hxreborn)
+
+  > hold_fade, pulse, shine_sweep are visually indistinct from each other.
+  > Keep only: snap, pop, segmented.
+
+
+### Miscellaneous
+
+- [541d733](https://github.com/hxreborn/punch-hole-download-progress/commit/541d73365a402b128deb7e85a270a9117f95deb3) Ignore local asset directories by [@hxreborn](https://github.com/hxreborn)
+
+
+
 ## What's Changed in [v1.0.0-alpha4](https://github.com/hxreborn/punch-hole-download-progress/releases/tag/v1.0.0-alpha4) (2026-01-18)
 
 
-### Added
+### Features
 
 - [bfa64bf](https://github.com/hxreborn/punch-hole-download-progress/commit/bfa64bff0c1b23a73c20875227887eefb4b58d78) *(ui)* Add version info section in settings by [@hxreborn](https://github.com/hxreborn)
 
@@ -11,7 +62,7 @@
   > on the System screen.
 
 
-### Fixed
+### Bug Fixes
 
 - [59c32a6](https://github.com/hxreborn/punch-hole-download-progress/commit/59c32a6a7ab5a6ac66c85f4e0fe9002e823b51a0) *(ci)* Use dynamic contributor from GitHub API by [@hxreborn](https://github.com/hxreborn)
 
@@ -19,7 +70,7 @@
   > profile link. Works in Actions with GITHUB_TOKEN.
 
 
-### Changed
+### Refactor
 
 - [031df0f](https://github.com/hxreborn/punch-hole-download-progress/commit/031df0f86b879d9fbf5afa78230f9301047539f6) *(ci)* Simplify changelog contributor format by [@hxreborn](https://github.com/hxreborn)
 
@@ -45,17 +96,31 @@
 
 
 
+## What's Changed in [v1.0.0-alpha3](https://github.com/hxreborn/punch-hole-download-progress/releases/tag/v1.0.0-alpha3) (2026-01-18)
+
+
+### Miscellaneous
+
+- [92a997a](https://github.com/hxreborn/punch-hole-download-progress/commit/92a997ad199a113bf723587f753cf500376f2da0) *(ci)* Update git-cliff to github-keepachangelog template by [@hxreborn](https://github.com/hxreborn) in [#1](https://github.com/hxreborn/punch-hole-download-progress/pull/1)
+
+  > - Use built-in github-keepachangelog template
+  > - Add commit hash links and author attribution
+  > - Group commits by conventional type (Added, Fixed, Changed, etc.)
+  > - Remove header/footer, use "What's New" section title
+
+
+
 ## What's Changed in [v1.0.0-alpha2](https://github.com/hxreborn/punch-hole-download-progress/releases/tag/v1.0.0-alpha2) (2026-01-18)
 
 
-### Added
+### Features
 
 - [b497438](https://github.com/hxreborn/punch-hole-download-progress/commit/b497438c6948c6eaec5ea29984f8fa652cd68e99) *(ci)* Add git-cliff changelog generation by [@hxreborn](https://github.com/hxreborn)
 
 - [9080a95](https://github.com/hxreborn/punch-hole-download-progress/commit/9080a95b79cebdcdcf2b946f0602efdc09ca4767) Update app icon by [@hxreborn](https://github.com/hxreborn)
 
 
-### Fixed
+### Bug Fixes
 
 - [581411a](https://github.com/hxreborn/punch-hole-download-progress/commit/581411ad31960b3e4e036344dd66d6789b3567fe) *(build)* Replace deprecated resourceConfigurations with localeFilters by [@hxreborn](https://github.com/hxreborn)
 
@@ -66,7 +131,7 @@
 - [29dc91a](https://github.com/hxreborn/punch-hole-download-progress/commit/29dc91a3ac47b45b5436b727f85aae6f5ad7d4d2) *(ci)* Build both libxposed api and service in workflows by [@hxreborn](https://github.com/hxreborn)
 
 
-### Changed
+### Refactor
 
 - [4fc8759](https://github.com/hxreborn/punch-hole-download-progress/commit/4fc8759e5fc8a9441f1e3236a0caa55a27af304d) *(hook)* Import Method class directly by [@hxreborn](https://github.com/hxreborn)
 
@@ -76,11 +141,16 @@
 - [11b867c](https://github.com/hxreborn/punch-hole-download-progress/commit/11b867c4dea42380d8f85ffb131cb3856ee688b2) Add GPLv3 license file by [@hxreborn](https://github.com/hxreborn)
 
 
+### Miscellaneous
+
+- [1562d0b](https://github.com/hxreborn/punch-hole-download-progress/commit/1562d0b6ef07761b3fb2868eee5399982b834a97) Update app name by [@hxreborn](https://github.com/hxreborn)
+
+
 
 ## What's Changed in [v1.0.0-alpha](https://github.com/hxreborn/punch-hole-download-progress/releases/tag/v1.0.0-alpha) (2026-01-18)
 
 
-### Added
+### Features
 
 - [f2ecafd](https://github.com/hxreborn/punch-hole-download-progress/commit/f2ecafdf9a806a24e3ac123f4474abed058a8a06) *(ui)* Add option to show filename label by [@hxreborn](https://github.com/hxreborn)
 
@@ -93,7 +163,7 @@
   > - android-ci.yml: CI on push/PR to main
 
 
-### Fixed
+### Bug Fixes
 
 - [54a7891](https://github.com/hxreborn/punch-hole-download-progress/commit/54a7891e673f262e4179b455f311d2b0f8731568) *(ci)* Add libxposed build step before app build by [@hxreborn](https://github.com/hxreborn)
 
@@ -104,7 +174,7 @@
 - [5101591](https://github.com/hxreborn/punch-hole-download-progress/commit/5101591e33b32d576c2b1d90568afe6287e015b3) Avoid log() shadowing in XposedModule by [@hxreborn](https://github.com/hxreborn)
 
 
-### Changed
+### Refactor
 
 - [99fb1ad](https://github.com/hxreborn/punch-hole-download-progress/commit/99fb1adfcdfa3be27a7c3a5567e1531778022f0a) *(ui)* Use Material You icons for switch thumbs by [@hxreborn](https://github.com/hxreborn)
 
@@ -125,16 +195,21 @@
 - [51a43cc](https://github.com/hxreborn/punch-hole-download-progress/commit/51a43cca16ed938d161514c40dae0374154c1cd9) Remove dead code and simplify haptic prefs by [@hxreborn](https://github.com/hxreborn)
 
 
-### Performance
+### Documentation
+
+- [a4b82aa](https://github.com/hxreborn/punch-hole-download-progress/commit/a4b82aa2d33a88b65fc5da6ac46c4cc50fc7fcc6) *(readme)* Refresh tagline and feature list by [@hxreborn](https://github.com/hxreborn)
+
+
+### Performance Improvements
 
 - [2f30f11](https://github.com/hxreborn/punch-hole-download-progress/commit/2f30f116c83684f45f771382382684537ef0029d) *(release)* Shrink APK 4.2MB to 1.8MB by [@hxreborn](https://github.com/hxreborn)
 
 - [2c59d63](https://github.com/hxreborn/punch-hole-download-progress/commit/2c59d63fc9817bcbecede7aea846035f7827e34b) Cache reflection Method objects by [@hxreborn](https://github.com/hxreborn)
 
 
-### Documentation
+### Miscellaneous
 
-- [a4b82aa](https://github.com/hxreborn/punch-hole-download-progress/commit/a4b82aa2d33a88b65fc5da6ac46c4cc50fc7fcc6) *(readme)* Refresh tagline and feature list by [@hxreborn](https://github.com/hxreborn)
+- [d8463c2](https://github.com/hxreborn/punch-hole-download-progress/commit/d8463c286ba5c24ad15278bc6bcca993364fe654) *(proguard)* Keep LSPosed entries, strip debug logs by [@hxreborn](https://github.com/hxreborn)
 
 
 ### Init
