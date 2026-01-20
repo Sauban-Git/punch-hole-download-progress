@@ -172,10 +172,7 @@ private fun finishStyleLabel(
     value: String,
     entries: List<String>,
     values: List<String>,
-): String? {
-    val index = values.indexOf(value)
-    return if (index >= 0) entries.getOrNull(index) else null
-}
+): String? = entries.getOrNull(values.indexOf(value))
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
