@@ -25,19 +25,16 @@ object DownloadProgressHooker {
         val lastUpdate: Long,
     )
 
-    // Debug logging for debug builds only
     private inline fun debug(msg: () -> String) {
         if (BuildConfig.DEBUG) log(msg())
     }
 
-    // Cached reflection methods for efficiency
     @Volatile private var getPackageNameMethod: Method? = null
 
     @Volatile private var getNotificationMethod: Method? = null
 
     @Volatile private var getIdMethod: Method? = null
 
-    // Whitelist packages that publish progress extras to avoid false positives
     private val SUPPORTED_PACKAGES =
         setOf(
             // System
@@ -82,7 +79,6 @@ object DownloadProgressHooker {
             "com.sec.android.app.sbrowser",
         )
 
-    // Active downloads keyed by id to state
     private val activeDownloads = ConcurrentHashMap<String, DownloadState>()
 
     var onProgressChanged: ((Int) -> Unit)? = null
@@ -178,7 +174,6 @@ object DownloadProgressHooker {
         updateFilename()
     }
 
-    // Find filename of download with highest progress as leading download
     private fun updateFilename() {
         val leadingEntry = activeDownloads.maxByOrNull { it.value.progress }
         val filename = leadingEntry?.value?.filename

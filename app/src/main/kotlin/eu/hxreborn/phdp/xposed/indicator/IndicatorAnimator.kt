@@ -58,27 +58,23 @@ class IndicatorAnimator(
         const val SEGMENT_ARC_DEGREES = (360f - SEGMENT_COUNT * SEGMENT_GAP_DEGREES) / SEGMENT_COUNT
     }
 
-    private data class AnimSpec(
-        val values: FloatArray,
-        val durationMs: Long,
-        val interpolator: TimeInterpolator = AccelerateDecelerateInterpolator(),
-    )
-
     private fun play(
-        spec: AnimSpec,
+        values: FloatArray,
+        durationMs: Long,
+        interpolator: TimeInterpolator = AccelerateDecelerateInterpolator(),
         onUpdate: (Float) -> Unit,
         onEnd: (() -> Unit)? = null,
     ): ValueAnimator {
         // Handle 0-duration edge case: ValueAnimator may skip onAnimationEnd
-        if (spec.durationMs <= 0) {
-            onUpdate(spec.values.last())
+        if (durationMs <= 0) {
+            onUpdate(values.last())
             view.invalidate()
             onEnd?.invoke()
             return ValueAnimator() // Return dummy animator
         }
-        return ValueAnimator.ofFloat(*spec.values).apply {
-            duration = spec.durationMs
-            interpolator = spec.interpolator
+        return ValueAnimator.ofFloat(*values).apply {
+            duration = durationMs
+            this.interpolator = interpolator
             addUpdateListener {
                 onUpdate(it.animatedValue as Float)
                 view.invalidate()
@@ -185,12 +181,15 @@ class IndicatorAnimator(
 
         finishAnimator =
             play(
-                AnimSpec(floatArrayOf(0f, 1f), scalePhaseMs, OvershootInterpolator(2f * intensity)),
+                values = floatArrayOf(0f, 1f),
+                durationMs = scalePhaseMs,
+                interpolator = OvershootInterpolator(2f * intensity),
                 onUpdate = { fraction -> displayScale = 1f + (0.08f * intensity * fraction) },
                 onEnd = {
                     finishAnimator =
                         play(
-                            AnimSpec(floatArrayOf(0f, 1f), fadePhaseMs),
+                            values = floatArrayOf(0f, 1f),
+                            durationMs = fadePhaseMs,
                             onUpdate = { fraction ->
                                 displayScale = 1f + (0.08f * intensity * (1f - fraction * 0.5f))
                                 displayAlpha = 1f - fraction
@@ -224,7 +223,8 @@ class IndicatorAnimator(
                     segmentHighlight = -1
                     finishAnimator =
                         play(
-                            AnimSpec(floatArrayOf(1f, 0f), fadePhaseMs),
+                            values = floatArrayOf(1f, 0f),
+                            durationMs = fadePhaseMs,
                             onUpdate = { alpha -> displayAlpha = alpha },
                             onEnd = { finishEnd(onComplete) },
                         )
@@ -243,7 +243,8 @@ class IndicatorAnimator(
         pulseAnimator?.cancel()
         pulseAnimator =
             play(
-                AnimSpec(floatArrayOf(1f, 0.7f, 1f), 400),
+                values = floatArrayOf(1f, 0.7f, 1f),
+                durationMs = 400,
                 onUpdate = { alpha -> completionPulseAlpha = alpha },
                 onEnd = {
                     completionPulseAlpha = 1f
@@ -277,7 +278,9 @@ class IndicatorAnimator(
         errorAnimator?.cancel()
         errorAnimator =
             play(
-                AnimSpec(floatArrayOf(0f, 1f, 0f, 1f, 0f), 600, LinearInterpolator()),
+                values = floatArrayOf(0f, 1f, 0f, 1f, 0f),
+                durationMs = 600,
+                interpolator = LinearInterpolator(),
                 onUpdate = { alpha -> errorAlpha = alpha },
                 onEnd = {
                     isErrorAnimating = false
@@ -295,30 +298,30 @@ class IndicatorAnimator(
         errorAlpha = 0f
     }
 
-    fun startPreview(
+    fun startDynamicPreviewAnim(
         finishStyle: String,
         holdMs: Int,
         exitMs: Int,
         pulseEnabled: Boolean,
     ) {
-        log("IndicatorAnimator: startPreview() - debouncing")
+        log("IndicatorAnimator: startDynamicPreviewAnim() - debouncing")
 
         previewDebounceRunnable?.let { view.removeCallbacks(it) }
         previewDebounceRunnable =
             Runnable {
-                startPreviewInternal(finishStyle, holdMs, exitMs, pulseEnabled)
+                startDynamicPreviewAnimInternal(finishStyle, holdMs, exitMs, pulseEnabled)
             }
         view.postDelayed(previewDebounceRunnable, previewDebounceMs)
     }
 
-    private fun startPreviewInternal(
+    private fun startDynamicPreviewAnimInternal(
         finishStyle: String,
         holdMs: Int,
         exitMs: Int,
         pulseEnabled: Boolean,
     ) {
-        log("IndicatorAnimator: startPreviewInternal()")
-        cancelPreview()
+        log("IndicatorAnimator: startDynamicPreviewAnimInternal()")
+        cancelDynamicPreviewAnim()
         previewMode = PreviewMode.ANIMATING
         previewProgress = 0
 
@@ -342,7 +345,7 @@ class IndicatorAnimator(
             )
     }
 
-    fun cancelPreview() {
+    fun cancelDynamicPreviewAnim() {
         previewDebounceRunnable?.let { view.removeCallbacks(it) }
         previewDebounceRunnable = null
         previewAnimator?.cancel()
@@ -351,8 +354,8 @@ class IndicatorAnimator(
         previewProgress = 0
     }
 
-    fun showGeometryPreview() {
-        log("IndicatorAnimator: showGeometryPreview() - debouncing")
+    fun showStaticPreviewAnim() {
+        log("IndicatorAnimator: showStaticPreviewAnim() - debouncing")
 
         geometryPreviewRunnable?.let { view.removeCallbacks(it) }
 
@@ -368,7 +371,7 @@ class IndicatorAnimator(
         view.postDelayed(geometryPreviewRunnable, geometryPreviewDurationMs)
     }
 
-    fun cancelGeometryPreview() {
+    fun cancelStaticPreviewAnim() {
         geometryPreviewRunnable?.let { view.removeCallbacks(it) }
         geometryPreviewRunnable = null
         if (previewMode == PreviewMode.GEOMETRY) previewMode = PreviewMode.NONE
@@ -377,7 +380,7 @@ class IndicatorAnimator(
     fun cancelAll() {
         cancelFinish()
         cancelError()
-        cancelPreview()
-        cancelGeometryPreview()
+        cancelDynamicPreviewAnim()
+        cancelStaticPreviewAnim()
     }
 }

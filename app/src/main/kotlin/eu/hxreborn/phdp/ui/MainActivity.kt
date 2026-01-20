@@ -34,7 +34,6 @@ import kotlinx.coroutines.launch
 class MainActivity :
     ComponentActivity(),
     XposedServiceHelper.OnServiceListener {
-    // Properties
     private lateinit var prefs: SharedPreferences
     private lateinit var repository: PrefsRepository
 
@@ -44,7 +43,6 @@ class MainActivity :
     private var showRestartDialog by mutableStateOf(false)
     private var showResetDialog by mutableStateOf(false)
 
-    // Lifecycle
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         enableEdgeToEdge()
@@ -122,7 +120,6 @@ class MainActivity :
         }
     }
 
-    // Preferences
     private fun saveToPrefs(
         key: String,
         value: Any,
@@ -130,7 +127,6 @@ class MainActivity :
         repository.save(key, value)
     }
 
-    // Test simulation
     private fun simulateSuccess() {
         lifecycleScope.launch {
             for (progress in 0..100 step 5) {
@@ -163,13 +159,11 @@ class MainActivity :
         Toast.makeText(this, R.string.reset_done, Toast.LENGTH_SHORT).show()
     }
 
-    // Lifecycle cleanup
     override fun onDestroy() {
         super.onDestroy()
         PHDPApp.removeServiceListener(this)
     }
 
-    // Xposed service callbacks
     override fun onServiceBind(service: XposedService) {
         xposedService = service
         remotePrefs = service.getRemotePreferences(PrefsManager.PREFS_GROUP)
@@ -190,7 +184,6 @@ class MainActivity :
         remotePrefs?.edit(commit = true) { putBoolean(PrefsManager.KEY_APP_VISIBLE, false) }
     }
 
-    // System actions
     private fun performRestart() {
         lifecycleScope.launch {
             if (!RootUtils.isRootAvailable()) {

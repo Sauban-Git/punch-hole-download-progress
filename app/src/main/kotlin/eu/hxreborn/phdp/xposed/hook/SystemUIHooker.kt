@@ -144,10 +144,10 @@ object SystemUIHooker {
             indicatorView?.let { it.post { it.progress = progress } }
         }
         PrefsManager.onPreviewTriggered = {
-            indicatorView?.let { it.post { it.startPreview() } }
+            indicatorView?.let { it.post { it.startDynamicPreviewAnim() } }
         }
         PrefsManager.onGeometryPreviewTriggered = {
-            indicatorView?.let { it.post { it.showGeometryPreview() } }
+            indicatorView?.let { it.post { it.showStaticPreviewAnim() } }
         }
         PrefsManager.onDownloadComplete = { triggerHapticFeedback() }
         PrefsManager.onTestErrorChanged = { isError ->

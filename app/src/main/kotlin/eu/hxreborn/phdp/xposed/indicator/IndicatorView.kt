@@ -32,7 +32,6 @@ class IndicatorView(
 
     private val animator = IndicatorAnimator(this)
 
-    // Minimum visibility delay state
     private var downloadStartTime = 0L
     private var pendingFinishRunnable: Runnable? = null
     private val minVisibilityMs: Long
@@ -113,7 +112,6 @@ class IndicatorView(
             }
         }
 
-    // Paints
     private val glowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE }
     private val shinePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE }
     private val errorPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE }
@@ -284,8 +282,8 @@ class IndicatorView(
         ) { progress = 0 }
     }
 
-    fun startPreview() {
-        animator.startPreview(
+    fun startDynamicPreviewAnim() {
+        animator.startDynamicPreviewAnim(
             finishStyle = PrefsManager.finishStyle,
             holdMs = PrefsManager.finishHoldMs,
             exitMs = PrefsManager.finishExitMs,
@@ -293,7 +291,7 @@ class IndicatorView(
         )
     }
 
-    fun showGeometryPreview() = animator.showGeometryPreview()
+    fun showStaticPreviewAnim() = animator.showStaticPreviewAnim()
 
     fun showError() = animator.startError { progress = 0 }
 
@@ -304,7 +302,6 @@ class IndicatorView(
             return
         }
 
-        // Error animation early return
         if (animator.isErrorAnimating) {
             scaledPath.computeBounds(arcBounds, true)
             errorPaint.alpha = (animator.errorAlpha * 255).toInt()
@@ -312,7 +309,6 @@ class IndicatorView(
             return
         }
 
-        // Visibility checks
         if (!PrefsManager.enabled) return
         if (isPowerSaveActive && PrefsManager.powerSaverMode == "disable") return
 
@@ -323,7 +319,6 @@ class IndicatorView(
                 else -> progress
             }
 
-        // Idle ring mode
         val isIdleRingMode =
             PrefsManager.idleRingEnabled &&
                 progress == 0 &&
@@ -335,7 +330,6 @@ class IndicatorView(
             return
         }
 
-        // Main visibility check
         val shouldDraw =
             when {
                 animator.isFinishAnimating -> true
@@ -435,7 +429,6 @@ class IndicatorView(
         }
     }
 
-    // Text labels: percent and filename with shared opacity
     private data class TextSpec(
         val text: String,
         val paint: Paint,
@@ -490,7 +483,6 @@ class IndicatorView(
         }
     }
 
-    // Color utilities
     private fun brightenColor(
         color: Int,
         factor: Float,
