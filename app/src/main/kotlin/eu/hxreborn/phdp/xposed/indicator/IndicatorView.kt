@@ -78,26 +78,32 @@ class IndicatorView(
                     pendingFinishRunnable = null
                 }
 
-                if (newValue == 100 && !animator.isFinishAnimating) {
-                    val elapsed = System.currentTimeMillis() - downloadStartTime
-                    val remaining = minVisibilityMs - elapsed
-                    if (remaining > 0 && downloadStartTime > 0) {
-                        log("IndicatorView: fast download, delaying finish by ${remaining}ms")
-                        pendingFinishRunnable =
-                            Runnable {
-                                pendingFinishRunnable = null
-                                startFinishAnimation()
-                            }
-                        postDelayed(pendingFinishRunnable, remaining)
-                    } else {
-                        startFinishAnimation()
+                when {
+                    newValue == 100 && !animator.isFinishAnimating -> {
+                        val elapsed = System.currentTimeMillis() - downloadStartTime
+                        val remaining = minVisibilityMs - elapsed
+                        if (remaining > 0 && downloadStartTime > 0) {
+                            log("IndicatorView: fast download, delaying finish by ${remaining}ms")
+                            pendingFinishRunnable =
+                                Runnable {
+                                    pendingFinishRunnable = null
+                                    startFinishAnimation()
+                                }
+                            postDelayed(pendingFinishRunnable, remaining)
+                        } else {
+                            startFinishAnimation()
+                        }
                     }
-                } else if (newValue in 1..99 && animator.isFinishAnimating) {
-                    animator.cancelFinish()
-                } else if (newValue == 0) {
-                    downloadStartTime = 0L
-                    pendingFinishRunnable?.let { removeCallbacks(it) }
-                    pendingFinishRunnable = null
+
+                    newValue in 1..99 && animator.isFinishAnimating -> {
+                        animator.cancelFinish()
+                    }
+
+                    newValue == 0 -> {
+                        downloadStartTime = 0L
+                        pendingFinishRunnable?.let { removeCallbacks(it) }
+                        pendingFinishRunnable = null
+                    }
                 }
                 post { invalidate() }
             }

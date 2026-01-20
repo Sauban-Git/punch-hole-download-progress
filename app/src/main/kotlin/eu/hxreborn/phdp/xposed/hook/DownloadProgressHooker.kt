@@ -236,9 +236,9 @@ class NotificationAddHooker : XposedInterface.Hooker {
         @JvmStatic
         @AfterInvocation
         fun after(callback: AfterHookCallback) {
-            if (BuildConfig.DEBUG) log("NotificationAddHooker: ${callback.args?.size ?: 0} args")
+            if (BuildConfig.DEBUG) log("NotificationAddHooker: ${callback.args.size} args")
 
-            callback.args?.forEach { arg ->
+            callback.args.forEach { arg ->
                 if (arg == null) return@forEach
 
                 if (DownloadProgressHooker.isStatusBarNotification(arg)) {
@@ -264,9 +264,9 @@ class NotificationRemoveHooker : XposedInterface.Hooker {
         @JvmStatic
         @AfterInvocation
         fun after(callback: AfterHookCallback) {
-            if (BuildConfig.DEBUG) log("NotificationRemoveHooker: ${callback.args?.size ?: 0} args")
+            if (BuildConfig.DEBUG) log("NotificationRemoveHooker: ${callback.args.size} args")
 
-            callback.args?.forEach { arg ->
+            callback.args.forEach { arg ->
                 if (arg == null) return@forEach
 
                 if (DownloadProgressHooker.isStatusBarNotification(arg)) {
