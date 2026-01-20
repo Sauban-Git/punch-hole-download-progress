@@ -49,7 +49,7 @@ object PrefsManager {
     const val DEFAULT_OPACITY = 90
     const val DEFAULT_HOOKS_FEEDBACK = false
     const val DEFAULT_PROGRESS_EASING = "linear"
-    const val DEFAULT_ERROR_COLOR = 0xFFFF5252.toInt()
+    const val DEFAULT_ERROR_COLOR = 0xFFFF5252.toInt() // Material Red
     const val DEFAULT_POWER_SAVER_MODE = "normal"
     const val DEFAULT_IDLE_RING_ENABLED = false
     const val DEFAULT_IDLE_RING_OPACITY = 20
