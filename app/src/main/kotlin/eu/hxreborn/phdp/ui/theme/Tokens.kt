@@ -9,6 +9,9 @@ object Tokens {
     // M3 Layout
     val ScreenHorizontalPadding: Dp = 16.dp
 
+    // M3 LargeTopAppBar
+    val LargeAppBarExpandedHeight: Dp = 152.dp
+
     // M3 Spacing Scale
     val SpacingXs: Dp = 4.dp
     val SpacingSm: Dp = 8.dp
