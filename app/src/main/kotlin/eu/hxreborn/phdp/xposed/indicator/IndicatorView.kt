@@ -1,0 +1,555 @@
+package eu.hxreborn.phdp.xposed.indicator
+
+import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Matrix
+import android.graphics.Paint
+import android.graphics.Path
+import android.graphics.PixelFormat
+import android.graphics.RectF
+import android.graphics.Typeface
+import android.text.TextPaint
+import android.text.TextUtils
+import android.view.View
+import android.view.WindowInsets
+import android.view.WindowManager
+import eu.hxreborn.phdp.prefs.PrefsManager
+import eu.hxreborn.phdp.xposed.PHDPModule.Companion.log
+import eu.hxreborn.phdp.xposed.hook.SystemUIHooker
+import kotlin.math.pow
+
+class IndicatorView(
+    context: Context,
+) : View(context) {
+    private var cutoutPath: Path? = null
+    private val scaledPath = Path()
+    private val scaleMatrix = Matrix()
+    private val pathBounds = RectF()
+    private val arcBounds = RectF()
+    private var drawCount = 0
+    private val density = resources.displayMetrics.density
+
+    private val animator = IndicatorAnimator(this)
+
+    // Minimum visibility delay state
+    private var downloadStartTime = 0L
+    private var pendingFinishRunnable: Runnable? = null
+    private val minVisibilityMs: Long
+        get() = if (PrefsManager.minVisibilityEnabled) PrefsManager.minVisibilityMs.toLong() else 0L
+
+    @Volatile var activeDownloadCount: Int = 0
+        set(value) {
+            if (field != value) {
+                field = value
+                post { invalidate() }
+            }
+        }
+
+    @Volatile var currentFilename: String? = null
+        set(value) {
+            if (field != value) {
+                field = value
+                post { invalidate() }
+            }
+        }
+
+    @Volatile var isPowerSaveActive: Boolean = false
+        set(value) {
+            if (field != value) {
+                field = value
+                post {
+                    updatePaintFromPrefs()
+                    invalidate()
+                }
+            }
+        }
+
+    @Volatile var progress: Int = 0
+        set(value) {
+            val newValue = value.coerceIn(0, 100)
+            if (field != newValue) {
+                val oldValue = field
+                field = newValue
+                log("IndicatorView: progress = $newValue")
+
+                if (oldValue == 0 && newValue > 0) {
+                    downloadStartTime = System.currentTimeMillis()
+                    pendingFinishRunnable?.let { removeCallbacks(it) }
+                    pendingFinishRunnable = null
+                }
+
+                if (newValue == 100 && !animator.isFinishAnimating) {
+                    val elapsed = System.currentTimeMillis() - downloadStartTime
+                    val remaining = minVisibilityMs - elapsed
+                    if (remaining > 0 && downloadStartTime > 0) {
+                        log("IndicatorView: fast download, delaying finish by ${remaining}ms")
+                        pendingFinishRunnable =
+                            Runnable {
+                                pendingFinishRunnable = null
+                                startFinishAnimation()
+                            }
+                        postDelayed(pendingFinishRunnable, remaining)
+                    } else {
+                        startFinishAnimation()
+                    }
+                } else if (newValue in 1..99 && animator.isFinishAnimating) {
+                    animator.cancelFinish()
+                } else if (newValue == 0) {
+                    downloadStartTime = 0L
+                    pendingFinishRunnable?.let { removeCallbacks(it) }
+                    pendingFinishRunnable = null
+                }
+                post { invalidate() }
+            }
+        }
+
+    @Volatile var appVisible: Boolean = false
+        set(value) {
+            if (field != value) {
+                field = value
+                log("IndicatorView: appVisible = $value")
+                post { invalidate() }
+            }
+        }
+
+    // Paints
+    private val glowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE }
+    private val shinePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE }
+    private val errorPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE }
+    private val countPaint =
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            textAlign = Paint.Align.CENTER
+            typeface = Typeface.DEFAULT_BOLD
+        }
+    private val idlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE }
+    private val percentPaint =
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            textAlign = Paint.Align.CENTER
+            typeface = Typeface.DEFAULT_BOLD
+            textSize =
+                android.util.TypedValue.applyDimension(
+                    android.util.TypedValue.COMPLEX_UNIT_SP,
+                    8f,
+                    resources.displayMetrics,
+                )
+        }
+    private val filenamePaint =
+        TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
+            textAlign = Paint.Align.LEFT
+            typeface = Typeface.DEFAULT
+            textSize =
+                android.util.TypedValue.applyDimension(
+                    android.util.TypedValue.COMPLEX_UNIT_SP,
+                    7f,
+                    resources.displayMetrics,
+                )
+        }
+    private val maxFilenameWidth: Float get() = resources.displayMetrics.widthPixels * 0.25f
+    private val effectiveOpacity: Int
+        get() =
+            if (isPowerSaveActive && PrefsManager.powerSaverMode == "dim") {
+                (PrefsManager.opacity * 0.5f).toInt()
+            } else {
+                PrefsManager.opacity
+            }
+
+    init {
+        log("IndicatorView: constructor called")
+        updatePaintFromPrefs()
+
+        PrefsManager.onPrefsChanged = {
+            post {
+                log("IndicatorView: prefs changed, updating...")
+                updatePaintFromPrefs()
+                recalculateScaledPath()
+                invalidate()
+            }
+        }
+
+        PrefsManager.onTestProgressChanged = { testProgress ->
+            post {
+                log("IndicatorView: test progress = $testProgress")
+                progress = testProgress
+            }
+        }
+    }
+
+    private fun updatePaintFromPrefs() {
+        glowPaint.apply {
+            color = PrefsManager.color
+            alpha = effectiveOpacity * 255 / 100
+            strokeWidth = PrefsManager.strokeWidth * density
+            maskFilter = null
+        }
+
+        shinePaint.apply {
+            color =
+                if (PrefsManager.finishUseFlashColor) {
+                    PrefsManager.finishFlashColor
+                } else {
+                    brightenColor(PrefsManager.color, 0.5f)
+                }
+            alpha = 255
+            strokeWidth = PrefsManager.strokeWidth * density * 1.2f
+        }
+
+        errorPaint.apply {
+            color = PrefsManager.errorColor
+            strokeWidth = PrefsManager.strokeWidth * density * 1.5f
+        }
+
+        countPaint.apply {
+            color = PrefsManager.color
+            textSize = 10f * density
+        }
+
+        idlePaint.apply {
+            color = PrefsManager.color
+            alpha = PrefsManager.idleRingOpacity * 255 / 100
+            strokeWidth = PrefsManager.strokeWidth * density
+        }
+
+        log(
+            "Paint updated: color=${Integer.toHexString(PrefsManager.color)}, " +
+                "opacity=$effectiveOpacity, stroke=${PrefsManager.strokeWidth}, " +
+                "gap=${PrefsManager.ringGap}",
+        )
+        invalidate()
+    }
+
+    private fun recalculateScaledPath() {
+        cutoutPath?.let { path ->
+            path.computeBounds(pathBounds, true)
+            scaleMatrix.setScale(
+                PrefsManager.ringGap,
+                PrefsManager.ringGap,
+                pathBounds.centerX(),
+                pathBounds.centerY(),
+            )
+            scaledPath.reset()
+            path.transform(scaleMatrix, scaledPath)
+        }
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        log("IndicatorView: onAttachedToWindow()")
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        log("IndicatorView: onDetachedFromWindow()")
+        animator.cancelAll()
+        pendingFinishRunnable?.let { removeCallbacks(it) }
+        pendingFinishRunnable = null
+        PrefsManager.onPrefsChanged = null
+        PrefsManager.onTestProgressChanged = null
+        PrefsManager.onTestErrorChanged = null
+        PrefsManager.onPreviewTriggered = null
+        PrefsManager.onGeometryPreviewTriggered = null
+        SystemUIHooker.detach()
+    }
+
+    override fun onApplyWindowInsets(insets: WindowInsets): WindowInsets {
+        val displayCutout = insets.displayCutout
+        if (displayCutout == null) {
+            log("WARNING: No display cutout available!")
+            cutoutPath = null
+            return super.onApplyWindowInsets(insets)
+        }
+
+        cutoutPath = displayCutout.cutoutPath
+        if (cutoutPath == null) {
+            log("WARNING: cutoutPath is null (device may not support cutoutPath API)")
+            return super.onApplyWindowInsets(insets)
+        }
+
+        cutoutPath?.let { path ->
+            path.computeBounds(pathBounds, true)
+            log("Cutout path bounds: ${pathBounds.width()}x${pathBounds.height()} at (${pathBounds.centerX()}, ${pathBounds.centerY()})")
+            recalculateScaledPath()
+        }
+
+        invalidate()
+        return super.onApplyWindowInsets(insets)
+    }
+
+    private fun startFinishAnimation() {
+        animator.startFinish(
+            style = PrefsManager.finishStyle,
+            holdMs = PrefsManager.finishHoldMs,
+            exitMs = PrefsManager.finishExitMs,
+            pulseEnabled = PrefsManager.completionPulseEnabled,
+        ) { progress = 0 }
+    }
+
+    fun startPreview() {
+        animator.startPreview(
+            finishStyle = PrefsManager.finishStyle,
+            holdMs = PrefsManager.finishHoldMs,
+            exitMs = PrefsManager.finishExitMs,
+            pulseEnabled = PrefsManager.completionPulseEnabled,
+        )
+    }
+
+    fun showGeometryPreview() = animator.showGeometryPreview()
+
+    fun showError() = animator.startError { progress = 0 }
+
+    override fun onDraw(canvas: Canvas) {
+        drawCount++
+        if (cutoutPath == null) {
+            if (drawCount == 1) log("First draw: NO cutoutPath, nothing to draw")
+            return
+        }
+
+        // Error animation early return
+        if (animator.isErrorAnimating) {
+            scaledPath.computeBounds(arcBounds, true)
+            errorPaint.alpha = (animator.errorAlpha * 255).toInt()
+            canvas.drawPath(scaledPath, errorPaint)
+            return
+        }
+
+        // Visibility checks
+        if (!PrefsManager.enabled) return
+        if (isPowerSaveActive && PrefsManager.powerSaverMode == "disable") return
+
+        val effectiveProgress =
+            when {
+                animator.isGeometryPreviewActive -> 100
+                animator.isPreviewAnimating -> animator.previewProgress
+                else -> progress
+            }
+
+        // Idle ring mode
+        val isIdleRingMode =
+            PrefsManager.idleRingEnabled &&
+                progress == 0 &&
+                !animator.isFinishAnimating &&
+                !appVisible
+
+        if (isIdleRingMode) {
+            canvas.drawPath(scaledPath, idlePaint)
+            return
+        }
+
+        // Main visibility check
+        val shouldDraw =
+            when {
+                animator.isFinishAnimating -> true
+                animator.isGeometryPreviewActive -> true
+                animator.isPreviewAnimating -> true
+                effectiveProgress in 1..99 -> true
+                pendingFinishRunnable != null -> true
+                else -> false
+            }
+        if (!shouldDraw) {
+            if (drawCount == 1) log("IndicatorView: not drawing (disabled or no visibility)")
+            return
+        }
+
+        canvas.save()
+
+        if (animator.displayScale != 1f) {
+            scaledPath.computeBounds(arcBounds, true)
+            canvas.scale(
+                animator.displayScale,
+                animator.displayScale,
+                arcBounds.centerX(),
+                arcBounds.centerY(),
+            )
+        }
+
+        val animatedPaint =
+            Paint(glowPaint).apply {
+                alpha = (effectiveOpacity * 255 / 100 * animator.displayAlpha * animator.completionPulseAlpha).toInt()
+                if (animator.successColorBlend > 0f) {
+                    val successColor =
+                        if (PrefsManager.finishUseFlashColor) {
+                            PrefsManager.finishFlashColor
+                        } else {
+                            brightenColor(PrefsManager.color, animator.successColorBlend)
+                        }
+                    color = blendColors(PrefsManager.color, successColor, animator.successColorBlend)
+                }
+            }
+
+        if (animator.isFinishAnimating) {
+            drawFinishAnimation(canvas, animatedPaint)
+        } else {
+            scaledPath.computeBounds(arcBounds, true)
+            val sweepAngle = 360f * applyEasing(effectiveProgress, PrefsManager.progressEasing)
+            val actualSweep = if (PrefsManager.clockwise) sweepAngle else -sweepAngle
+            canvas.drawArc(arcBounds, -90f, actualSweep, false, animatedPaint)
+
+            if (!animator.isPreviewAnimating && PrefsManager.showDownloadCount &&
+                activeDownloadCount > 1 && effectiveProgress > 0
+            ) {
+                canvas.drawText(
+                    activeDownloadCount.toString(),
+                    arcBounds.centerX(),
+                    arcBounds.centerY() + countPaint.textSize / 3,
+                    countPaint,
+                )
+            }
+
+            if (effectiveProgress in 1..99) drawLabels(canvas, effectiveProgress)
+        }
+
+        canvas.restore()
+
+        if (drawCount == 1) log("First draw: ring rendered (appVisible=$appVisible, progress=$progress)")
+    }
+
+    private fun drawFinishAnimation(
+        canvas: Canvas,
+        paint: Paint,
+    ) {
+        scaledPath.computeBounds(arcBounds, true)
+        if (PrefsManager.finishStyle == "segmented") {
+            drawSegmented(canvas, paint)
+        } else {
+            canvas.drawPath(scaledPath, paint)
+        }
+    }
+
+    private fun drawSegmented(
+        canvas: Canvas,
+        paint: Paint,
+    ) {
+        val segmentCount = 12
+        val segmentGapDegrees = 6f
+        val segmentArcDegrees = (360f - segmentCount * segmentGapDegrees) / segmentCount
+
+        for (i in 0 until segmentCount) {
+            val startAngle = -90f + i * (segmentArcDegrees + segmentGapDegrees)
+            val segmentPaint =
+                if (i == animator.segmentHighlight || i == animator.segmentHighlight - 1) {
+                    Paint(shinePaint).apply { alpha = (255 * animator.displayAlpha).toInt() }
+                } else {
+                    Paint(paint)
+                }
+            canvas.drawArc(arcBounds, startAngle, segmentArcDegrees, false, segmentPaint)
+        }
+    }
+
+    // Text labels: percent and filename with shared opacity
+    private data class TextSpec(
+        val text: String,
+        val paint: Paint,
+        val x: Float,
+        val y: Float,
+        val align: Paint.Align? = null,
+    )
+
+    private fun drawLabels(
+        canvas: Canvas,
+        progressVal: Int,
+    ) {
+        val alpha = effectiveOpacity * 255 / 100
+        val padding = 8f * density
+        val specs = mutableListOf<TextSpec>()
+
+        if (PrefsManager.percentTextEnabled) {
+            val text = "$progressVal%"
+            val textWidth = percentPaint.measureText(text)
+            val x =
+                when (PrefsManager.percentTextPosition) {
+                    "left" -> arcBounds.left - textWidth / 2 - padding
+                    else -> arcBounds.right + textWidth / 2 + padding
+                }
+            specs += TextSpec(text, percentPaint, x, arcBounds.centerY() + percentPaint.textSize / 3)
+        }
+
+        if (PrefsManager.filenameTextEnabled && currentFilename != null) {
+            val truncated =
+                TextUtils
+                    .ellipsize(
+                        currentFilename,
+                        filenamePaint,
+                        maxFilenameWidth,
+                        TextUtils.TruncateAt.MIDDLE,
+                    ).toString()
+            val (x, y, align) =
+                when (PrefsManager.filenameTextPosition) {
+                    "left" -> Triple(arcBounds.left - padding, arcBounds.centerY() + filenamePaint.textSize / 3, Paint.Align.RIGHT)
+                    "right" -> Triple(arcBounds.right + padding, arcBounds.centerY() + filenamePaint.textSize / 3, Paint.Align.LEFT)
+                    "top_left" -> Triple(arcBounds.left - padding, arcBounds.top - padding, Paint.Align.RIGHT)
+                    else -> Triple(arcBounds.right + padding, arcBounds.top - padding, Paint.Align.LEFT)
+                }
+            specs += TextSpec(truncated, filenamePaint, x, y, align)
+        }
+
+        for (spec in specs) {
+            spec.paint.color = PrefsManager.color
+            spec.paint.alpha = alpha
+            spec.align?.let { (spec.paint as? TextPaint)?.textAlign = it }
+            canvas.drawText(spec.text, spec.x, spec.y, spec.paint)
+        }
+    }
+
+    // Color utilities
+    private fun brightenColor(
+        color: Int,
+        factor: Float,
+    ): Int {
+        val r = (Color.red(color) + (255 - Color.red(color)) * factor).toInt().coerceIn(0, 255)
+        val g = (Color.green(color) + (255 - Color.green(color)) * factor).toInt().coerceIn(0, 255)
+        val b = (Color.blue(color) + (255 - Color.blue(color)) * factor).toInt().coerceIn(0, 255)
+        return Color.argb(Color.alpha(color), r, g, b)
+    }
+
+    private fun blendColors(
+        color1: Int,
+        color2: Int,
+        ratio: Float,
+    ): Int {
+        val inv = 1f - ratio
+        val r = (Color.red(color1) * inv + Color.red(color2) * ratio).toInt()
+        val g = (Color.green(color1) * inv + Color.green(color2) * ratio).toInt()
+        val b = (Color.blue(color1) * inv + Color.blue(color2) * ratio).toInt()
+        return Color.argb(Color.alpha(color1), r, g, b)
+    }
+
+    private fun applyEasing(
+        progressVal: Int,
+        easingType: String,
+    ): Float {
+        val p = progressVal / 100f
+        return when (easingType) {
+            "accelerate" -> p * p
+            "decelerate" -> 1f - (1f - p) * (1f - p)
+            "ease_in_out" -> if (p < 0.5f) 2f * p * p else 1f - (-2f * p + 2f).pow(2) / 2f
+            else -> p
+        }
+    }
+
+    companion object {
+        private const val TYPE_NAVIGATION_BAR_PANEL = 2024
+
+        fun attach(context: Context): IndicatorView {
+            val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+            val view = IndicatorView(context)
+
+            val params =
+                WindowManager
+                    .LayoutParams(
+                        WindowManager.LayoutParams.MATCH_PARENT,
+                        WindowManager.LayoutParams.MATCH_PARENT,
+                        TYPE_NAVIGATION_BAR_PANEL,
+                        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
+                            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
+                            WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+                        PixelFormat.TRANSLUCENT,
+                    ).apply {
+                        layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
+                    }
+
+            wm.addView(view, params)
+            return view
+        }
+    }
+}

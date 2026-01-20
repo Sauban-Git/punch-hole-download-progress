@@ -4,6 +4,7 @@ import android.os.Build
 import android.util.Log
 import eu.hxreborn.phdp.BuildConfig
 import eu.hxreborn.phdp.prefs.PrefsManager
+import eu.hxreborn.phdp.xposed.hook.SystemUIHooker
 import io.github.libxposed.api.XposedInterface
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface.ModuleLoadedParam

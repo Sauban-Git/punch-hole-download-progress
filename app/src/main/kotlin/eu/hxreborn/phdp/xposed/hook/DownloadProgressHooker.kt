@@ -1,4 +1,4 @@
-package eu.hxreborn.phdp.xposed
+package eu.hxreborn.phdp.xposed.hook
 
 import android.app.Notification
 import eu.hxreborn.phdp.BuildConfig
@@ -120,10 +120,17 @@ object DownloadProgressHooker {
         val title = extras.getCharSequence(EXTRA_TITLE)?.toString()
         debug { "Progress: $progress/$max, title: $title" }
 
-        // Only process notifications with valid progress extras
-        // Notifications without progress (paused, summary) are ignored
-        // Completion/cancellation handled by NotificationRemoveHooker
-        if (progress < 0 || max <= 0) return
+        // Browsers signal completion via max=0 update, not notification removal
+        if (progress < 0 || max <= 0) {
+            activeDownloads.remove(id)?.let {
+                log("Download ${it.packageName}: 100% (max=0)")
+                onActiveCountChanged?.invoke(activeDownloads.size)
+                onDownloadComplete?.invoke()
+                updateProgress()
+                updateFilename()
+            }
+            return
+        }
 
         val percent = (progress * 100 / max).coerceIn(0, 100)
         val oldState = activeDownloads[id]

@@ -1,4 +1,4 @@
-package eu.hxreborn.phdp.xposed
+package eu.hxreborn.phdp.xposed.hook
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -10,6 +10,8 @@ import android.os.Vibrator
 import eu.hxreborn.phdp.prefs.PrefsManager
 import eu.hxreborn.phdp.util.accessibleField
 import eu.hxreborn.phdp.xposed.PHDPModule.Companion.log
+import eu.hxreborn.phdp.xposed.indicator.IndicatorView
+import eu.hxreborn.phdp.xposed.module
 import io.github.libxposed.api.XposedInterface
 import io.github.libxposed.api.XposedInterface.AfterHookCallback
 import io.github.libxposed.api.annotations.AfterInvocation
@@ -121,7 +123,10 @@ object SystemUIHooker {
         DownloadProgressHooker.onProgressChanged = { progress ->
             indicatorView?.let { it.post { it.progress = progress } }
         }
-        DownloadProgressHooker.onDownloadComplete = { triggerHapticFeedback() }
+        DownloadProgressHooker.onDownloadComplete = {
+            triggerHapticFeedback()
+            indicatorView?.let { it.post { it.progress = 100 } }
+        }
         DownloadProgressHooker.onDownloadCancelled = {
             indicatorView?.let { it.post { it.showError() } }
         }
