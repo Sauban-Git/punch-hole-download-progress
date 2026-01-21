@@ -69,6 +69,11 @@ fun MotionScreen(
                                             stringResource(R.string.pref_completion_style_title),
                                         )
                                     },
+                                    summary = {
+                                        Text(
+                                            stringResource(R.string.pref_completion_style_summary),
+                                        )
+                                    },
                                     valueToText = {
                                         finishStyleLabel(it, finishStyleEntries, finishStyleValues)
                                             ?: it

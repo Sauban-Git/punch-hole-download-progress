@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -161,6 +162,15 @@ fun SystemScreen(
                                             stringResource(R.string.pref_battery_saver_title),
                                         )
                                     },
+                                    summary = {
+                                        Text(
+                                            powerSaverLabel(
+                                                prefsState.powerSaverMode,
+                                                powerSaverEntries,
+                                                powerSaverValues,
+                                            ) ?: prefsState.powerSaverMode,
+                                        )
+                                    },
                                     enabled = prefsState.enabled,
                                     valueToText = {
                                         powerSaverLabel(it, powerSaverEntries, powerSaverValues)
@@ -244,16 +254,18 @@ fun SystemScreen(
                     items =
                         listOf(
                             {
-                                ActionPreference(
-                                    onClick = {},
-                                    title = { Text(stringResource(R.string.pref_version_title)) },
-                                    summary = {
-                                        Text(
-                                            "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
-                                        )
-                                    },
-                                    enabled = false,
-                                )
+                                SelectionContainer {
+                                    ActionPreference(
+                                        onClick = {},
+                                        title = { Text(stringResource(R.string.pref_version_title)) },
+                                        summary = {
+                                            Text(
+                                                "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
+                                            )
+                                        },
+                                        enabled = false,
+                                    )
+                                }
                             },
                         ),
                 )

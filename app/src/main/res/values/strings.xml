@@ -44,11 +44,11 @@
     <string name="pref_success_color_summary">Ring color applied when download finishes</string>
 
     <!-- Design: Geometry -->
-    <string name="pref_stroke_width_title">Ring thickness</string>
-    <string name="pref_stroke_width_summary">Line width of the progress arc</string>
+    <string name="pref_stroke_width_title">Thickness</string>
+    <string name="pref_stroke_width_summary">Progress arc width</string>
     <string name="pref_cutout_padding_title">Cutout spacing</string>
     <string name="pref_cutout_padding_summary">Distance multiplier from camera edge</string>
-    <string name="pref_opacity_title">Ring opacity</string>
+    <string name="pref_opacity_title">Opacity</string>
     <string name="pref_opacity_summary">Transparency level of the progress indicator</string>
 
     <!-- Design: Percentage Text -->
@@ -73,20 +73,20 @@
 
     <!-- Motion: Animation -->
     <string name="pref_completion_style_title">Completion style</string>
-    <string name="pref_completion_style_summary">Animation style when download finishes</string>
+    <string name="pref_completion_style_summary">Visual effect when downloads finish</string>
     <string name="long_press_preview_hint">Long-press to preview</string>
 
     <!-- Motion: Timing -->
-    <string name="pref_hold_duration_title">Hold duration</string>
-    <string name="pref_hold_duration_summary">Time the ring stays visible before fading out</string>
-    <string name="pref_exit_duration_title">Exit duration</string>
-    <string name="pref_exit_duration_summary">Duration of the fade-out animation</string>
+    <string name="pref_hold_duration_title">Completion delay</string>
+    <string name="pref_hold_duration_summary">Pause before completion animation</string>
+    <string name="pref_exit_duration_title">Animation duration</string>
+    <string name="pref_exit_duration_summary">Duration of completion animation</string>
 
     <!-- Motion: Feedback -->
     <string name="pref_haptic_feedback_title">Haptic feedback</string>
     <string name="pref_haptic_feedback_summary">Vibrate on download completion</string>
-    <string name="pref_pulse_flash_title">Pulse flash</string>
-    <string name="pref_pulse_flash_summary">Brief brightness dip before completion animation plays</string>
+    <string name="pref_pulse_flash_title">Completion pulse</string>
+    <string name="pref_pulse_flash_summary">Brief dim before completion animation</string>
 
     <!-- Motion: Fast Downloads -->
     <string name="pref_min_duration_title">Min duration</string>

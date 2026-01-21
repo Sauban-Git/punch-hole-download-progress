@@ -49,7 +49,7 @@ fun SectionCard(
     Column(
         modifier =
             modifier
-                .padding(horizontal = 8.dp)
+                .padding(horizontal = 12.dp)
                 .alpha(if (enabled) 1f else Tokens.DISABLED_ALPHA),
         verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
