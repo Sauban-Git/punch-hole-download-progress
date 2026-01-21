@@ -117,6 +117,9 @@
     <string name="pref_debug_completion_summary">Trigger a test completion animation</string>
     <string name="pref_test_failure_title">Simulate failure</string>
     <string name="pref_test_failure_summary">Trigger a test failure animation</string>
+    <string name="pref_clear_downloads_title">Clear downloads</string>
+    <string name="pref_clear_downloads_summary">Reset stuck download indicators</string>
+    <string name="clear_downloads_done">Downloads cleared</string>
 
     <!-- System: About -->
     <string name="pref_version_title">Version</string>

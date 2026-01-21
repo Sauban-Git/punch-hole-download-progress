@@ -80,6 +80,7 @@ fun MainNavHost(
     onSavePrefs: (key: String, value: Any) -> Unit,
     onTestSuccess: () -> Unit,
     onTestFailure: () -> Unit,
+    onClearDownloads: () -> Unit,
     onPreviewAnimation: () -> Unit,
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
@@ -114,6 +115,7 @@ fun MainNavHost(
                 onSavePrefs = onSavePrefs,
                 onTestSuccess = onTestSuccess,
                 onTestFailure = onTestFailure,
+                onClearDownloads = onClearDownloads,
                 contentPadding = contentPadding,
             )
         }

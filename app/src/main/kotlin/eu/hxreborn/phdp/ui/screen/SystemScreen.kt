@@ -29,6 +29,7 @@ fun SystemScreen(
     onSavePrefs: (key: String, value: Any) -> Unit,
     onTestSuccess: () -> Unit,
     onTestFailure: () -> Unit,
+    onClearDownloads: () -> Unit,
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
 ) {
@@ -213,6 +214,22 @@ fun SystemScreen(
                                     enabled = prefsState.enabled,
                                 )
                             },
+                            {
+                                ActionPreference(
+                                    onClick = onClearDownloads,
+                                    title = {
+                                        Text(
+                                            stringResource(R.string.pref_clear_downloads_title),
+                                        )
+                                    },
+                                    summary = {
+                                        Text(
+                                            stringResource(R.string.pref_clear_downloads_summary),
+                                        )
+                                    },
+                                    enabled = prefsState.enabled,
+                                )
+                            },
                         ),
                 )
             }
@@ -260,6 +277,7 @@ private fun SystemScreenPreview() {
             onSavePrefs = { _, _ -> },
             onTestSuccess = {},
             onTestFailure = {},
+            onClearDownloads = {},
             contentPadding = PaddingValues(),
         )
     }

@@ -90,6 +90,14 @@ object DownloadProgressHooker {
     var onActiveCountChanged: ((Int) -> Unit)? = null
     var onFilenameChanged: ((String?) -> Unit)? = null
 
+    fun clearActiveDownloads() {
+        activeDownloads.clear()
+        onActiveCountChanged?.invoke(0)
+        onProgressChanged?.invoke(0)
+        onFilenameChanged?.invoke(null)
+        log("Downloads cleared manually")
+    }
+
     private fun cleanupStaleSamePackage(
         pkg: String,
         currentId: String,

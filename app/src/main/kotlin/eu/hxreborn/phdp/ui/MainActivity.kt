@@ -68,6 +68,7 @@ class MainActivity :
                     },
                     onTestSuccess = ::simulateSuccess,
                     onTestFailure = ::simulateFailure,
+                    onClearDownloads = ::clearDownloads,
                     onPreviewAnimation = ::previewCompletion,
                 )
 
@@ -139,6 +140,11 @@ class MainActivity :
 
     private fun previewCompletion() {
         saveToPrefs(PrefsManager.KEY_PREVIEW_TRIGGER, System.currentTimeMillis())
+    }
+
+    private fun clearDownloads() {
+        saveToPrefs(PrefsManager.KEY_CLEAR_DOWNLOADS_TRIGGER, System.currentTimeMillis())
+        Toast.makeText(this, R.string.clear_downloads_done, Toast.LENGTH_SHORT).show()
     }
 
     private fun simulateFailure() {

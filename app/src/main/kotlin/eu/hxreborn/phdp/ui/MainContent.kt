@@ -54,6 +54,7 @@ fun PunchHoleProgressContent(
     onMenuAction: (MenuAction) -> Unit,
     onTestSuccess: () -> Unit,
     onTestFailure: () -> Unit,
+    onClearDownloads: () -> Unit,
     onPreviewAnimation: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -144,6 +145,7 @@ fun PunchHoleProgressContent(
             onSavePrefs = onSavePrefs,
             onTestSuccess = onTestSuccess,
             onTestFailure = onTestFailure,
+            onClearDownloads = onClearDownloads,
             onPreviewAnimation = onPreviewAnimation,
             contentPadding = paddingValues,
         )

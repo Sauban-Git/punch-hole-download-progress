@@ -36,6 +36,7 @@ object PrefsManager {
     const val KEY_FINISH_USE_FLASH_COLOR = "finish_use_flash_color"
     const val KEY_FINISH_FLASH_COLOR = "finish_flash_color"
     const val KEY_PREVIEW_TRIGGER = "preview_trigger"
+    const val KEY_CLEAR_DOWNLOADS_TRIGGER = "clear_downloads_trigger"
 
     // Keys that trigger preview when changed
     private val VISUAL_KEYS =
@@ -226,6 +227,7 @@ object PrefsManager {
     var onTestErrorChanged: ((Boolean) -> Unit)? = null
     var onPreviewTriggered: (() -> Unit)? = null
     var onGeometryPreviewTriggered: (() -> Unit)? = null
+    var onClearDownloadsTriggered: (() -> Unit)? = null
 
     fun init(xposed: io.github.libxposed.api.XposedInterface) {
         runCatching {
@@ -255,6 +257,10 @@ object PrefsManager {
 
                         KEY_PREVIEW_TRIGGER -> {
                             onPreviewTriggered?.invoke()
+                        }
+
+                        KEY_CLEAR_DOWNLOADS_TRIGGER -> {
+                            onClearDownloadsTriggered?.invoke()
                         }
 
                         in VISUAL_KEYS -> {

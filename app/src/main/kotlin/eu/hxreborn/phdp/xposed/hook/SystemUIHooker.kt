@@ -157,6 +157,9 @@ object SystemUIHooker {
         PrefsManager.onTestErrorChanged = { isError ->
             if (isError) indicatorView?.let { it.post { it.showError() } }
         }
+        PrefsManager.onClearDownloadsTriggered = {
+            DownloadProgressHooker.clearActiveDownloads()
+        }
     }
 
     fun markAttached(
@@ -230,6 +233,7 @@ object SystemUIHooker {
         PrefsManager.onGeometryPreviewTriggered = null
         PrefsManager.onDownloadComplete = null
         PrefsManager.onTestErrorChanged = null
+        PrefsManager.onClearDownloadsTriggered = null
 
         attached = false
     }
