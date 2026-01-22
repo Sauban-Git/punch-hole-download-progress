@@ -5,8 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.PowerManager
-import android.os.VibrationEffect
-import android.os.Vibrator
+import android.view.HapticFeedbackConstants
+import androidx.core.view.ViewCompat
 import eu.hxreborn.phdp.prefs.PrefsManager
 import eu.hxreborn.phdp.util.accessibleField
 import eu.hxreborn.phdp.xposed.PHDPModule.Companion.log
@@ -31,6 +31,9 @@ object SystemUIHooker {
 
     @Volatile
     private var powerSaveReceiver: BroadcastReceiver? = null
+
+    @Volatile
+    private var systemUIContext: Context? = null
 
     fun hook(classLoader: ClassLoader) {
         hookCentralSurfaces(classLoader)
@@ -168,6 +171,7 @@ object SystemUIHooker {
     ) {
         attached = true
         indicatorView = view
+        systemUIContext = context
         registerPowerSaveReceiver(context)
     }
 
@@ -198,14 +202,11 @@ object SystemUIHooker {
 
     private fun triggerHapticFeedback() {
         if (!PrefsManager.hooksFeedback) return
-        val context = indicatorView?.context ?: return
-        runCatching {
-            val vibrator = context.getSystemService(Vibrator::class.java)
-            if (vibrator?.hasVibrator() == true) vibrator.vibrate(createHapticEffect())
+        val view = indicatorView ?: return
+        view.post {
+            ViewCompat.performHapticFeedback(view, HapticFeedbackConstants.CONFIRM)
         }
     }
-
-    private fun createHapticEffect(): VibrationEffect = VibrationEffect.createOneShot(40, 150)
 
     fun isAttached(): Boolean = attached
 
