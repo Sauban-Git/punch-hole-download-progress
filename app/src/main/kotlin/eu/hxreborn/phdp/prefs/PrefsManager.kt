@@ -20,8 +20,6 @@ object PrefsManager {
     const val KEY_PROGRESS_EASING = "progress_easing"
     const val KEY_ERROR_COLOR = "error_color"
     const val KEY_POWER_SAVER_MODE = "power_saver_mode"
-    const val KEY_IDLE_RING_ENABLED = "idle_ring_enabled"
-    const val KEY_IDLE_RING_OPACITY = "idle_ring_opacity"
     const val KEY_SHOW_DOWNLOAD_COUNT = "show_download_count"
     const val KEY_MIN_VISIBILITY_ENABLED = "min_visibility_enabled"
     const val KEY_MIN_VISIBILITY_MS = "min_visibility_ms"
@@ -52,8 +50,6 @@ object PrefsManager {
     const val DEFAULT_PROGRESS_EASING = "linear"
     const val DEFAULT_ERROR_COLOR = 0xFFFF5252.toInt() // Material Red
     const val DEFAULT_POWER_SAVER_MODE = "normal"
-    const val DEFAULT_IDLE_RING_ENABLED = false
-    const val DEFAULT_IDLE_RING_OPACITY = 20
     const val DEFAULT_SHOW_DOWNLOAD_COUNT = false
     const val DEFAULT_MIN_VISIBILITY_ENABLED = true
     const val DEFAULT_MIN_VISIBILITY_MS = 500
@@ -94,8 +90,6 @@ object PrefsManager {
             KEY_PROGRESS_EASING to DEFAULT_PROGRESS_EASING,
             KEY_ERROR_COLOR to DEFAULT_ERROR_COLOR,
             KEY_POWER_SAVER_MODE to DEFAULT_POWER_SAVER_MODE,
-            KEY_IDLE_RING_ENABLED to DEFAULT_IDLE_RING_ENABLED,
-            KEY_IDLE_RING_OPACITY to DEFAULT_IDLE_RING_OPACITY,
             KEY_SHOW_DOWNLOAD_COUNT to DEFAULT_SHOW_DOWNLOAD_COUNT,
             KEY_MIN_VISIBILITY_ENABLED to DEFAULT_MIN_VISIBILITY_ENABLED,
             KEY_MIN_VISIBILITY_MS to DEFAULT_MIN_VISIBILITY_MS,
@@ -157,14 +151,6 @@ object PrefsManager {
 
     @Volatile
     var powerSaverMode = DEFAULT_POWER_SAVER_MODE
-        private set
-
-    @Volatile
-    var idleRingEnabled = DEFAULT_IDLE_RING_ENABLED
-        private set
-
-    @Volatile
-    var idleRingOpacity = DEFAULT_IDLE_RING_OPACITY
         private set
 
     @Volatile
@@ -293,8 +279,6 @@ object PrefsManager {
                 progressEasing = prefs.readProgressEasing()
                 errorColor = prefs.readErrorColor()
                 powerSaverMode = prefs.readPowerSaverMode()
-                idleRingEnabled = prefs.readIdleRingEnabled()
-                idleRingOpacity = prefs.readIdleRingOpacity()
                 showDownloadCount = prefs.readShowDownloadCount()
                 finishStyle = prefs.readFinishStyle()
                 finishHoldMs = prefs.readFinishHoldMs()

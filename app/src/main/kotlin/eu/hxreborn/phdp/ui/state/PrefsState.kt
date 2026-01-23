@@ -13,8 +13,6 @@ data class PrefsState(
     val progressEasing: String = PrefsManager.DEFAULT_PROGRESS_EASING,
     val errorColor: Int = PrefsManager.DEFAULT_ERROR_COLOR,
     val powerSaverMode: String = PrefsManager.DEFAULT_POWER_SAVER_MODE,
-    val idleRingEnabled: Boolean = PrefsManager.DEFAULT_IDLE_RING_ENABLED,
-    val idleRingOpacity: Int = PrefsManager.DEFAULT_IDLE_RING_OPACITY,
     val showDownloadCount: Boolean = PrefsManager.DEFAULT_SHOW_DOWNLOAD_COUNT,
     val finishStyle: String = PrefsManager.DEFAULT_FINISH_STYLE,
     val finishHoldMs: Int = PrefsManager.DEFAULT_FINISH_HOLD_MS,

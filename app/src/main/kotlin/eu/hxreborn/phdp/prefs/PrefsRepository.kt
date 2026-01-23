@@ -62,8 +62,6 @@ class PrefsRepositoryImpl(
             progressEasing = readProgressEasing(),
             errorColor = readErrorColor(),
             powerSaverMode = readPowerSaverMode(),
-            idleRingEnabled = readIdleRingEnabled(),
-            idleRingOpacity = readIdleRingOpacity(),
             showDownloadCount = readShowDownloadCount(),
             finishStyle = readFinishStyle(),
             finishHoldMs = readFinishHoldMs(),

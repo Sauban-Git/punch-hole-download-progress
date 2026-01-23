@@ -127,7 +127,6 @@ class IndicatorView(
     private val glowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE }
     private val shinePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE }
     private val errorPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE }
-    private val idlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE }
     private val percentPaint =
         Paint(Paint.ANTI_ALIAS_FLAG).apply {
             textAlign = Paint.Align.CENTER
@@ -205,12 +204,6 @@ class IndicatorView(
         }
 
         badgePainter.updateColors(PrefsManager.color)
-
-        idlePaint.apply {
-            color = PrefsManager.color
-            alpha = PrefsManager.idleRingOpacity * 255 / 100
-            strokeWidth = PrefsManager.strokeWidth * density
-        }
 
         log(
             "Paint updated: color=${Integer.toHexString(PrefsManager.color)}, " +
@@ -324,15 +317,6 @@ class IndicatorView(
                 animator.isPreviewAnimating -> animator.previewProgress
                 else -> progress
             }
-
-        val isIdleRingMode =
-            PrefsManager.idleRingEnabled && progress == 0 && !animator.isFinishAnimating &&
-                !appVisible
-
-        if (isIdleRingMode) {
-            canvas.drawPath(scaledPath, idlePaint)
-            return
-        }
 
         val shouldDraw =
             when {

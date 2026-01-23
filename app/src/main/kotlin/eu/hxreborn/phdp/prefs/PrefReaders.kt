@@ -13,9 +13,6 @@ fun SharedPreferences.readAppVisible(): Boolean = getBoolean(PrefsManager.KEY_AP
 
 fun SharedPreferences.readClockwise(): Boolean = getBoolean(PrefsManager.KEY_CLOCKWISE, true)
 
-fun SharedPreferences.readIdleRingEnabled(): Boolean =
-    getBoolean(PrefsManager.KEY_IDLE_RING_ENABLED, PrefsManager.DEFAULT_IDLE_RING_ENABLED)
-
 fun SharedPreferences.readShowDownloadCount(): Boolean =
     getBoolean(PrefsManager.KEY_SHOW_DOWNLOAD_COUNT, PrefsManager.DEFAULT_SHOW_DOWNLOAD_COUNT)
 
@@ -52,12 +49,6 @@ fun SharedPreferences.readOpacity(): Int =
         PrefsManager.KEY_OPACITY,
         PrefsManager.DEFAULT_OPACITY,
     ).coerceIn(PrefsManager.MIN_OPACITY, PrefsManager.MAX_OPACITY)
-
-fun SharedPreferences.readIdleRingOpacity(): Int =
-    getInt(PrefsManager.KEY_IDLE_RING_OPACITY, PrefsManager.DEFAULT_IDLE_RING_OPACITY).coerceIn(
-        0,
-        100,
-    )
 
 fun SharedPreferences.readFinishHoldMs(): Int =
     getInt(PrefsManager.KEY_FINISH_HOLD_MS, PrefsManager.DEFAULT_FINISH_HOLD_MS).coerceIn(
