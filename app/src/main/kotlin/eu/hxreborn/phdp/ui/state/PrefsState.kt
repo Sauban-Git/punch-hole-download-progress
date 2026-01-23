@@ -1,6 +1,7 @@
 package eu.hxreborn.phdp.ui.state
 
 import eu.hxreborn.phdp.prefs.PrefsManager
+import eu.hxreborn.phdp.ui.theme.DarkThemeConfig
 
 data class PrefsState(
     val enabled: Boolean = PrefsManager.DEFAULT_ENABLED,
@@ -26,4 +27,6 @@ data class PrefsState(
     val percentTextPosition: String = PrefsManager.DEFAULT_PERCENT_TEXT_POSITION,
     val filenameTextEnabled: Boolean = PrefsManager.DEFAULT_FILENAME_TEXT_ENABLED,
     val filenameTextPosition: String = PrefsManager.DEFAULT_FILENAME_TEXT_POSITION,
+    val darkThemeConfig: DarkThemeConfig = DarkThemeConfig.FOLLOW_SYSTEM,
+    val useDynamicColor: Boolean = PrefsManager.DEFAULT_USE_DYNAMIC_COLOR,
 )

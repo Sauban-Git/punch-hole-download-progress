@@ -35,6 +35,8 @@ object PrefsManager {
     const val KEY_FINISH_FLASH_COLOR = "finish_flash_color"
     const val KEY_PREVIEW_TRIGGER = "preview_trigger"
     const val KEY_CLEAR_DOWNLOADS_TRIGGER = "clear_downloads_trigger"
+    const val KEY_DARK_THEME_CONFIG = "dark_theme_config"
+    const val KEY_USE_DYNAMIC_COLOR = "use_dynamic_color"
 
     // Keys that trigger preview when changed
     private val VISUAL_KEYS =
@@ -63,6 +65,8 @@ object PrefsManager {
     const val DEFAULT_FINISH_EXIT_MS = 500
     const val DEFAULT_FINISH_USE_FLASH_COLOR = true
     const val DEFAULT_FINISH_FLASH_COLOR = 0xFFFFFFFF.toInt()
+    const val DEFAULT_DARK_THEME_CONFIG = "follow_system"
+    const val DEFAULT_USE_DYNAMIC_COLOR = true
 
     // Ranges
     const val MIN_STROKE_WIDTH = 0.5f

@@ -75,5 +75,7 @@ class PrefsRepositoryImpl(
             percentTextPosition = readPercentTextPosition(),
             filenameTextEnabled = readFilenameTextEnabled(),
             filenameTextPosition = readFilenameTextPosition(),
+            darkThemeConfig = readDarkThemeConfig(),
+            useDynamicColor = readUseDynamicColor(),
         )
 }

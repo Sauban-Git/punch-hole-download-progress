@@ -10,21 +10,22 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.edit
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import eu.hxreborn.phdp.PHDPApp
 import eu.hxreborn.phdp.R
 import eu.hxreborn.phdp.prefs.PrefsManager
 import eu.hxreborn.phdp.prefs.PrefsRepository
 import eu.hxreborn.phdp.prefs.PrefsRepositoryImpl
-import eu.hxreborn.phdp.ui.state.PrefsState
 import eu.hxreborn.phdp.ui.theme.AppTheme
+import eu.hxreborn.phdp.ui.theme.DarkThemeConfig
 import eu.hxreborn.phdp.util.RootUtils
 import io.github.libxposed.service.XposedService
 import io.github.libxposed.service.XposedServiceHelper
@@ -36,6 +37,7 @@ class MainActivity :
     XposedServiceHelper.OnServiceListener {
     private lateinit var prefs: SharedPreferences
     private lateinit var repository: PrefsRepository
+    private lateinit var viewModel: SettingsViewModel
 
     private var xposedService: XposedService? = null
     private var remotePrefs: SharedPreferences? = null
@@ -50,26 +52,48 @@ class MainActivity :
 
         prefs = getSharedPreferences(PrefsManager.PREFS_GROUP, Context.MODE_PRIVATE)
         repository = PrefsRepositoryImpl(prefs) { remotePrefs }
+        viewModel = ViewModelProvider(this, SettingsViewModelFactory(repository))[SettingsViewModel::class.java]
 
         PHDPApp.addServiceListener(this)
 
         setContent {
-            AppTheme {
-                val prefsState by repository.state.collectAsState(initial = PrefsState())
+            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-                PunchHoleProgressContent(
-                    prefsState = prefsState,
-                    onSavePrefs = ::saveToPrefs,
-                    onMenuAction = { action ->
-                        when (action) {
-                            MenuAction.RestartSystemUI -> showRestartDialog = true
-                            MenuAction.Reset -> showResetDialog = true
-                        }
-                    },
-                    onTestSuccess = ::simulateSuccess,
-                    onTestFailure = ::simulateFailure,
-                    onClearDownloads = ::clearDownloads,
-                )
+            val (darkThemeConfig, useDynamicColor) =
+                when (uiState) {
+                    is SettingsUiState.Loading -> {
+                        DarkThemeConfig.FOLLOW_SYSTEM to true
+                    }
+
+                    is SettingsUiState.Success -> {
+                        val prefs = (uiState as SettingsUiState.Success).prefs
+                        prefs.darkThemeConfig to prefs.useDynamicColor
+                    }
+                }
+
+            AppTheme(
+                darkThemeConfig = darkThemeConfig,
+                useDynamicColor = useDynamicColor,
+            ) {
+                when (val state = uiState) {
+                    is SettingsUiState.Loading -> {}
+
+                    is SettingsUiState.Success -> {
+                        PunchHoleProgressContent(
+                            prefsState = state.prefs,
+                            onSavePrefs = viewModel::save,
+                            onMenuAction = { action ->
+                                when (action) {
+                                    MenuAction.RestartSystemUI -> showRestartDialog = true
+                                    MenuAction.Reset -> showResetDialog = true
+                                }
+                            },
+                            onTestSuccess = ::simulateSuccess,
+                            onTestFailure = ::simulateFailure,
+                            onClearDownloads = ::clearDownloads,
+                        )
+                    }
+                }
 
                 if (showRestartDialog) {
                     AlertDialog(
@@ -103,7 +127,8 @@ class MainActivity :
                             TextButton(
                                 onClick = {
                                     showResetDialog = false
-                                    resetToDefaults()
+                                    viewModel.resetDefaults()
+                                    Toast.makeText(this@MainActivity, R.string.reset_done, Toast.LENGTH_SHORT).show()
                                 },
                             ) {
                                 Text(stringResource(R.string.reset))
@@ -120,44 +145,32 @@ class MainActivity :
         }
     }
 
-    private fun saveToPrefs(
-        key: String,
-        value: Any,
-    ) {
-        repository.save(key, value)
-    }
-
     private fun simulateSuccess() {
         lifecycleScope.launch {
             for (progress in 0..100 step 5) {
-                saveToPrefs(PrefsManager.KEY_TEST_PROGRESS, progress)
+                viewModel.save(PrefsManager.KEY_TEST_PROGRESS, progress)
                 delay(100)
             }
-            saveToPrefs(PrefsManager.KEY_TEST_PROGRESS, -1)
+            viewModel.save(PrefsManager.KEY_TEST_PROGRESS, -1)
         }
     }
 
     private fun clearDownloads() {
-        saveToPrefs(PrefsManager.KEY_CLEAR_DOWNLOADS_TRIGGER, System.currentTimeMillis())
+        viewModel.save(PrefsManager.KEY_CLEAR_DOWNLOADS_TRIGGER, System.currentTimeMillis())
         Toast.makeText(this, R.string.clear_downloads_done, Toast.LENGTH_SHORT).show()
     }
 
     private fun simulateFailure() {
         lifecycleScope.launch {
             for (progress in 0..60 step 10) {
-                saveToPrefs(PrefsManager.KEY_TEST_PROGRESS, progress)
+                viewModel.save(PrefsManager.KEY_TEST_PROGRESS, progress)
                 delay(100)
             }
-            saveToPrefs(PrefsManager.KEY_TEST_ERROR, true)
+            viewModel.save(PrefsManager.KEY_TEST_ERROR, true)
             delay(100)
-            saveToPrefs(PrefsManager.KEY_TEST_PROGRESS, -1)
-            saveToPrefs(PrefsManager.KEY_TEST_ERROR, false)
+            viewModel.save(PrefsManager.KEY_TEST_PROGRESS, -1)
+            viewModel.save(PrefsManager.KEY_TEST_ERROR, false)
         }
-    }
-
-    private fun resetToDefaults() {
-        repository.resetDefaults()
-        Toast.makeText(this, R.string.reset_done, Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroy() {

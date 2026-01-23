@@ -145,6 +145,8 @@ dependencies {
     implementation(libs.libxposed.service)
     implementation(libs.libsu.core)
     implementation(libs.lifecycle.runtime)
+    implementation(libs.lifecycle.runtime.compose)
+    implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.core.ktx)
     implementation(libs.core.splashscreen)
 

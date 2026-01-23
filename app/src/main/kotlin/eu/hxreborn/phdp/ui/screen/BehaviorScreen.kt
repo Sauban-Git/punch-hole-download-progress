@@ -17,6 +17,7 @@ import eu.hxreborn.phdp.ui.component.preference.SelectPreference
 import eu.hxreborn.phdp.ui.component.preference.TogglePreferenceWithIcon
 import eu.hxreborn.phdp.ui.state.PrefsState
 import eu.hxreborn.phdp.ui.theme.AppTheme
+import eu.hxreborn.phdp.ui.theme.DarkThemeConfig
 import eu.hxreborn.phdp.ui.theme.Tokens
 import me.zhanghai.compose.preference.ProvidePreferenceLocals
 import me.zhanghai.compose.preference.preferenceCategory
@@ -201,7 +202,7 @@ private fun finishStyleLabel(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun BehaviorScreenPreview() {
-    AppTheme(darkTheme = true) {
+    AppTheme(darkThemeConfig = DarkThemeConfig.DARK) {
         BehaviorScreen(
             prefsState = PrefsState(),
             onSavePrefs = { _, _ -> },

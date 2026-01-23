@@ -20,6 +20,7 @@ import eu.hxreborn.phdp.ui.component.preference.SelectPreference
 import eu.hxreborn.phdp.ui.component.preference.TogglePreferenceWithIcon
 import eu.hxreborn.phdp.ui.state.PrefsState
 import eu.hxreborn.phdp.ui.theme.AppTheme
+import eu.hxreborn.phdp.ui.theme.DarkThemeConfig
 import eu.hxreborn.phdp.ui.theme.Tokens
 import me.zhanghai.compose.preference.ProvidePreferenceLocals
 import me.zhanghai.compose.preference.preferenceCategory
@@ -187,7 +188,7 @@ private fun powerSaverLabel(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun SystemScreenPreview() {
-    AppTheme(darkTheme = true) {
+    AppTheme(darkThemeConfig = DarkThemeConfig.DARK) {
         SystemScreen(
             prefsState = PrefsState(),
             onSavePrefs = { _, _ -> },

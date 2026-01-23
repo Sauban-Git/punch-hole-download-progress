@@ -1,6 +1,7 @@
 package eu.hxreborn.phdp.prefs
 
 import android.content.SharedPreferences
+import eu.hxreborn.phdp.ui.theme.DarkThemeConfig
 
 // Boolean readers
 fun SharedPreferences.readEnabled(): Boolean =
@@ -33,6 +34,9 @@ fun SharedPreferences.readPercentTextEnabled(): Boolean =
 
 fun SharedPreferences.readFilenameTextEnabled(): Boolean =
     getBoolean(PrefsManager.KEY_FILENAME_TEXT_ENABLED, PrefsManager.DEFAULT_FILENAME_TEXT_ENABLED)
+
+fun SharedPreferences.readUseDynamicColor(): Boolean =
+    getBoolean(PrefsManager.KEY_USE_DYNAMIC_COLOR, PrefsManager.DEFAULT_USE_DYNAMIC_COLOR)
 
 // Int readers no coercion
 fun SharedPreferences.readColor(): Int = getInt(PrefsManager.KEY_COLOR, PrefsManager.DEFAULT_COLOR)
@@ -101,6 +105,17 @@ fun SharedPreferences.readPercentTextPosition(): String =
 fun SharedPreferences.readFilenameTextPosition(): String =
     getString(PrefsManager.KEY_FILENAME_TEXT_POSITION, PrefsManager.DEFAULT_FILENAME_TEXT_POSITION)
         ?: PrefsManager.DEFAULT_FILENAME_TEXT_POSITION
+
+fun SharedPreferences.readDarkThemeConfig(): DarkThemeConfig {
+    val value =
+        getString(PrefsManager.KEY_DARK_THEME_CONFIG, PrefsManager.DEFAULT_DARK_THEME_CONFIG)
+            ?: PrefsManager.DEFAULT_DARK_THEME_CONFIG
+    return when (value) {
+        "light" -> DarkThemeConfig.LIGHT
+        "dark" -> DarkThemeConfig.DARK
+        else -> DarkThemeConfig.FOLLOW_SYSTEM
+    }
+}
 
 // Writer helper
 fun SharedPreferences.Editor.putAny(

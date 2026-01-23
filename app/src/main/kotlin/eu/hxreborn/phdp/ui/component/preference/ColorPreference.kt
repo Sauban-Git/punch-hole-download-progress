@@ -43,6 +43,7 @@ import androidx.compose.ui.window.Dialog
 import eu.hxreborn.phdp.R
 import eu.hxreborn.phdp.prefs.PrefsManager
 import eu.hxreborn.phdp.ui.theme.AppTheme
+import eu.hxreborn.phdp.ui.theme.DarkThemeConfig
 import eu.hxreborn.phdp.ui.theme.Tokens
 
 private val presetColors =
@@ -264,7 +265,7 @@ private fun ColorPreferencePreview() {
 @Preview(name = "Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun ColorPreferenceDarkPreview() {
-    AppTheme(darkTheme = true) {
+    AppTheme(darkThemeConfig = DarkThemeConfig.DARK) {
         ColorPreference(
             value = PrefsManager.DEFAULT_COLOR,
             onValueChange = {},
