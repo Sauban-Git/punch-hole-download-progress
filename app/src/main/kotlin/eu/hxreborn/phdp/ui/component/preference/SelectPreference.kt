@@ -123,8 +123,7 @@ private fun <T> SelectDialog(
                                     selected = option == value,
                                     onClick = { onValueChange(option) },
                                     role = Role.RadioButton,
-                                )
-                                .padding(horizontal = Tokens.PreferencePadding),
+                                ).padding(horizontal = Tokens.PreferencePadding),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         RadioButton(

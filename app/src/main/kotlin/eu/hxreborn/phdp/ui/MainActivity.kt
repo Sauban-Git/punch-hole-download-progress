@@ -32,7 +32,9 @@ import io.github.libxposed.service.XposedServiceHelper
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class MainActivity : ComponentActivity(), XposedServiceHelper.OnServiceListener {
+class MainActivity :
+    ComponentActivity(),
+    XposedServiceHelper.OnServiceListener {
     private lateinit var prefs: SharedPreferences
     private lateinit var repository: PrefsRepository
     private lateinit var viewModel: SettingsViewModel
@@ -57,16 +59,17 @@ class MainActivity : ComponentActivity(), XposedServiceHelper.OnServiceListener 
         setContent {
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-            val (darkThemeConfig, useDynamicColor) = when (uiState) {
-                is SettingsUiState.Loading -> {
-                    DarkThemeConfig.FOLLOW_SYSTEM to true
-                }
+            val (darkThemeConfig, useDynamicColor) =
+                when (uiState) {
+                    is SettingsUiState.Loading -> {
+                        DarkThemeConfig.FOLLOW_SYSTEM to true
+                    }
 
-                is SettingsUiState.Success -> {
-                    val prefs = (uiState as SettingsUiState.Success).prefs
-                    prefs.darkThemeConfig to prefs.useDynamicColor
+                    is SettingsUiState.Success -> {
+                        val prefs = (uiState as SettingsUiState.Success).prefs
+                        prefs.darkThemeConfig to prefs.useDynamicColor
+                    }
                 }
-            }
 
             AppTheme(
                 darkThemeConfig = darkThemeConfig,
@@ -195,26 +198,31 @@ class MainActivity : ComponentActivity(), XposedServiceHelper.OnServiceListener 
     private fun performRestart() {
         lifecycleScope.launch {
             if (!RootUtils.isRootAvailable()) {
-                Toast.makeText(
-                    this@MainActivity,
-                    R.string.root_not_granted,
-                    Toast.LENGTH_LONG,
-                ).show()
+                Toast
+                    .makeText(
+                        this@MainActivity,
+                        R.string.root_not_granted,
+                        Toast.LENGTH_LONG,
+                    ).show()
                 return@launch
             }
-            RootUtils.restartSystemUI().onSuccess {
-                Toast.makeText(
-                    this@MainActivity,
-                    R.string.restart_success,
-                    Toast.LENGTH_SHORT,
-                ).show()
-            }.onFailure { e ->
-                Toast.makeText(
-                    this@MainActivity,
-                    getString(R.string.restart_failed_detail, e.message),
-                    Toast.LENGTH_LONG,
-                ).show()
-            }
+            RootUtils
+                .restartSystemUI()
+                .onSuccess {
+                    Toast
+                        .makeText(
+                            this@MainActivity,
+                            R.string.restart_success,
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                }.onFailure { e ->
+                    Toast
+                        .makeText(
+                            this@MainActivity,
+                            getString(R.string.restart_failed_detail, e.message),
+                            Toast.LENGTH_LONG,
+                        ).show()
+                }
         }
     }
 

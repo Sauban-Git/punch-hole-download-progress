@@ -350,7 +350,7 @@ class IndicatorView(
                     (
                         effectiveOpacity * 255 / 100 * animator.displayAlpha *
                             animator.completionPulseAlpha
-                        ).toInt()
+                    ).toInt()
                 if (animator.successColorBlend > 0f) {
                     val successColor =
                         if (PrefsManager.finishUseFlashColor) {

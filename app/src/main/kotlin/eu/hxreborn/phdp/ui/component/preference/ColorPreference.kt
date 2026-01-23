@@ -238,8 +238,7 @@ private fun ColorSwatch(
                             MaterialTheme.colorScheme.outline
                         },
                     shape = CircleShape,
-                )
-                .clickable(onClick = onClick),
+                ).clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         if (selected) {
