@@ -350,7 +350,7 @@ class IndicatorView(
                     (
                         effectiveOpacity * 255 / 100 * animator.displayAlpha *
                             animator.completionPulseAlpha
-                    ).toInt()
+                        ).toInt()
                 if (animator.successColorBlend > 0f) {
                     val successColor =
                         if (PrefsManager.finishUseFlashColor) {
@@ -457,14 +457,6 @@ class IndicatorView(
                         )
                     }
 
-                    "right" -> {
-                        Triple(
-                            arcBounds.right + textWidth / 2 + padding,
-                            arcBounds.centerY() + percentPaint.textSize / 3,
-                            null,
-                        )
-                    }
-
                     "top_left" -> {
                         Triple(
                             arcBounds.left - padding,
@@ -558,14 +550,6 @@ class IndicatorView(
                             arcBounds.left - padding,
                             arcBounds.top - padding,
                             Paint.Align.RIGHT,
-                        )
-                    }
-
-                    "top_right" -> {
-                        Triple(
-                            arcBounds.right + padding,
-                            arcBounds.top - padding,
-                            Paint.Align.LEFT,
                         )
                     }
 

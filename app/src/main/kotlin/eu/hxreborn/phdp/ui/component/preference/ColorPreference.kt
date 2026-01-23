@@ -181,7 +181,7 @@ private fun ColorPickerDialog(
                 Spacer(modifier = Modifier.height(Tokens.DialogTitleSpacing))
 
                 Text(
-                    text = stringResource(R.string.selected),
+                    text = stringResource(R.string.color_selected),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -238,7 +238,8 @@ private fun ColorSwatch(
                             MaterialTheme.colorScheme.outline
                         },
                     shape = CircleShape,
-                ).clickable(onClick = onClick),
+                )
+                .clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         if (selected) {

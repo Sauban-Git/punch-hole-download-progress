@@ -12,8 +12,7 @@
     <string name="root_not_granted">Root not granted. Please grant root to Punch-hole Download Progress.</string>
 
     <!-- Value Formats -->
-    <!-- TODO: Fix override-->
-    <string name="selected">Selected</string>
+    <string name="color_selected">Selected</string>
     <string name="more_options">More options</string>
 
     <!-- Tab Titles -->
