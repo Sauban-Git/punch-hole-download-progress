@@ -32,11 +32,11 @@ import androidx.compose.ui.text.style.TextMotion
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import eu.hxreborn.phdp.R
 import eu.hxreborn.phdp.ui.navigation.BottomNav
-import eu.hxreborn.phdp.ui.navigation.MainNavHost
+import eu.hxreborn.phdp.ui.navigation.MainNavDisplay
+import eu.hxreborn.phdp.ui.navigation.Screen
+import eu.hxreborn.phdp.ui.navigation.rememberTypedBackStack
 import eu.hxreborn.phdp.ui.state.PrefsState
 import eu.hxreborn.phdp.ui.theme.Tokens
 
@@ -57,9 +57,8 @@ fun PunchHoleProgressContent(
     onClearDownloads: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val navController = rememberNavController()
-    val navBackStackEntry = navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry.value?.destination?.route
+    val backStack = rememberTypedBackStack<Screen>(Screen.Design)
+    val currentKey = backStack.lastOrNull()
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
             snapAnimationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing),
@@ -133,13 +132,13 @@ fun PunchHoleProgressContent(
         },
         bottomBar = {
             BottomNav(
-                navController = navController,
-                currentRoute = currentRoute,
+                backStack = backStack,
+                currentKey = currentKey,
             )
         },
     ) { paddingValues ->
-        MainNavHost(
-            navController = navController,
+        MainNavDisplay(
+            backStack = backStack,
             prefsState = prefsState,
             onSavePrefs = onSavePrefs,
             onTestSuccess = onTestSuccess,

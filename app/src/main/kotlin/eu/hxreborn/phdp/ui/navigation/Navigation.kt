@@ -3,8 +3,6 @@ package eu.hxreborn.phdp.ui.navigation
 import android.provider.Settings
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Palette
@@ -19,33 +17,36 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.ui.NavDisplay
 import eu.hxreborn.phdp.R
 import eu.hxreborn.phdp.ui.screen.AppearanceScreen
 import eu.hxreborn.phdp.ui.screen.BehaviorScreen
 import eu.hxreborn.phdp.ui.screen.SystemScreen
 import eu.hxreborn.phdp.ui.state.PrefsState
 import eu.hxreborn.phdp.ui.theme.Tokens
+import kotlinx.serialization.Serializable
 
-sealed class Screen(
-    val route: String,
-) {
-    data object Design : Screen("design")
+@Serializable
+sealed interface Screen : NavKey {
+    @Serializable
+    data object Design : Screen
 
-    data object Motion : Screen("motion")
+    @Serializable
+    data object Motion : Screen
 
-    data object System : Screen("system")
+    @Serializable
+    data object System : Screen
 }
 
 data class BottomNavItem(
-    val route: String,
+    val key: Screen,
     val titleRes: Int,
     val selectedIcon: ImageVector,
     val unselectedIcon: ImageVector,
@@ -54,19 +55,19 @@ data class BottomNavItem(
 val bottomNavItems =
     listOf(
         BottomNavItem(
-            route = Screen.Design.route,
+            key = Screen.Design,
             titleRes = R.string.tab_design,
             selectedIcon = Icons.Filled.Palette,
             unselectedIcon = Icons.Outlined.Palette,
         ),
         BottomNavItem(
-            route = Screen.Motion.route,
+            key = Screen.Motion,
             titleRes = R.string.tab_motion,
             selectedIcon = Icons.Filled.Widgets,
             unselectedIcon = Icons.Outlined.Widgets,
         ),
         BottomNavItem(
-            route = Screen.System.route,
+            key = Screen.System,
             titleRes = R.string.tab_system,
             selectedIcon = Icons.Filled.Settings,
             unselectedIcon = Icons.Outlined.Settings,
@@ -74,8 +75,8 @@ val bottomNavItems =
     )
 
 @Composable
-fun MainNavHost(
-    navController: NavHostController,
+fun MainNavDisplay(
+    backStack: SnapshotStateList<Screen>,
     prefsState: PrefsState,
     onSavePrefs: (key: String, value: Any) -> Unit,
     onTestSuccess: () -> Unit,
@@ -84,46 +85,44 @@ fun MainNavHost(
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
 ) {
-    NavHost(
-        navController = navController,
-        startDestination = Screen.Design.route,
+    NavDisplay(
+        backStack = backStack,
+        onBack = { backStack.removeLastOrNull() },
         modifier = modifier,
-        enterTransition = { fadeIn(tween(Tokens.ANIMATION_DURATION_MS)) },
-        exitTransition = { fadeOut(tween(Tokens.ANIMATION_DURATION_MS)) },
-        popEnterTransition = { fadeIn(tween(Tokens.ANIMATION_DURATION_MS)) },
-        popExitTransition = { fadeOut(tween(Tokens.ANIMATION_DURATION_MS)) },
-    ) {
-        composable(Screen.Design.route) {
-            AppearanceScreen(
-                prefsState = prefsState,
-                onSavePrefs = onSavePrefs,
-                contentPadding = contentPadding,
-            )
-        }
-        composable(Screen.Motion.route) {
-            BehaviorScreen(
-                prefsState = prefsState,
-                onSavePrefs = onSavePrefs,
-                contentPadding = contentPadding,
-            )
-        }
-        composable(Screen.System.route) {
-            SystemScreen(
-                prefsState = prefsState,
-                onSavePrefs = onSavePrefs,
-                onTestSuccess = onTestSuccess,
-                onTestFailure = onTestFailure,
-                onClearDownloads = onClearDownloads,
-                contentPadding = contentPadding,
-            )
-        }
-    }
+        entryProvider =
+            entryProvider {
+                entry<Screen.Design> {
+                    AppearanceScreen(
+                        prefsState = prefsState,
+                        onSavePrefs = onSavePrefs,
+                        contentPadding = contentPadding,
+                    )
+                }
+                entry<Screen.Motion> {
+                    BehaviorScreen(
+                        prefsState = prefsState,
+                        onSavePrefs = onSavePrefs,
+                        contentPadding = contentPadding,
+                    )
+                }
+                entry<Screen.System> {
+                    SystemScreen(
+                        prefsState = prefsState,
+                        onSavePrefs = onSavePrefs,
+                        onTestSuccess = onTestSuccess,
+                        onTestFailure = onTestFailure,
+                        onClearDownloads = onClearDownloads,
+                        contentPadding = contentPadding,
+                    )
+                }
+            },
+    )
 }
 
 @Composable
 fun BottomNav(
-    navController: NavController,
-    currentRoute: String?,
+    backStack: SnapshotStateList<Screen>,
+    currentKey: Screen?,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -143,16 +142,15 @@ fun BottomNav(
 
     NavigationBar(modifier = modifier) {
         bottomNavItems.forEach { item ->
-            val selected = currentRoute == item.route
+            val selected = currentKey == item.key
             NavigationBarItem(
                 selected = selected,
                 onClick = {
-                    navController.navigate(item.route) {
-                        popUpTo(navController.graph.startDestinationId) {
-                            saveState = true
+                    if (!selected) {
+                        backStack.removeAll { it != Screen.Design }
+                        if (item.key != Screen.Design) {
+                            backStack.add(item.key)
                         }
-                        launchSingleTop = true
-                        restoreState = true
                     }
                 },
                 icon = {
