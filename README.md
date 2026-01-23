@@ -12,27 +12,25 @@ Xposed module that displays download progress as an animated ring around the cam
 
 ## Features
 
-- **Cutout Integration:** Renders progress rings directly around the device camera cutout using the native Android Display Cutout API.
-- **Native Tracking:** Out-of-the-box monitoring for Android Download Manager, Bluetooth transfers, and major browser engines (Chrome, Firefox, etc.).
-- **Universal Interception:** Optional tracking mode to display progress for any active notification containing a standard progress bar.
-- **Concurrent Management:** Logic for handling multiple simultaneous transfers, defaulting to the task with the highest progress.
-- **Granular Customization:** Individual controls for ring thickness, cutout spacing, opacity, and color hex codes.
-- **Completion Effects:** Selectable animations for finished tasks, including snap, pulse, and segmented sweep effects.
-- **Duration Thresholds:** Configurable behavior for fast downloads with options to guarantee minimum visibility or skip the indicator entirely.
-- **System Awareness:** Integrated haptic feedback and automatic dimming or disabling when Battery Saver is active.
+- Progress ring around camera cutout using Display Cutout API
+- Tracks Download Manager and major browsers (Chrome, Firefox, Brave, Edge, etc.)
+- Multiple concurrent downloads with highest-progress priority
+- Customizable ring thickness, spacing, opacity, and color
+- Completion animations: snap, pop, segmented (with optional pulse)
+- Minimum visibility threshold for fast downloads
+- Battery Saver integration: dim or disable when active
 
 ## Requirements
 
-- Android 12 (API 31) or higher
-- [LSPosed](https://github.com/JingMatrix/LSPosed) (JingMatrix fork recommended) or [LSPosed Next](https://github.com/mywalkb/LSPosed_mod)
-- Device with camera cutout (punch-hole or pill-shaped)
+- Android 12+
+- [LSPosed](https://github.com/JingMatrix/LSPosed)
+- Device with camera cutout
 
 ## Installation
 
-1. Install and enable the module in LSPosed.
-2. Configure the scope:
-   - `com.android.systemui` – Shows the download progress ring overlay.
-3. Reboot your device.
+1. Install and enable module in LSPosed
+2. Scope to `com.android.systemui`
+3. Reboot
 
 ## Build
 
