@@ -21,6 +21,7 @@ object RootUtils {
                 .build()
                 .also { shellInstance = it }
 
+    @Suppress("kotlin:S6310")
     suspend fun isRootAvailable(): Boolean =
         withContext(Dispatchers.IO) {
             ArrayList<String>()
@@ -38,6 +39,7 @@ object RootUtils {
             }
         }
 
+    @Suppress("kotlin:S6310")
     suspend fun restartSystemUI(): Result<Unit> =
         withContext(Dispatchers.IO) {
             runCatching {
