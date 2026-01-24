@@ -1,6 +1,6 @@
 # Punch-hole Download Progress
 
-Xposed module that displays download progress as an animated ring around the camera cutout. 
+Xposed module that displays download progress as an animated ring around the camera cutout.
 
 ![Android CI](https://github.com/hxreborn/punch-hole-download-progress/actions/workflows/android-ci.yml/badge.svg)
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.1.21-7F52FF?style=flat&logo=kotlin&logoColor=white)
@@ -26,6 +26,7 @@ Xposed module that displays download progress as an animated ring around the cam
 - [LSPosed](https://github.com/JingMatrix/LSPosed) (JingMatrix fork recommended)
 - Pixel or AOSP-based ROM
 - Root access (optional, for `Restart SystemUI` in settings)
+- A phone with a punch-hole display
 
 ## Installation
 
@@ -60,6 +61,10 @@ RELEASE_STORE_PASSWORD=<store_password>
 RELEASE_KEY_ALIAS=<key_alias>
 RELEASE_KEY_PASSWORD=<key_password>
 ```
+
+## Contributing
+
+Pull requests welcome. [Open an issue](https://github.com/hxreborn/punch-hole-download-progress/issues/new) for bugs or feature requests.
 
 ## License
 
