@@ -1,5 +1,6 @@
 package eu.hxreborn.phdp.xposed.hook
 
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -22,6 +23,8 @@ private const val NOTIF_COLLECTION =
     "com.android.systemui.statusbar.notification.collection.NotifCollection"
 private const val NOTIFICATION_LISTENER = "com.android.systemui.statusbar.NotificationListener"
 
+// Scoped to process lifetime, cannot leak
+@SuppressLint("StaticFieldLeak")
 object SystemUIHooker {
     @Volatile
     private var attached = false
