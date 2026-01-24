@@ -7,7 +7,7 @@ Xposed module that displays download progress as an animated ring around the cam
 ![Android](https://img.shields.io/badge/API-31%2B-3DDC84?logo=android&logoColor=white)
 
 <div align="center">
-  <img src=".github/assets/demo.png" alt="Download progress ring around camera cutout" width="320" />
+  <img src=".github/assets/demo-pop.gif" alt="Download progress animation" width="320" />
 </div>
 
 ## Features
