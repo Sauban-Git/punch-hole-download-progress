@@ -1,7 +1,5 @@
 package eu.hxreborn.phdp.ui.theme
 
-import android.os.Build
-import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialExpressiveTheme
@@ -27,7 +25,7 @@ fun AppTheme(
 
     val colorScheme =
         when {
-            useDynamicColor && supportsDynamicTheming() -> {
+            useDynamicColor -> {
                 val context = LocalContext.current
                 if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
             }
@@ -47,6 +45,3 @@ fun AppTheme(
         content = content,
     )
 }
-
-@ChecksSdkIntAtLeast(api = Build.VERSION_CODES.S)
-fun supportsDynamicTheming(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
