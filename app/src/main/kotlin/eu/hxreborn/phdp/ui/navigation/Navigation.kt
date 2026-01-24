@@ -5,12 +5,12 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesomeMotion
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.outlined.AutoAwesomeMotion
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -63,8 +63,8 @@ val bottomNavItems =
         BottomNavItem(
             key = Screen.Motion,
             titleRes = R.string.tab_motion,
-            selectedIcon = Icons.Filled.Tune,
-            unselectedIcon = Icons.Outlined.Tune,
+            selectedIcon = Icons.Filled.AutoAwesomeMotion,
+            unselectedIcon = Icons.Outlined.AutoAwesomeMotion,
         ),
         BottomNavItem(
             key = Screen.System,
