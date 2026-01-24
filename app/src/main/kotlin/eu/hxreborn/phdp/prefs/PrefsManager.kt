@@ -272,30 +272,58 @@ object PrefsManager {
     private fun refreshCache() {
         runCatching {
             remotePrefs?.let { prefs ->
-                enabled = prefs.readEnabled()
-                color = prefs.readColor()
-                strokeWidth = prefs.readStrokeWidth()
-                ringGap = prefs.readRingGap()
-                opacity = prefs.readOpacity()
-                hooksFeedback = prefs.readHooksFeedback()
-                appVisible = prefs.readAppVisible()
-                clockwise = prefs.readClockwise()
-                progressEasing = prefs.readProgressEasing()
-                errorColor = prefs.readErrorColor()
-                powerSaverMode = prefs.readPowerSaverMode()
-                showDownloadCount = prefs.readShowDownloadCount()
-                finishStyle = prefs.readFinishStyle()
-                finishHoldMs = prefs.readFinishHoldMs()
-                finishExitMs = prefs.readFinishExitMs()
-                finishUseFlashColor = prefs.readFinishUseFlashColor()
-                finishFlashColor = prefs.readFinishFlashColor()
-                minVisibilityEnabled = prefs.readMinVisibilityEnabled()
-                minVisibilityMs = prefs.readMinVisibilityMs()
-                completionPulseEnabled = prefs.readCompletionPulseEnabled()
-                percentTextEnabled = prefs.readPercentTextEnabled()
-                percentTextPosition = prefs.readPercentTextPosition()
-                filenameTextEnabled = prefs.readFilenameTextEnabled()
-                filenameTextPosition = prefs.readFilenameTextPosition()
+                enabled = prefs.read(KEY_ENABLED, DEFAULT_ENABLED)
+                color = prefs.read(KEY_COLOR, DEFAULT_COLOR)
+                strokeWidth =
+                    prefs.readFloat(
+                        KEY_STROKE_WIDTH,
+                        DEFAULT_STROKE_WIDTH,
+                        MIN_STROKE_WIDTH..MAX_STROKE_WIDTH,
+                    )
+                ringGap =
+                    prefs.readFloat(KEY_RING_GAP, DEFAULT_RING_GAP, MIN_RING_GAP..MAX_RING_GAP)
+                opacity = prefs.readInt(KEY_OPACITY, DEFAULT_OPACITY, MIN_OPACITY..MAX_OPACITY)
+                hooksFeedback = prefs.read(KEY_HOOKS_FEEDBACK, DEFAULT_HOOKS_FEEDBACK)
+                appVisible = prefs.read(KEY_APP_VISIBLE, false)
+                clockwise = prefs.read(KEY_CLOCKWISE, true)
+                progressEasing = prefs.readString(KEY_PROGRESS_EASING, DEFAULT_PROGRESS_EASING)
+                errorColor = prefs.read(KEY_ERROR_COLOR, DEFAULT_ERROR_COLOR)
+                powerSaverMode = prefs.readString(KEY_POWER_SAVER_MODE, DEFAULT_POWER_SAVER_MODE)
+                showDownloadCount = prefs.read(KEY_SHOW_DOWNLOAD_COUNT, DEFAULT_SHOW_DOWNLOAD_COUNT)
+                finishStyle = prefs.readString(KEY_FINISH_STYLE, DEFAULT_FINISH_STYLE)
+                finishHoldMs =
+                    prefs.readInt(
+                        KEY_FINISH_HOLD_MS,
+                        DEFAULT_FINISH_HOLD_MS,
+                        MIN_FINISH_HOLD_MS..MAX_FINISH_HOLD_MS,
+                    )
+                finishExitMs =
+                    prefs.readInt(
+                        KEY_FINISH_EXIT_MS,
+                        DEFAULT_FINISH_EXIT_MS,
+                        MIN_FINISH_EXIT_MS..MAX_FINISH_EXIT_MS,
+                    )
+                finishUseFlashColor =
+                    prefs.read(KEY_FINISH_USE_FLASH_COLOR, DEFAULT_FINISH_USE_FLASH_COLOR)
+                finishFlashColor = prefs.read(KEY_FINISH_FLASH_COLOR, DEFAULT_FINISH_FLASH_COLOR)
+                minVisibilityEnabled =
+                    prefs.read(KEY_MIN_VISIBILITY_ENABLED, DEFAULT_MIN_VISIBILITY_ENABLED)
+                minVisibilityMs =
+                    prefs.readInt(
+                        KEY_MIN_VISIBILITY_MS,
+                        DEFAULT_MIN_VISIBILITY_MS,
+                        MIN_MIN_VISIBILITY_MS..MAX_MIN_VISIBILITY_MS,
+                    )
+                completionPulseEnabled =
+                    prefs.read(KEY_COMPLETION_PULSE_ENABLED, DEFAULT_COMPLETION_PULSE_ENABLED)
+                percentTextEnabled =
+                    prefs.read(KEY_PERCENT_TEXT_ENABLED, DEFAULT_PERCENT_TEXT_ENABLED)
+                percentTextPosition =
+                    prefs.readString(KEY_PERCENT_TEXT_POSITION, DEFAULT_PERCENT_TEXT_POSITION)
+                filenameTextEnabled =
+                    prefs.read(KEY_FILENAME_TEXT_ENABLED, DEFAULT_FILENAME_TEXT_ENABLED)
+                filenameTextPosition =
+                    prefs.readString(KEY_FILENAME_TEXT_POSITION, DEFAULT_FILENAME_TEXT_POSITION)
             }
         }.onFailure { log("refreshCache() failed", it) }
     }

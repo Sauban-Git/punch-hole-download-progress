@@ -15,13 +15,13 @@ import eu.hxreborn.phdp.BuildConfig
 import eu.hxreborn.phdp.R
 import eu.hxreborn.phdp.prefs.PrefsManager
 import eu.hxreborn.phdp.ui.component.SectionCard
-import eu.hxreborn.phdp.ui.component.preference.ActionPreference
 import eu.hxreborn.phdp.ui.component.preference.SelectPreference
 import eu.hxreborn.phdp.ui.state.PrefsState
 import eu.hxreborn.phdp.ui.theme.AppTheme
 import eu.hxreborn.phdp.ui.theme.DarkThemeConfig
 import eu.hxreborn.phdp.ui.theme.Tokens
 import eu.hxreborn.phdp.util.labelFromValues
+import me.zhanghai.compose.preference.Preference
 import me.zhanghai.compose.preference.ProvidePreferenceLocals
 import me.zhanghai.compose.preference.preferenceCategory
 
@@ -96,7 +96,7 @@ fun SystemScreen(
                     items =
                         listOf(
                             {
-                                ActionPreference(
+                                Preference(
                                     onClick = onTestSuccess,
                                     title = {
                                         Text(
@@ -111,7 +111,7 @@ fun SystemScreen(
                                 )
                             },
                             {
-                                ActionPreference(
+                                Preference(
                                     onClick = onTestFailure,
                                     title = {
                                         Text(
@@ -126,7 +126,7 @@ fun SystemScreen(
                                 )
                             },
                             {
-                                ActionPreference(
+                                Preference(
                                     onClick = onClearDownloads,
                                     title = {
                                         Text(
@@ -155,7 +155,7 @@ fun SystemScreen(
                         listOf(
                             {
                                 SelectionContainer {
-                                    ActionPreference(
+                                    Preference(
                                         onClick = {},
                                         title = { Text(stringResource(R.string.pref_version_title)) },
                                         summary = {
