@@ -13,3 +13,9 @@ internal fun Class<*>.accessibleField(name: String): Field =
 fun View.weakVibrate() {
     performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
 }
+
+fun labelFromValues(
+    value: String,
+    entries: List<String>,
+    values: List<String>,
+): String? = entries.getOrNull(values.indexOf(value))

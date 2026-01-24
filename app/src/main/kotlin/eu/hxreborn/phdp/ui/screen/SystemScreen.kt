@@ -21,6 +21,7 @@ import eu.hxreborn.phdp.ui.state.PrefsState
 import eu.hxreborn.phdp.ui.theme.AppTheme
 import eu.hxreborn.phdp.ui.theme.DarkThemeConfig
 import eu.hxreborn.phdp.ui.theme.Tokens
+import eu.hxreborn.phdp.util.labelFromValues
 import me.zhanghai.compose.preference.ProvidePreferenceLocals
 import me.zhanghai.compose.preference.preferenceCategory
 
@@ -72,7 +73,7 @@ fun SystemScreen(
                                     },
                                     summary = {
                                         Text(
-                                            powerSaverLabel(
+                                            labelFromValues(
                                                 prefsState.powerSaverMode,
                                                 powerSaverEntries,
                                                 powerSaverValues,
@@ -80,7 +81,7 @@ fun SystemScreen(
                                         )
                                     },
                                     valueToText = {
-                                        powerSaverLabel(it, powerSaverEntries, powerSaverValues)
+                                        labelFromValues(it, powerSaverEntries, powerSaverValues)
                                             ?: it
                                     },
                                 )
@@ -176,12 +177,6 @@ fun SystemScreen(
         }
     }
 }
-
-private fun powerSaverLabel(
-    value: String,
-    entries: List<String>,
-    values: List<String>,
-): String? = entries.getOrNull(values.indexOf(value))
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
