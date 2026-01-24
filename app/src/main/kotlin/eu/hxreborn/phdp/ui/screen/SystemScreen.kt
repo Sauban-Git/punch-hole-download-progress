@@ -73,11 +73,7 @@ fun SystemScreen(
                                     },
                                     summary = {
                                         Text(
-                                            labelFromValues(
-                                                prefsState.powerSaverMode,
-                                                powerSaverEntries,
-                                                powerSaverValues,
-                                            ) ?: prefsState.powerSaverMode,
+                                            stringResource(R.string.pref_battery_saver_summary),
                                         )
                                     },
                                     valueToText = {

@@ -85,6 +85,7 @@
 
     <!-- System: Power -->
     <string name="pref_battery_saver_title">Battery saver mode</string>
+    <string name="pref_battery_saver_summary">Indicator behavior during battery saver</string>
 
     <!-- System: Diagnostics -->
     <string name="pref_debug_completion_title">Simulate completion</string>

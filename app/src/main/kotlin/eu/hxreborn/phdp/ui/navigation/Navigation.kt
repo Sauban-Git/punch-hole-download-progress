@@ -7,10 +7,10 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Widgets
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material.icons.outlined.Widgets
+import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -63,8 +63,8 @@ val bottomNavItems =
         BottomNavItem(
             key = Screen.Motion,
             titleRes = R.string.tab_motion,
-            selectedIcon = Icons.Filled.Widgets,
-            unselectedIcon = Icons.Outlined.Widgets,
+            selectedIcon = Icons.Filled.Tune,
+            unselectedIcon = Icons.Outlined.Tune,
         ),
         BottomNavItem(
             key = Screen.System,
