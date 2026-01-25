@@ -1,0 +1,46 @@
+name: Mirror to Xposed-Modules-Repo
+
+on:
+  release:
+    types: [published]
+
+concurrency:
+  group: mirror-release
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    if: startsWith(github.event.release.tag_name, 'v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Download APK from release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ github.event.release.tag_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          mkdir -p ./artifacts
+          gh release download "$TAG_NAME" \
+            --repo "$REPO" \
+            --pattern "*-release.apk" \
+            --dir ./artifacts
+
+          apk_count=$(find ./artifacts -name '*-release.apk' | wc -l)
+          echo "Found $apk_count release APK(s)"
+          [ "$apk_count" -gt 0 ] || { echo "::error::No release APK found"; exit 1; }
+
+      - name: Create mirror release
+        uses: softprops/action-gh-release@v2
+        with:
+          repository: Xposed-Modules-Repo/eu.hxreborn.phdp
+          token: ${{ secrets.XPOSED_REPO_PAT }}
+          tag_name: ${{ github.event.release.tag_name }}
+          name: ${{ github.event.release.name }}
+          body: ${{ github.event.release.body }}
+          prerelease: ${{ github.event.release.prerelease }}
+          files: ./artifacts/*-release.apk
+          fail_on_unmatched_files: true
+          make_latest: true
