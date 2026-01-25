@@ -208,14 +208,7 @@ class MainActivity :
             }
             RootUtils
                 .restartSystemUI()
-                .onSuccess {
-                    Toast
-                        .makeText(
-                            this@MainActivity,
-                            R.string.restart_success,
-                            Toast.LENGTH_SHORT,
-                        ).show()
-                }.onFailure { e ->
+                .onFailure { e ->
                     Toast
                         .makeText(
                             this@MainActivity,

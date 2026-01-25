@@ -7,7 +7,6 @@
     <string name="restart_systemui">Restart SystemUI</string>
     <string name="restart_systemui_confirm">This will restart SystemUI to apply changes. Continue?</string>
     <string name="restart">Restart</string>
-    <string name="restart_success">SystemUI restarted</string>
     <string name="restart_failed_detail">Failed to restart SystemUI: %1$s</string>
     <string name="root_not_granted">Root not granted. Please grant root to Punch-hole Download Progress.</string>
 
