@@ -196,6 +196,84 @@ fun AppearanceScreen(
                                     valueText = { Text("${it.toInt()}%") },
                                 )
                             },
+                            {
+                                TogglePreferenceWithIcon(
+                                    value = prefsState.ringScaleLinked,
+                                    onValueChange = {
+                                        onSavePrefs(PrefsManager.KEY_RING_SCALE_LINKED, it)
+                                        if (it) {
+                                            onSavePrefs(
+                                                PrefsManager.KEY_RING_SCALE_Y,
+                                                prefsState.ringScaleX,
+                                            )
+                                        }
+                                    },
+                                    title = {
+                                        Text(stringResource(R.string.pref_ring_scale_linked_title))
+                                    },
+                                    summary = {
+                                        Text(stringResource(R.string.pref_ring_scale_linked_summary))
+                                    },
+                                )
+                            },
+                            {
+                                SliderPreferenceWithReset(
+                                    value = prefsState.ringScaleX,
+                                    onValueChange = {
+                                        onSavePrefs(PrefsManager.KEY_RING_SCALE_X, it)
+                                        if (prefsState.ringScaleLinked) {
+                                            onSavePrefs(PrefsManager.KEY_RING_SCALE_Y, it)
+                                        }
+                                    },
+                                    title = {
+                                        Text(stringResource(R.string.pref_ring_scale_x_title))
+                                    },
+                                    summary = {
+                                        Text(stringResource(R.string.pref_ring_scale_x_summary))
+                                    },
+                                    valueRange =
+                                        PrefsManager.MIN_RING_SCALE..PrefsManager.MAX_RING_SCALE,
+                                    defaultValue = PrefsManager.DEFAULT_RING_SCALE,
+                                    onReset = {
+                                        onSavePrefs(
+                                            PrefsManager.KEY_RING_SCALE_X,
+                                            PrefsManager.DEFAULT_RING_SCALE,
+                                        )
+                                        if (prefsState.ringScaleLinked) {
+                                            onSavePrefs(
+                                                PrefsManager.KEY_RING_SCALE_Y,
+                                                PrefsManager.DEFAULT_RING_SCALE,
+                                            )
+                                        }
+                                    },
+                                    valueText = { Text("%.2fx".format(it)) },
+                                )
+                            },
+                            {
+                                SliderPreferenceWithReset(
+                                    value = prefsState.ringScaleY,
+                                    onValueChange = {
+                                        onSavePrefs(PrefsManager.KEY_RING_SCALE_Y, it)
+                                    },
+                                    title = {
+                                        Text(stringResource(R.string.pref_ring_scale_y_title))
+                                    },
+                                    summary = {
+                                        Text(stringResource(R.string.pref_ring_scale_y_summary))
+                                    },
+                                    valueRange =
+                                        PrefsManager.MIN_RING_SCALE..PrefsManager.MAX_RING_SCALE,
+                                    defaultValue = PrefsManager.DEFAULT_RING_SCALE,
+                                    onReset = {
+                                        onSavePrefs(
+                                            PrefsManager.KEY_RING_SCALE_Y,
+                                            PrefsManager.DEFAULT_RING_SCALE,
+                                        )
+                                    },
+                                    valueText = { Text("%.2fx".format(it)) },
+                                    enabled = !prefsState.ringScaleLinked,
+                                )
+                            },
                         ),
                 )
             }

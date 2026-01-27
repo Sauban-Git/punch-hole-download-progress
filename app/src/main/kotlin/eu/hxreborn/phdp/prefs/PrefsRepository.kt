@@ -163,5 +163,22 @@ class PrefsRepositoryImpl(
                     PrefsManager.KEY_USE_DYNAMIC_COLOR,
                     PrefsManager.DEFAULT_USE_DYNAMIC_COLOR,
                 ),
+            ringScaleX =
+                readFloat(
+                    PrefsManager.KEY_RING_SCALE_X,
+                    PrefsManager.DEFAULT_RING_SCALE,
+                    PrefsManager.MIN_RING_SCALE..PrefsManager.MAX_RING_SCALE,
+                ),
+            ringScaleY =
+                readFloat(
+                    PrefsManager.KEY_RING_SCALE_Y,
+                    PrefsManager.DEFAULT_RING_SCALE,
+                    PrefsManager.MIN_RING_SCALE..PrefsManager.MAX_RING_SCALE,
+                ),
+            ringScaleLinked =
+                read(
+                    PrefsManager.KEY_RING_SCALE_LINKED,
+                    PrefsManager.DEFAULT_RING_SCALE_LINKED,
+                ),
         )
 }

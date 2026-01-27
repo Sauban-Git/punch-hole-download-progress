@@ -29,4 +29,7 @@ data class PrefsState(
     val filenameTextPosition: String = PrefsManager.DEFAULT_FILENAME_TEXT_POSITION,
     val darkThemeConfig: DarkThemeConfig = DarkThemeConfig.FOLLOW_SYSTEM,
     val useDynamicColor: Boolean = PrefsManager.DEFAULT_USE_DYNAMIC_COLOR,
+    val ringScaleX: Float = PrefsManager.DEFAULT_RING_SCALE,
+    val ringScaleY: Float = PrefsManager.DEFAULT_RING_SCALE,
+    val ringScaleLinked: Boolean = PrefsManager.DEFAULT_RING_SCALE_LINKED,
 )

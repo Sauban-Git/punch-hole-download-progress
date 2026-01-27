@@ -46,6 +46,12 @@
     <string name="pref_cutout_padding_summary">Distance multiplier from camera edge</string>
     <string name="pref_opacity_title">Opacity</string>
     <string name="pref_opacity_summary">Transparency level of the progress indicator</string>
+    <string name="pref_ring_scale_linked_title">Link scale</string>
+    <string name="pref_ring_scale_linked_summary">Adjust width and height together</string>
+    <string name="pref_ring_scale_x_title">Width scale</string>
+    <string name="pref_ring_scale_x_summary">Horizontal ring stretch</string>
+    <string name="pref_ring_scale_y_title">Height scale</string>
+    <string name="pref_ring_scale_y_summary">Vertical ring stretch</string>
 
     <!-- Design: Percentage Text -->
     <string name="pref_show_percentage_title">Percentage label</string>

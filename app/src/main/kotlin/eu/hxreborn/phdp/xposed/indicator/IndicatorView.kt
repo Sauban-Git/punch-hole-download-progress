@@ -210,7 +210,8 @@ class IndicatorView(
         log(
             "Paint updated: color=${Integer.toHexString(PrefsManager.color)}, " +
                 "opacity=$effectiveOpacity, stroke=${PrefsManager.strokeWidth}, " +
-                "gap=${PrefsManager.ringGap}",
+                "gap=${PrefsManager.ringGap}, scaleX=${PrefsManager.ringScaleX}, " +
+                "scaleY=${PrefsManager.ringScaleY}",
         )
         invalidate()
     }
@@ -366,6 +367,7 @@ class IndicatorView(
                 drawFinishAnimation(this, animatedPaint)
             } else {
                 scaledPath.computeBounds(arcBounds, true)
+                arcBounds.normalizeAndScale()
                 val sweepAngle = 360f * applyEasing(effectiveProgress, PrefsManager.progressEasing)
                 val actualSweep = if (PrefsManager.clockwise) sweepAngle else -sweepAngle
                 drawArc(arcBounds, -90f, actualSweep, false, animatedPaint)
@@ -399,10 +401,11 @@ class IndicatorView(
         paint: Paint,
     ) {
         scaledPath.computeBounds(arcBounds, true)
+        arcBounds.normalizeAndScale()
         if (PrefsManager.finishStyle == "segmented") {
             drawSegmented(canvas, paint)
         } else {
-            canvas.drawPath(scaledPath, paint)
+            canvas.drawArc(arcBounds, 0f, 360f, false, paint)
         }
     }
 
@@ -603,6 +606,16 @@ class IndicatorView(
             "ease_in_out" -> if (p < 0.5f) 2f * p * p else 1f - (-2f * p + 2f).pow(2) / 2f
             else -> p
         }
+    }
+
+    // Normalize bounds to square then apply X/Y scale for user customization
+    private fun RectF.normalizeAndScale() {
+        val maxDim = maxOf(width(), height())
+        val cx = centerX()
+        val cy = centerY()
+        val halfW = maxDim / 2 * PrefsManager.ringScaleX
+        val halfH = maxDim / 2 * PrefsManager.ringScaleY
+        set(cx - halfW, cy - halfH, cx + halfW, cy + halfH)
     }
 
     companion object {

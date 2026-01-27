@@ -37,10 +37,21 @@ object PrefsManager {
     const val KEY_CLEAR_DOWNLOADS_TRIGGER = "clear_downloads_trigger"
     const val KEY_DARK_THEME_CONFIG = "dark_theme_config"
     const val KEY_USE_DYNAMIC_COLOR = "use_dynamic_color"
+    const val KEY_RING_SCALE_X = "ring_scale_x"
+    const val KEY_RING_SCALE_Y = "ring_scale_y"
+    const val KEY_RING_SCALE_LINKED = "ring_scale_linked"
 
     // Keys that trigger preview when changed
     private val VISUAL_KEYS =
-        setOf(KEY_COLOR, KEY_STROKE_WIDTH, KEY_RING_GAP, KEY_OPACITY, KEY_CLOCKWISE)
+        setOf(
+            KEY_COLOR,
+            KEY_STROKE_WIDTH,
+            KEY_RING_GAP,
+            KEY_OPACITY,
+            KEY_CLOCKWISE,
+            KEY_RING_SCALE_X,
+            KEY_RING_SCALE_Y,
+        )
 
     // Defaults
     const val DEFAULT_ENABLED = true
@@ -67,6 +78,8 @@ object PrefsManager {
     const val DEFAULT_FINISH_FLASH_COLOR = 0xFFFFFFFF.toInt()
     const val DEFAULT_DARK_THEME_CONFIG = "follow_system"
     const val DEFAULT_USE_DYNAMIC_COLOR = true
+    const val DEFAULT_RING_SCALE = 1.0f
+    const val DEFAULT_RING_SCALE_LINKED = true
 
     // Ranges
     const val MIN_STROKE_WIDTH = 0.5f
@@ -81,6 +94,8 @@ object PrefsManager {
     const val MAX_FINISH_EXIT_MS = 3000
     const val MIN_MIN_VISIBILITY_MS = 0
     const val MAX_MIN_VISIBILITY_MS = 2000
+    const val MIN_RING_SCALE = 0.5f
+    const val MAX_RING_SCALE = 2.0f
 
     // Reset defaults exclude KEY_ENABLED
     val DEFAULTS: Map<String, Any> =
@@ -107,6 +122,9 @@ object PrefsManager {
             KEY_FINISH_EXIT_MS to DEFAULT_FINISH_EXIT_MS,
             KEY_FINISH_USE_FLASH_COLOR to DEFAULT_FINISH_USE_FLASH_COLOR,
             KEY_FINISH_FLASH_COLOR to DEFAULT_FINISH_FLASH_COLOR,
+            KEY_RING_SCALE_X to DEFAULT_RING_SCALE,
+            KEY_RING_SCALE_Y to DEFAULT_RING_SCALE,
+            KEY_RING_SCALE_LINKED to DEFAULT_RING_SCALE_LINKED,
         )
 
     // Cached values
@@ -207,6 +225,18 @@ object PrefsManager {
 
     @Volatile
     var filenameTextPosition = DEFAULT_FILENAME_TEXT_POSITION
+        private set
+
+    @Volatile
+    var ringScaleX = DEFAULT_RING_SCALE
+        private set
+
+    @Volatile
+    var ringScaleY = DEFAULT_RING_SCALE
+        private set
+
+    @Volatile
+    var ringScaleLinked = DEFAULT_RING_SCALE_LINKED
         private set
 
     // Callbacks
@@ -324,6 +354,19 @@ object PrefsManager {
                     prefs.read(KEY_FILENAME_TEXT_ENABLED, DEFAULT_FILENAME_TEXT_ENABLED)
                 filenameTextPosition =
                     prefs.readString(KEY_FILENAME_TEXT_POSITION, DEFAULT_FILENAME_TEXT_POSITION)
+                ringScaleX =
+                    prefs.readFloat(
+                        KEY_RING_SCALE_X,
+                        DEFAULT_RING_SCALE,
+                        MIN_RING_SCALE..MAX_RING_SCALE,
+                    )
+                ringScaleY =
+                    prefs.readFloat(
+                        KEY_RING_SCALE_Y,
+                        DEFAULT_RING_SCALE,
+                        MIN_RING_SCALE..MAX_RING_SCALE,
+                    )
+                ringScaleLinked = prefs.read(KEY_RING_SCALE_LINKED, DEFAULT_RING_SCALE_LINKED)
             }
         }.onFailure { log("refreshCache() failed", it) }
     }
