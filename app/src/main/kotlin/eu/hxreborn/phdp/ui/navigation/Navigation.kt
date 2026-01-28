@@ -3,6 +3,9 @@ package eu.hxreborn.phdp.ui.navigation
 import android.provider.Settings
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesomeMotion
@@ -28,6 +31,7 @@ import androidx.navigation3.ui.NavDisplay
 import eu.hxreborn.phdp.R
 import eu.hxreborn.phdp.ui.screen.AppearanceScreen
 import eu.hxreborn.phdp.ui.screen.BehaviorScreen
+import eu.hxreborn.phdp.ui.screen.CalibrationScreen
 import eu.hxreborn.phdp.ui.screen.SystemScreen
 import eu.hxreborn.phdp.ui.state.PrefsState
 import eu.hxreborn.phdp.ui.theme.Tokens
@@ -43,6 +47,9 @@ sealed interface Screen : NavKey {
 
     @Serializable
     data object System : Screen
+
+    @Serializable
+    data object Calibration : Screen
 }
 
 data class BottomNavItem(
@@ -95,6 +102,29 @@ fun MainNavDisplay(
                     AppearanceScreen(
                         prefsState = prefsState,
                         onSavePrefs = onSavePrefs,
+                        onNavigateToCalibration = { backStack.add(Screen.Calibration) },
+                        contentPadding = contentPadding,
+                    )
+                }
+                entry<Screen.Calibration>(
+                    metadata =
+                        NavDisplay.transitionSpec {
+                            slideInHorizontally(initialOffsetX = { it }) togetherWith
+                                slideOutHorizontally(targetOffsetX = { -it })
+                        } +
+                            NavDisplay.popTransitionSpec {
+                                slideInHorizontally(initialOffsetX = { -it }) togetherWith
+                                    slideOutHorizontally(targetOffsetX = { it })
+                            } +
+                            NavDisplay.predictivePopTransitionSpec {
+                                slideInHorizontally(initialOffsetX = { -it }) togetherWith
+                                    slideOutHorizontally(targetOffsetX = { it })
+                            },
+                ) {
+                    CalibrationScreen(
+                        prefsState = prefsState,
+                        onSavePrefs = onSavePrefs,
+                        onNavigateBack = { backStack.removeLastOrNull() },
                         contentPadding = contentPadding,
                     )
                 }
@@ -141,8 +171,13 @@ fun BottomNav(
         }
 
     NavigationBar(modifier = modifier) {
+        val effectiveKey =
+            when (currentKey) {
+                Screen.Calibration -> Screen.Design
+                else -> currentKey
+            }
         bottomNavItems.forEach { item ->
-            val selected = currentKey == item.key
+            val selected = effectiveKey == item.key
             NavigationBarItem(
                 selected = selected,
                 onClick = {

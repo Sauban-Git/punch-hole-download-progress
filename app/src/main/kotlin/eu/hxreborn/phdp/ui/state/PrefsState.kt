@@ -32,4 +32,6 @@ data class PrefsState(
     val ringScaleX: Float = PrefsManager.DEFAULT_RING_SCALE,
     val ringScaleY: Float = PrefsManager.DEFAULT_RING_SCALE,
     val ringScaleLinked: Boolean = PrefsManager.DEFAULT_RING_SCALE_LINKED,
+    val ringOffsetX: Float = PrefsManager.DEFAULT_RING_OFFSET,
+    val ringOffsetY: Float = PrefsManager.DEFAULT_RING_OFFSET,
 )

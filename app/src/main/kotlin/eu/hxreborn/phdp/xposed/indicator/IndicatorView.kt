@@ -293,7 +293,9 @@ class IndicatorView(
         )
     }
 
-    fun showStaticPreviewAnim() = animator.showStaticPreviewAnim()
+    fun showStaticPreviewAnim(autoHide: Boolean = true) = animator.showStaticPreviewAnim(autoHide)
+
+    fun cancelStaticPreviewAnim() = animator.cancelStaticPreviewAnim()
 
     fun showError() = animator.startError { progress = 0 }
 
@@ -367,7 +369,7 @@ class IndicatorView(
                 drawFinishAnimation(this, animatedPaint)
             } else {
                 scaledPath.computeBounds(arcBounds, true)
-                arcBounds.normalizeAndScale()
+                arcBounds.applyCalibration()
                 val sweepAngle = 360f * applyEasing(effectiveProgress, PrefsManager.progressEasing)
                 val actualSweep = if (PrefsManager.clockwise) sweepAngle else -sweepAngle
                 drawArc(arcBounds, -90f, actualSweep, false, animatedPaint)
@@ -401,7 +403,7 @@ class IndicatorView(
         paint: Paint,
     ) {
         scaledPath.computeBounds(arcBounds, true)
-        arcBounds.normalizeAndScale()
+        arcBounds.applyCalibration()
         if (PrefsManager.finishStyle == "segmented") {
             drawSegmented(canvas, paint)
         } else {
@@ -608,14 +610,28 @@ class IndicatorView(
         }
     }
 
-    // Normalize bounds to square then apply X/Y scale for user customization
-    private fun RectF.normalizeAndScale() {
-        val maxDim = maxOf(width(), height())
-        val cx = centerX()
-        val cy = centerY()
-        val halfW = maxDim / 2 * PrefsManager.ringScaleX
-        val halfH = maxDim / 2 * PrefsManager.ringScaleY
-        set(cx - halfW, cy - halfH, cx + halfW, cy + halfH)
+    // Apply calibration: normalize to square, offset for alignment, scale for customization
+    private fun RectF.applyCalibration() {
+        val offsetX = PrefsManager.ringOffsetX
+        val offsetY = PrefsManager.ringOffsetY
+        val scaleX = PrefsManager.ringScaleX
+        val scaleY = PrefsManager.ringScaleY
+
+        val maxDimension = maxOf(width(), height())
+        val halfBaseSize = maxDimension / 2f
+
+        val centerX = centerX() + offsetX
+        val centerY = centerY() + offsetY
+
+        val halfWidth = halfBaseSize * scaleX
+        val halfHeight = halfBaseSize * scaleY
+
+        set(
+            centerX - halfWidth,
+            centerY - halfHeight,
+            centerX + halfWidth,
+            centerY + halfHeight,
+        )
     }
 
     companion object {

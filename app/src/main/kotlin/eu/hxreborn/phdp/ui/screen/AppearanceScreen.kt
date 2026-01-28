@@ -13,6 +13,7 @@ import eu.hxreborn.phdp.R
 import eu.hxreborn.phdp.prefs.PrefsManager
 import eu.hxreborn.phdp.ui.component.SectionCard
 import eu.hxreborn.phdp.ui.component.preference.ColorPreference
+import eu.hxreborn.phdp.ui.component.preference.NavigationPreference
 import eu.hxreborn.phdp.ui.component.preference.SelectPreference
 import eu.hxreborn.phdp.ui.component.preference.SliderPreferenceWithReset
 import eu.hxreborn.phdp.ui.component.preference.TogglePreferenceWithIcon
@@ -27,6 +28,7 @@ import me.zhanghai.compose.preference.preferenceCategory
 fun AppearanceScreen(
     prefsState: PrefsState,
     onSavePrefs: (key: String, value: Any) -> Unit,
+    onNavigateToCalibration: () -> Unit,
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
 ) {
@@ -197,81 +199,14 @@ fun AppearanceScreen(
                                 )
                             },
                             {
-                                TogglePreferenceWithIcon(
-                                    value = prefsState.ringScaleLinked,
-                                    onValueChange = {
-                                        onSavePrefs(PrefsManager.KEY_RING_SCALE_LINKED, it)
-                                        if (it) {
-                                            onSavePrefs(
-                                                PrefsManager.KEY_RING_SCALE_Y,
-                                                prefsState.ringScaleX,
-                                            )
-                                        }
-                                    },
+                                NavigationPreference(
+                                    onClick = onNavigateToCalibration,
                                     title = {
-                                        Text(stringResource(R.string.pref_ring_scale_linked_title))
+                                        Text(stringResource(R.string.pref_calibrate_ring_title))
                                     },
                                     summary = {
-                                        Text(stringResource(R.string.pref_ring_scale_linked_summary))
+                                        Text(stringResource(R.string.pref_calibrate_ring_summary))
                                     },
-                                )
-                            },
-                            {
-                                SliderPreferenceWithReset(
-                                    value = prefsState.ringScaleX,
-                                    onValueChange = {
-                                        onSavePrefs(PrefsManager.KEY_RING_SCALE_X, it)
-                                        if (prefsState.ringScaleLinked) {
-                                            onSavePrefs(PrefsManager.KEY_RING_SCALE_Y, it)
-                                        }
-                                    },
-                                    title = {
-                                        Text(stringResource(R.string.pref_ring_scale_x_title))
-                                    },
-                                    summary = {
-                                        Text(stringResource(R.string.pref_ring_scale_x_summary))
-                                    },
-                                    valueRange =
-                                        PrefsManager.MIN_RING_SCALE..PrefsManager.MAX_RING_SCALE,
-                                    defaultValue = PrefsManager.DEFAULT_RING_SCALE,
-                                    onReset = {
-                                        onSavePrefs(
-                                            PrefsManager.KEY_RING_SCALE_X,
-                                            PrefsManager.DEFAULT_RING_SCALE,
-                                        )
-                                        if (prefsState.ringScaleLinked) {
-                                            onSavePrefs(
-                                                PrefsManager.KEY_RING_SCALE_Y,
-                                                PrefsManager.DEFAULT_RING_SCALE,
-                                            )
-                                        }
-                                    },
-                                    valueText = { Text("%.2fx".format(it)) },
-                                )
-                            },
-                            {
-                                SliderPreferenceWithReset(
-                                    value = prefsState.ringScaleY,
-                                    onValueChange = {
-                                        onSavePrefs(PrefsManager.KEY_RING_SCALE_Y, it)
-                                    },
-                                    title = {
-                                        Text(stringResource(R.string.pref_ring_scale_y_title))
-                                    },
-                                    summary = {
-                                        Text(stringResource(R.string.pref_ring_scale_y_summary))
-                                    },
-                                    valueRange =
-                                        PrefsManager.MIN_RING_SCALE..PrefsManager.MAX_RING_SCALE,
-                                    defaultValue = PrefsManager.DEFAULT_RING_SCALE,
-                                    onReset = {
-                                        onSavePrefs(
-                                            PrefsManager.KEY_RING_SCALE_Y,
-                                            PrefsManager.DEFAULT_RING_SCALE,
-                                        )
-                                    },
-                                    valueText = { Text("%.2fx".format(it)) },
-                                    enabled = !prefsState.ringScaleLinked,
                                 )
                             },
                         ),
@@ -437,6 +372,7 @@ private fun AppearanceScreenPreview() {
         AppearanceScreen(
             prefsState = PrefsState(),
             onSavePrefs = { _, _ -> },
+            onNavigateToCalibration = {},
             contentPadding = PaddingValues(),
         )
     }

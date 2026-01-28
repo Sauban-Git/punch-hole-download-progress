@@ -357,27 +357,33 @@ class IndicatorAnimator(
         previewProgress = 0
     }
 
-    fun showStaticPreviewAnim() {
-        log("IndicatorAnimator: showStaticPreviewAnim() - debouncing")
+    fun showStaticPreviewAnim(autoHide: Boolean = true) {
+        log("IndicatorAnimator: showStaticPreviewAnim(autoHide=$autoHide)")
 
         geometryPreviewRunnable?.let { view.removeCallbacks(it) }
+        geometryPreviewRunnable = null
 
         previewMode = PreviewMode.GEOMETRY
         view.invalidate()
 
-        geometryPreviewRunnable =
-            Runnable {
-                previewMode = PreviewMode.NONE
-                geometryPreviewRunnable = null
-                view.invalidate()
-            }
-        view.postDelayed(geometryPreviewRunnable, geometryPreviewDurationMs)
+        if (autoHide) {
+            geometryPreviewRunnable =
+                Runnable {
+                    previewMode = PreviewMode.NONE
+                    geometryPreviewRunnable = null
+                    view.invalidate()
+                }
+            view.postDelayed(geometryPreviewRunnable, geometryPreviewDurationMs)
+        }
     }
 
     fun cancelStaticPreviewAnim() {
         geometryPreviewRunnable?.let { view.removeCallbacks(it) }
         geometryPreviewRunnable = null
-        if (previewMode == PreviewMode.GEOMETRY) previewMode = PreviewMode.NONE
+        if (previewMode == PreviewMode.GEOMETRY) {
+            previewMode = PreviewMode.NONE
+            view.invalidate()
+        }
     }
 
     fun cancelAll() {

@@ -1,0 +1,4 @@
+Add calibration screen for elliptical punch-hole cutouts
+- Ring position offset (X/Y)
+- Ring scale adjustment (width/height)
+- Stepper controls for fine adjustment

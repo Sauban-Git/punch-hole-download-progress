@@ -41,6 +41,10 @@ object PrefsManager {
     const val KEY_RING_SCALE_Y = "ring_scale_y"
     const val KEY_RING_SCALE_LINKED = "ring_scale_linked"
 
+    const val KEY_RING_OFFSET_X = "ring_offset_x"
+    const val KEY_RING_OFFSET_Y = "ring_offset_y"
+    const val KEY_PERSISTENT_PREVIEW = "persistent_preview"
+
     // Keys that trigger preview when changed
     private val VISUAL_KEYS =
         setOf(
@@ -51,6 +55,8 @@ object PrefsManager {
             KEY_CLOCKWISE,
             KEY_RING_SCALE_X,
             KEY_RING_SCALE_Y,
+            KEY_RING_OFFSET_X,
+            KEY_RING_OFFSET_Y,
         )
 
     // Defaults
@@ -80,6 +86,7 @@ object PrefsManager {
     const val DEFAULT_USE_DYNAMIC_COLOR = true
     const val DEFAULT_RING_SCALE = 1.0f
     const val DEFAULT_RING_SCALE_LINKED = true
+    const val DEFAULT_RING_OFFSET = 0f
 
     // Ranges
     const val MIN_STROKE_WIDTH = 0.5f
@@ -96,6 +103,8 @@ object PrefsManager {
     const val MAX_MIN_VISIBILITY_MS = 2000
     const val MIN_RING_SCALE = 0.5f
     const val MAX_RING_SCALE = 2.0f
+    const val MIN_RING_OFFSET = -200f
+    const val MAX_RING_OFFSET = 200f
 
     // Reset defaults exclude KEY_ENABLED
     val DEFAULTS: Map<String, Any> =
@@ -125,6 +134,8 @@ object PrefsManager {
             KEY_RING_SCALE_X to DEFAULT_RING_SCALE,
             KEY_RING_SCALE_Y to DEFAULT_RING_SCALE,
             KEY_RING_SCALE_LINKED to DEFAULT_RING_SCALE_LINKED,
+            KEY_RING_OFFSET_X to DEFAULT_RING_OFFSET,
+            KEY_RING_OFFSET_Y to DEFAULT_RING_OFFSET,
         )
 
     // Cached values
@@ -239,6 +250,14 @@ object PrefsManager {
     var ringScaleLinked = DEFAULT_RING_SCALE_LINKED
         private set
 
+    @Volatile
+    var ringOffsetX = DEFAULT_RING_OFFSET
+        private set
+
+    @Volatile
+    var ringOffsetY = DEFAULT_RING_OFFSET
+        private set
+
     // Callbacks
     var onPrefsChanged: (() -> Unit)? = null
     var onAppVisibilityChanged: ((Boolean) -> Unit)? = null
@@ -248,6 +267,7 @@ object PrefsManager {
     var onPreviewTriggered: (() -> Unit)? = null
     var onGeometryPreviewTriggered: (() -> Unit)? = null
     var onClearDownloadsTriggered: (() -> Unit)? = null
+    var onPersistentPreviewChanged: ((Boolean) -> Unit)? = null
 
     fun init(xposed: io.github.libxposed.api.XposedInterface) {
         runCatching {
@@ -281,6 +301,12 @@ object PrefsManager {
 
                         KEY_CLEAR_DOWNLOADS_TRIGGER -> {
                             onClearDownloadsTriggered?.invoke()
+                        }
+
+                        KEY_PERSISTENT_PREVIEW -> {
+                            onPersistentPreviewChanged?.invoke(
+                                prefs.getBoolean(KEY_PERSISTENT_PREVIEW, false),
+                            )
                         }
 
                         in VISUAL_KEYS -> {
@@ -367,6 +393,18 @@ object PrefsManager {
                         MIN_RING_SCALE..MAX_RING_SCALE,
                     )
                 ringScaleLinked = prefs.read(KEY_RING_SCALE_LINKED, DEFAULT_RING_SCALE_LINKED)
+                ringOffsetX =
+                    prefs.readFloat(
+                        KEY_RING_OFFSET_X,
+                        DEFAULT_RING_OFFSET,
+                        MIN_RING_OFFSET..MAX_RING_OFFSET,
+                    )
+                ringOffsetY =
+                    prefs.readFloat(
+                        KEY_RING_OFFSET_Y,
+                        DEFAULT_RING_OFFSET,
+                        MIN_RING_OFFSET..MAX_RING_OFFSET,
+                    )
             }
         }.onFailure { log("refreshCache() failed", it) }
     }

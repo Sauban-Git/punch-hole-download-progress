@@ -166,6 +166,17 @@ object SystemUIHooker {
         PrefsManager.onClearDownloadsTriggered = {
             DownloadProgressHooker.clearActiveDownloads()
         }
+        PrefsManager.onPersistentPreviewChanged = { enabled ->
+            indicatorView?.let { view ->
+                view.post {
+                    if (enabled) {
+                        view.showStaticPreviewAnim(autoHide = false)
+                    } else {
+                        view.cancelStaticPreviewAnim()
+                    }
+                }
+            }
+        }
     }
 
     fun markAttached(
@@ -238,6 +249,7 @@ object SystemUIHooker {
         PrefsManager.onDownloadComplete = null
         PrefsManager.onTestErrorChanged = null
         PrefsManager.onClearDownloadsTriggered = null
+        PrefsManager.onPersistentPreviewChanged = null
 
         attached = false
     }

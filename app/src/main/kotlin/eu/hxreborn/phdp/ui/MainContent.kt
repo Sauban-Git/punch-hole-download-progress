@@ -59,6 +59,7 @@ fun PunchHoleProgressContent(
 ) {
     val backStack = rememberTypedBackStack<Screen>(Screen.Design)
     val currentKey = backStack.lastOrNull()
+    val showMainAppBar = currentKey != Screen.Calibration
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
             snapAnimationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing),
@@ -69,66 +70,73 @@ fun PunchHoleProgressContent(
     val titleScale = lerp(1.25f, 1f, collapsedFraction)
 
     Scaffold(
-        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier =
+            if (showMainAppBar) {
+                modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+            } else {
+                modifier
+            },
         topBar = {
-            LargeTopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.app_name),
-                        maxLines = 2,
-                        softWrap = true,
-                        lineHeight = 32.sp,
-                        modifier =
-                            Modifier
-                                .padding(end = 16.dp)
-                                .graphicsLayer {
-                                    scaleX = titleScale
-                                    scaleY = titleScale
-                                    transformOrigin = TransformOrigin(0f, 0.5f)
-                                },
-                        style = LocalTextStyle.current.copy(textMotion = TextMotion.Animated),
-                    )
-                },
-                expandedHeight = Tokens.LargeAppBarExpandedHeight,
-                scrollBehavior = scrollBehavior,
-                actions = {
-                    if (isCollapsed) {
-                        Box {
-                            IconButton(onClick = { menuExpanded = true }) {
-                                Icon(
-                                    imageVector = Icons.Default.MoreVert,
-                                    contentDescription = stringResource(R.string.more_options),
-                                )
-                            }
-                            DropdownMenu(
-                                expanded = menuExpanded,
-                                onDismissRequest = { menuExpanded = false },
-                            ) {
-                                DropdownMenuItem(
-                                    text = { Text(stringResource(R.string.restart_systemui)) },
-                                    onClick = {
-                                        menuExpanded = false
-                                        onMenuAction(MenuAction.RestartSystemUI)
+            if (showMainAppBar) {
+                LargeTopAppBar(
+                    title = {
+                        Text(
+                            text = stringResource(R.string.app_name),
+                            maxLines = 2,
+                            softWrap = true,
+                            lineHeight = 32.sp,
+                            modifier =
+                                Modifier
+                                    .padding(end = 16.dp)
+                                    .graphicsLayer {
+                                        scaleX = titleScale
+                                        scaleY = titleScale
+                                        transformOrigin = TransformOrigin(0f, 0.5f)
                                     },
-                                    leadingIcon = {
-                                        Icon(Icons.Default.Refresh, contentDescription = null)
-                                    },
-                                )
-                                DropdownMenuItem(
-                                    text = { Text(stringResource(R.string.reset_defaults)) },
-                                    onClick = {
-                                        menuExpanded = false
-                                        onMenuAction(MenuAction.Reset)
-                                    },
-                                    leadingIcon = {
-                                        Icon(Icons.Default.RestartAlt, contentDescription = null)
-                                    },
-                                )
+                            style = LocalTextStyle.current.copy(textMotion = TextMotion.Animated),
+                        )
+                    },
+                    expandedHeight = Tokens.LargeAppBarExpandedHeight,
+                    scrollBehavior = scrollBehavior,
+                    actions = {
+                        if (isCollapsed) {
+                            Box {
+                                IconButton(onClick = { menuExpanded = true }) {
+                                    Icon(
+                                        imageVector = Icons.Default.MoreVert,
+                                        contentDescription = stringResource(R.string.more_options),
+                                    )
+                                }
+                                DropdownMenu(
+                                    expanded = menuExpanded,
+                                    onDismissRequest = { menuExpanded = false },
+                                ) {
+                                    DropdownMenuItem(
+                                        text = { Text(stringResource(R.string.restart_systemui)) },
+                                        onClick = {
+                                            menuExpanded = false
+                                            onMenuAction(MenuAction.RestartSystemUI)
+                                        },
+                                        leadingIcon = {
+                                            Icon(Icons.Default.Refresh, contentDescription = null)
+                                        },
+                                    )
+                                    DropdownMenuItem(
+                                        text = { Text(stringResource(R.string.reset_defaults)) },
+                                        onClick = {
+                                            menuExpanded = false
+                                            onMenuAction(MenuAction.Reset)
+                                        },
+                                        leadingIcon = {
+                                            Icon(Icons.Default.RestartAlt, contentDescription = null)
+                                        },
+                                    )
+                                }
                             }
                         }
-                    }
-                },
-            )
+                    },
+                )
+            }
         },
         bottomBar = {
             BottomNav(

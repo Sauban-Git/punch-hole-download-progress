@@ -180,5 +180,17 @@ class PrefsRepositoryImpl(
                     PrefsManager.KEY_RING_SCALE_LINKED,
                     PrefsManager.DEFAULT_RING_SCALE_LINKED,
                 ),
+            ringOffsetX =
+                readFloat(
+                    PrefsManager.KEY_RING_OFFSET_X,
+                    PrefsManager.DEFAULT_RING_OFFSET,
+                    PrefsManager.MIN_RING_OFFSET..PrefsManager.MAX_RING_OFFSET,
+                ),
+            ringOffsetY =
+                readFloat(
+                    PrefsManager.KEY_RING_OFFSET_Y,
+                    PrefsManager.DEFAULT_RING_OFFSET,
+                    PrefsManager.MIN_RING_OFFSET..PrefsManager.MAX_RING_OFFSET,
+                ),
         )
 }

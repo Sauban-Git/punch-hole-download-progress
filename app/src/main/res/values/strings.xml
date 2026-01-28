@@ -3,6 +3,9 @@
     <string name="app_name">Punch-hole Download Progress</string>
     <string name="app_desc">Activity indicator ring around camera cutout</string>
 
+    <!-- Navigation -->
+    <string name="back">Back</string>
+
     <!-- Restart SystemUI -->
     <string name="restart_systemui">Restart SystemUI</string>
     <string name="restart_systemui_confirm">This will restart SystemUI to apply changes. Continue?</string>
@@ -52,6 +55,17 @@
     <string name="pref_ring_scale_x_summary">Horizontal ring stretch</string>
     <string name="pref_ring_scale_y_title">Height scale</string>
     <string name="pref_ring_scale_y_summary">Vertical ring stretch</string>
+
+    <!-- Design: Calibration -->
+    <string name="pref_calibrate_ring_title">Calibrate ring</string>
+    <string name="pref_calibrate_ring_summary">Adjust ring position and size</string>
+    <string name="group_calibration">Ring Calibration</string>
+    <string name="group_position">Position</string>
+    <string name="group_size">Size</string>
+    <string name="pref_ring_offset_x_title">Horizontal offset</string>
+    <string name="pref_ring_offset_x_summary">Move ring left or right</string>
+    <string name="pref_ring_offset_y_title">Vertical offset</string>
+    <string name="pref_ring_offset_y_summary">Move ring up or down</string>
 
     <!-- Design: Percentage Text -->
     <string name="pref_show_percentage_title">Percentage label</string>
@@ -112,6 +126,8 @@
     <string name="reset_confirm">Reset all settings to defaults?</string>
     <string name="reset_done">Settings reset</string>
     <string name="reset">Reset</string>
+    <string name="increase">Increase</string>
+    <string name="decrease">Decrease</string>
 
     <!-- Dialog Arrays: Completion Style -->
     <string-array name="finish_style_entries">
