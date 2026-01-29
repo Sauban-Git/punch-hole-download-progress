@@ -32,11 +32,11 @@ import androidx.compose.ui.text.style.TextMotion
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
+import androidx.navigation3.runtime.rememberNavBackStack
 import eu.hxreborn.phdp.R
 import eu.hxreborn.phdp.ui.navigation.BottomNav
 import eu.hxreborn.phdp.ui.navigation.MainNavDisplay
 import eu.hxreborn.phdp.ui.navigation.Screen
-import eu.hxreborn.phdp.ui.navigation.rememberTypedBackStack
 import eu.hxreborn.phdp.ui.state.PrefsState
 import eu.hxreborn.phdp.ui.theme.Tokens
 
@@ -57,8 +57,8 @@ fun PunchHoleProgressContent(
     onClearDownloads: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val backStack = rememberTypedBackStack<Screen>(Screen.Design)
-    val currentKey = backStack.lastOrNull()
+    val backStack = rememberNavBackStack(Screen.Design)
+    val currentKey = backStack.lastOrNull() as? Screen
     val showMainAppBar = currentKey != Screen.Calibration
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(

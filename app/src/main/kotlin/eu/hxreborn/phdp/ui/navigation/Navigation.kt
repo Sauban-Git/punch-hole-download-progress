@@ -20,11 +20,11 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
@@ -83,7 +83,7 @@ val bottomNavItems =
 
 @Composable
 fun MainNavDisplay(
-    backStack: SnapshotStateList<Screen>,
+    backStack: NavBackStack<NavKey>,
     prefsState: PrefsState,
     onSavePrefs: (key: String, value: Any) -> Unit,
     onTestSuccess: () -> Unit,
@@ -151,8 +151,8 @@ fun MainNavDisplay(
 
 @Composable
 fun BottomNav(
-    backStack: SnapshotStateList<Screen>,
-    currentKey: Screen?,
+    backStack: NavBackStack<NavKey>,
+    currentKey: NavKey?,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
