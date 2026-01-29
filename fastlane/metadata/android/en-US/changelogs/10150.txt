@@ -1,0 +1,3 @@
+Better support for different phone models
+- Fixed settings showing wrong default values in color picker
+- Fixed error animation shape on some devices
