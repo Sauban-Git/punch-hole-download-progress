@@ -310,9 +310,9 @@ class IndicatorView(
         if (isPowerSaveActive && PrefsManager.powerSaverMode == "disable") return
 
         if (animator.isErrorAnimating) {
-            scaledPath.computeBounds(arcBounds, true)
+            computeCalibratedArcBounds()
             errorPaint.alpha = (animator.errorAlpha * 255).toInt()
-            canvas.drawPath(scaledPath, errorPaint)
+            canvas.drawArc(arcBounds, 0f, 360f, false, errorPaint)
             return
         }
 
@@ -608,6 +608,11 @@ class IndicatorView(
             "ease_in_out" -> if (p < 0.5f) 2f * p * p else 1f - (-2f * p + 2f).pow(2) / 2f
             else -> p
         }
+    }
+
+    private fun computeCalibratedArcBounds() {
+        scaledPath.computeBounds(arcBounds, true)
+        arcBounds.applyCalibration()
     }
 
     // Apply calibration: normalize to square, offset for alignment, scale for customization
