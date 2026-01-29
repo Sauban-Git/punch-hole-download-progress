@@ -90,9 +90,9 @@ object PrefsManager {
 
     // Ranges
     const val MIN_STROKE_WIDTH = 0.5f
-    const val MAX_STROKE_WIDTH = 5.0f
-    const val MIN_RING_GAP = 1.0f
-    const val MAX_RING_GAP = 1.6f
+    const val MAX_STROKE_WIDTH = 10.0f
+    const val MIN_RING_GAP = 0.5f
+    const val MAX_RING_GAP = 3.0f
     const val MIN_OPACITY = 1
     const val MAX_OPACITY = 100
     const val MIN_FINISH_HOLD_MS = 0
@@ -101,10 +101,10 @@ object PrefsManager {
     const val MAX_FINISH_EXIT_MS = 3000
     const val MIN_MIN_VISIBILITY_MS = 0
     const val MAX_MIN_VISIBILITY_MS = 2000
-    const val MIN_RING_SCALE = 0.5f
-    const val MAX_RING_SCALE = 2.0f
-    const val MIN_RING_OFFSET = -200f
-    const val MAX_RING_OFFSET = 200f
+    const val MIN_RING_SCALE = 0.25f
+    const val MAX_RING_SCALE = 3.0f
+    const val MIN_RING_OFFSET = -500f
+    const val MAX_RING_OFFSET = 500f
 
     // Reset defaults exclude KEY_ENABLED
     val DEFAULTS: Map<String, Any> =
