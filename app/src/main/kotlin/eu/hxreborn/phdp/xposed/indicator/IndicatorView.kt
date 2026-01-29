@@ -306,15 +306,15 @@ class IndicatorView(
             return
         }
 
+        if (!PrefsManager.enabled) return
+        if (isPowerSaveActive && PrefsManager.powerSaverMode == "disable") return
+
         if (animator.isErrorAnimating) {
             scaledPath.computeBounds(arcBounds, true)
             errorPaint.alpha = (animator.errorAlpha * 255).toInt()
             canvas.drawPath(scaledPath, errorPaint)
             return
         }
-
-        if (!PrefsManager.enabled) return
-        if (isPowerSaveActive && PrefsManager.powerSaverMode == "disable") return
 
         val effectiveProgress =
             when {
