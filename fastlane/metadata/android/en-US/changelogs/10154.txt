@@ -1,0 +1,2 @@
+Added support for Cromite browser and ADM download manager
+Improved settings screen scroll performance

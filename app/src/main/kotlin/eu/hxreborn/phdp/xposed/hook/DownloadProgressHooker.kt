@@ -43,6 +43,9 @@ object DownloadProgressHooker {
         setOf(
             // System
             "com.android.providers.downloads",
+            // Download managers
+            "com.dv.adm",
+            "com.dv.adm.pay",
             // Firefox and forks
             "org.mozilla.firefox",
             "org.mozilla.firefox_beta",
@@ -63,6 +66,7 @@ object DownloadProgressHooker {
             "com.chrome.dev",
             "com.chrome.canary",
             "org.chromium.chrome",
+            "org.cromite.cromite",
             "com.brave.browser",
             "com.brave.browser_beta",
             "com.brave.browser_nightly",
