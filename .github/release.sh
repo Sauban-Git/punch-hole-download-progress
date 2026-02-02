@@ -64,6 +64,17 @@ if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
 	exit 1
 fi
 
+# Update version properties for F-Droid
+MAJOR="${VERSION%%.*}"
+COMMIT_COUNT=$(($(git rev-list --count HEAD) + 1))
+VERSION_CODE=$((MAJOR * 10000 + COMMIT_COUNT))
+
+sed -i "s/^version\.code=.*/version.code=${VERSION_CODE}/" gradle.properties
+sed -i "s/^version\.name=.*/version.name=${VERSION}/" gradle.properties
+
+git add gradle.properties
+git commit -m "build: bump version to ${VERSION}"
+
 git tag -a "$TAG" -m "Release $TAG"
 git push origin main
 git push origin "$TAG"

@@ -1,0 +1,1 @@
+Added static version info for F-Droid auto-updates
