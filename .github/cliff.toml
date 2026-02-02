@@ -33,6 +33,9 @@ https://github.com/{{ remote.github.owner }}/{{ remote.github.repo }}
 
 ## What's Changed
 
+{% if commits | length == 0 -%}
+No user-facing changes in this release.
+{%- else %}
 {% for group, commits in commits | group_by(attribute="group") %}
 ### {{ group | striptags | trim | upper_first }}
 {% for commit in commits | filter(attribute="scope") | sort(attribute="scope") %}
@@ -44,6 +47,7 @@ https://github.com/{{ remote.github.owner }}/{{ remote.github.repo }}
 {%- endif -%}
 {%- endfor %}
 {% endfor %}
+{%- endif %}
 
 {%- if github.contributors | filter(attribute="is_first_time", value=true) | length != 0 %}
 ### New Contributors

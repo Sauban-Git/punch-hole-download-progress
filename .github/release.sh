@@ -58,6 +58,21 @@ echo ""
 git cliff --config .github/cliff.toml --tag "$TAG" --unreleased
 echo ""
 
+# Check fastlane changelog exists
+MAJOR="${VERSION%%.*}"
+COMMIT_COUNT=$(($(git rev-list --count HEAD) + 1))
+VERSION_CODE=$((MAJOR * 10000 + COMMIT_COUNT))
+CHANGELOG_FILE="fastlane/metadata/android/en-US/changelogs/${VERSION_CODE}.txt"
+
+if [[ ! -f "$CHANGELOG_FILE" ]]; then
+	echo "Warning: missing fastlane changelog: $CHANGELOG_FILE"
+	read -rp "Continue anyway? [y/N] " skip_changelog
+	if [[ ! "$skip_changelog" =~ ^[Yy]$ ]]; then
+		echo "Aborted - create changelog first"
+		exit 1
+	fi
+fi
+
 read -rp "Push and release? [y/N] " confirm
 if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
 	echo "Aborted"
@@ -65,15 +80,11 @@ if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
 fi
 
 # Update version properties for F-Droid
-MAJOR="${VERSION%%.*}"
-COMMIT_COUNT=$(($(git rev-list --count HEAD) + 1))
-VERSION_CODE=$((MAJOR * 10000 + COMMIT_COUNT))
-
 sed -i "s/^version\.code=.*/version.code=${VERSION_CODE}/" gradle.properties
 sed -i "s/^version\.name=.*/version.name=${VERSION}/" gradle.properties
 
 git add gradle.properties
-git commit -m "build: bump version to ${VERSION}"
+git commit -m "chore(release): bump version to ${VERSION}"
 
 git tag -a "$TAG" -m "Release $TAG"
 git push origin main
