@@ -39,6 +39,7 @@ object SystemUIHooker {
     private var systemUIContext: Context? = null
 
     fun hook(classLoader: ClassLoader) {
+        wireCallbacks()
         hookCentralSurfaces(classLoader)
         hookNotificationListener(classLoader)
         hookNotifications(classLoader)
@@ -125,8 +126,6 @@ object SystemUIHooker {
                     )
                 }.onSuccess { log("Hooked NotifCollection.${method.name}") }
             }
-
-        wireCallbacks()
     }
 
     private fun wireCallbacks() {
