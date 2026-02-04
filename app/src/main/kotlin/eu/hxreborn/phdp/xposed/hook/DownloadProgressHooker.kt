@@ -124,7 +124,7 @@ object DownloadProgressHooker {
             activeDownloads.remove(id)
             onActiveCountChanged?.invoke(activeDownloads.size)
             onDownloadComplete?.invoke()
-            updateFilename()
+            updateProgress()
         }
     }
 
