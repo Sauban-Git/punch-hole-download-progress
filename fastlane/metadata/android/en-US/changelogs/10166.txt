@@ -1,0 +1,3 @@
+New package selection screen
+Fixed progress calculation with multiple downloads
+Fixed callback registration on some devices
