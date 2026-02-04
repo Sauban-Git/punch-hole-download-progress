@@ -241,15 +241,20 @@ private fun AppIcon(
         color = icon?.let { Color.Transparent } ?: MaterialTheme.colorScheme.surfaceContainerHighest,
     ) {
         when (icon) {
-            null -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(Tokens.LoadingIndicatorSize),
-                    strokeWidth = 2.dp,
-                    color = MaterialTheme.colorScheme.primary,
-                    trackColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                )
+            null -> {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(Tokens.LoadingIndicatorSize),
+                        strokeWidth = 2.dp,
+                        color = MaterialTheme.colorScheme.primary,
+                        trackColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                    )
+                }
             }
-            else -> Image(icon, contentDescription = null, modifier = Modifier.fillMaxSize())
+
+            else -> {
+                Image(icon, contentDescription = null, modifier = Modifier.fillMaxSize())
+            }
         }
     }
 }
